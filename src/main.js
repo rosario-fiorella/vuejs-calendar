@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
-import App from './App.vue'
 import router from './router'
+import App from './App.vue'
 import vuetify from './plugins/vuetify'
 require('dotenv').config()
 

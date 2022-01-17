@@ -1,34 +1,14 @@
 export const I18N = {
-  /**
-   * @param {string} locale
-   * @returns {object}
-   */
   load: (locale = null) => {
-    locale = locale || 'it'
-    const lang = locale.toLowerCase()
-    return I18N[lang] || {}
-  },
-
-  /**
-   * @param {string} locale
-   * @param {string} property
-   * @returns {object}
-   */
-  getProperty: (locale, property) => {
-    const langObj = I18N.load(locale)
-    return langObj[property] || {}
+    locale = locale || I18N.getIso(locale)
+    return I18N[locale] || {}
   },
 
   getIso: (locale = null) => {
-    locale = locale || 'it'
-    const lang = locale.toLowerCase()
-    return I18N.iso[lang] || ''
+    return (locale || window.navigator.language || 'it-IT')
   },
 
-  iso: {
-    it: 'it-IT'
-  },
-  it: {
+  'it-IT': {
     common: {
       id: 'Id',
       lang: 'Lingua',
@@ -40,9 +20,13 @@ export const I18N = {
       notFound: 'La pagina richiesta non è stata trovata',
       browserNotSupported: 'Questo browser non supporta la persistenza dei dati, si consiglia di provare un altro browser.',
       conditions: 'Condizioni',
-      terms: 'Termini'
-    },
-    actions: {
+      lastUpdate: 'Ultimi aggiornamenti',
+      notices: 'Avvisi',
+      notify: 'Notifiche',
+      features: 'Caratteristiche specifiche',
+      includedServices: 'Servizi inclusi',
+      tag: 'Tag',
+      services: 'Servizi',
       ok: 'Ok',
       add: 'Aggiungi',
       remove: 'Rimuovi',
@@ -51,11 +35,6 @@ export const I18N = {
       sendRequest: 'Invia richiesta',
       success: 'Operazione eseguita con successo!',
       error: 'Operazione annullata, si sono verificati errori!',
-      booking: {
-        success: 'Ti sarà inviata una mail con il riepilogo della prenotazione'
-      }
-    },
-    user: {
       email: 'E-mail',
       fullName: 'Nome e cognome',
       firstName: 'Nome',
@@ -63,45 +42,18 @@ export const I18N = {
       guestType: 'Tipologia di ospite',
       family: 'Famiglia',
       couple: 'Coppia',
-      friends: 'Amici'
-    },
-    form: {
-      autoFilled: 'Campo compilato in automatico',
-      calendar: {
-        in_booking: 'In prenotazione',
-        n_adults: 'Numero adulti',
-        n_kids: 'Numero bambini'
-      },
-      validation: {
-        required: 'Campo obbligatorio',
-        badChar: 'Caratteri non validi',
-        error: {
-          email: 'Inserisci un indirizzo E-mail valido',
-          required: 'Verificare i campi obbligatori',
-          productsNotSelected: 'Aggiungi almeno 1 prodotto per prenotare'
-        },
-        minLength: (n) => {
-          return 'Inserisci almeno a ' + Number(n) + ' caratteri'
-        },
-        maxLength: (n) => {
-          return 'Inserisci fino a ' + Number(n) + ' caratteri'
-        }
-      }
-    },
-    privacy: {
+      friends: 'Amici',
       condition: 'Accetta le condizioni per continuare',
-      terms: 'Accetta i termini per continuare'
-    },
-    contents: {
+      terms: 'Accetta i termini per continuare',
+      autoFilled: 'Campo compilato in automatico',
+      signin: 'Iscriviti',
+      confirm: 'Riceverai una email per confermare l\'iscrizione',
       slug: 'Url',
       name: 'Nome',
       title: 'Titolo',
       description: 'Descrizione',
       short_description: 'Descrizione breve',
       excerpt: 'Riassunto',
-      note: 'Note'
-    },
-    ecommerce: {
       price: 'Prezzo',
       price_reduction: 'Riduzione del prezzo',
       tax: 'Tasse',
@@ -111,14 +63,42 @@ export const I18N = {
       min_tim: 'Tempo minimo di permanenza',
       expired_time: 'Scadenza',
       currency: 'Valuta',
-      unit: 'Valutazione unitaria'
-    },
-    calendars: {
+      unit: 'Valutazione unitaria',
       day: 'Giorno',
       date_start: 'Data di arrivo',
       date_end: 'Data di partenza',
       time_start: 'Orario di arrivo',
-      time_end: 'Orario di partenza'
+      time_end: 'Orario di partenza',
+      date_from: 'Dal',
+      date_to: 'al',
+      in_booking: 'In prenotazione',
+      n_adults: 'Numero adulti',
+      n_kids: 'Numero bambini'
+    },
+    unit: {
+      d: 'al giorno',
+      h: 'all\'ora',
+      m: 'al minuto'
+    },
+    actions: {
+      booking: {
+        success: 'Ti sarà inviata una mail con il riepilogo della prenotazione'
+      }
+    },
+    validation: {
+      required: 'Campo obbligatorio',
+      badChar: 'Caratteri non validi',
+      error: {
+        email: 'Inserisci un indirizzo E-mail valido',
+        required: 'Verificare i campi obbligatori',
+        productsNotSelected: 'Aggiungi almeno 1 prodotto per prenotare'
+      },
+      minLength: (n) => {
+        return 'Inserisci almeno a ' + Number(n) + ' caratteri'
+      },
+      maxLength: (n) => {
+        return 'Inserisci fino a ' + Number(n) + ' caratteri'
+      }
     }
   }
 }

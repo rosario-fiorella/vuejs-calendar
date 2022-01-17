@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { TEST } from './models/test.js'
+
 export default {
   data () {
     return {
@@ -28,24 +30,11 @@ export default {
   },
   methods: {
     init () {
-      const slug = this.$route.params.slug
-      const lang = sessionStorage.getItem('selectedLanguage')
-      let content = sessionStorage.getItem(slug)
-      if (content) {
-        content = JSON.parse(content)
-        this.title = content.content_name
-        this.description = content.content_description
-        this.short_description = content.content_short_description
-        this.excerpt = content.content_excerpt
-        this.note = content.content_note
-      } else {
-        this.$router.push({
-          name: 'notFound',
-          params: {
-            lang: lang
-          }
-        }).catch(e => e)
-      }
+      this.title = TEST.page().title
+      this.description = TEST.page().description
+      this.short_description = TEST.page().short_description
+      this.excerpt = TEST.page().excerpt
+      this.note = TEST.page().note
     }
   }
 }

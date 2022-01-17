@@ -2,8 +2,12 @@ export const ICONS = {
   person: 'person',
   email: 'email',
   people: 'people',
+  addCart: 'add_shopping_cart',
   add: 'add',
   close: 'close',
+  open: 'add',
+  done: 'done',
+  accept: 'check',
   note: 'note',
   arrowLeft: 'keyboard_arrow_left',
   arrowRight: 'keyboard_arrow_right',
@@ -14,5 +18,13 @@ export const ICONS = {
   accessTime: 'access_time',
   star: 'star',
   menu: 'menu',
-  translate: 'translate'
+  translate: 'translate',
+  phone: 'phone',
+  notify: 'notifications_none',
+  discount: 'local_offer',
+  info: 'info_outline',
+  settings: 'settings',
+  description: 'description',
+  addCheck: 'playlist_add_check',
+  eventNote: 'event_note'
 }
