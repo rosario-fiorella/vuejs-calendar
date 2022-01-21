@@ -10,6 +10,16 @@ export class Entity {
   _resources = []
   _services = []
   _tags = []
+  _selected = false
+  _id = null
+
+  get id () {
+    return this._id
+  }
+
+  set id (s) {
+    this._id = s
+  }
 
   get attributes () {
     return this._attributes || []
@@ -83,7 +93,17 @@ export class Entity {
     this._tags = o
   }
 
+  get selected () {
+    return this._selected || false
+  }
+
+  set selected (bool) {
+    this._selected = bool
+  }
+
   constructor (entity) {
+    this.id = entity.id
+    this.selected = false
     this.attributes = this.attributesMap(entity.groups)
     this.calendar = this.calendarMap(entity.calendar)
     this.content = this.contentMap(entity.content)

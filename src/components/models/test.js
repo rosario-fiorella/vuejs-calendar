@@ -176,6 +176,8 @@ export const TEST = {
     i = 1
     for (i; i < 6; ++i) {
       const entity = new Entity({
+        id: 123 + i,
+        selected: false,
         calendar: {
           entity_id: i,
           id: i,

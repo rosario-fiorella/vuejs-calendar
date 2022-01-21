@@ -96,6 +96,7 @@ export const PRODUCT_SELECTED = {
   icon: ICONS.add,
   hint: I18N.load().common.autoFilled,
   selected: [],
+  value: [],
   required: true
 }
 

@@ -3,6 +3,7 @@ export const ICONS = {
   email: 'email',
   people: 'people',
   addCart: 'add_shopping_cart',
+  removeItem: 'remove_circle_outline',
   add: 'add',
   close: 'close',
   open: 'add',

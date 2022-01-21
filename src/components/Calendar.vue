@@ -45,13 +45,16 @@
             ></v-select>
 
             <v-select
-              v-model="_productSelected"
+              v-model="fields.productSelected.value"
               :items="_productSelected"
+              item-value="id"
+              item-text="text"
               :label="fields.productSelected.label"
               :prepend-icon="fields.productSelected.icon"
               :hint="fields.productSelected.hint"
               chips
               multiple
+              @change="updateSelected()"
             ></v-select>
 
             <v-text-field
@@ -169,12 +172,12 @@
         </v-carousel>
         <v-card-title>{{ product.content.name }}</v-card-title>
         <v-card-subtitle>{{ product.content.short_description }}</v-card-subtitle>
-        <v-list>
+        <v-list dense>
           <v-list-item-group>
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title>
-                  {{ product.ecommerce.currency }} {{ product.ecommerce.price }} {{ product.ecommerce.unit }}
+                  {{ product.ecommerce.currency }} {{ product.ecommerce.price_current }} {{ product.ecommerce.unit }}
                 </v-list-item-title>
                 <v-list-item-subtitle v-if="product.ecommerce.price_reduction">
                   <span class="text-decoration-line-through mr-2">
@@ -184,12 +187,14 @@
                     {{ product.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
                   </v-chip>
                 </v-list-item-subtitle>
-                <v-list-item-subtitle>{{ product.ecommerce.tax_included }}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{ product.ecommerce.tax }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ product.ecommerce.tax_included }}, {{ product.ecommerce.tax }}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-action>
-                <v-btn icon @click="addOrRmoveProduct({})">
+              <v-list-item-action @click="addOrRmoveProduct(product)">
+                <v-btn v-if="!product.selected" fab small color="primary">
                   <v-icon>{{ icons.addCart }}</v-icon>
+                </v-btn>
+                <v-btn v-else fab small color="orange">
+                  <v-icon color="white">{{ icons.removeItem }}</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
@@ -481,6 +486,7 @@ export default {
         arrowLeft: ICONS.arrowLeft,
         arrowRight: ICONS.arrowRight,
         addCart: ICONS.addCart,
+        removeItem: ICONS.removeItem,
         discount: ICONS.discount,
         check: ICONS.accept,
         info: ICONS.info,
@@ -536,9 +542,15 @@ export default {
         return this.fields.productSelected.selected || []
       },
       set (v) {
-        if (v.length > 0) {
-          this.fields.productSelected.selected.push(v)
+        if (typeof v === 'object') {
+          if (this.fields.productSelected.value.filter(o => o.id === v.id).length === 0) {
+            this.fields.productSelected.value.push(v)
+          }
+          if (this.fields.productSelected.selected.filter(o => o.id === v.id).length === 0) {
+            this.fields.productSelected.selected.push(v)
+          }
         } else {
+          this.fields.productSelected.value = []
           this.fields.productSelected.selected = []
         }
       }
@@ -620,8 +632,30 @@ export default {
     fetchProducts () {
       this.products = TEST.entities()
     },
+    updateSelected () {
+      const ids = this.fields.productSelected.value
+      for (const i in this.products) {
+        if (ids.includes(this.products[i].id)) {
+          this.products[i].selected = true
+        } else {
+          this.products[i].selected = false
+        }
+      }
+    },
     addOrRmoveProduct (o) {
-      console.log('addOrRmoveProduct', o)
+      this.fields.productSelected.value = []
+      this.fields.productSelected.selected = []
+      for (const i in this.products) {
+        if (this.products[i].id === o.id) {
+          this.products[i].selected = !this.products[i].selected
+        }
+        if (this.products[i].selected) {
+          this._productSelected = {
+            id: this.products[i].id,
+            text: this.products[i].content.name
+          }
+        }
+      }
     },
     dateIsValid (v) {
       if (this.fields.dateRange.notAvaibleDate.includes(v) === true) {
