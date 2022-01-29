@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col md="4" sm="6" xs="12">
+    <v-col sm="4" xs="12">
       <v-form v-model="flags.valid" ref="form">
         <v-card outlined tile>
           <v-card-text>
@@ -165,7 +165,7 @@
         </v-card>
       </v-dialog>
     </v-col>
-    <v-col md="5" sm="6" xs="12">
+    <v-col sm="4" xs="12">
       <v-card class="mb-4" outlined tile v-for="(product, i) in _products" :key="i">
         <v-carousel height="auto">
           <v-carousel-item v-for="(media, m) in product.media" :key="m" :src="media.url"></v-carousel-item>
@@ -190,11 +190,11 @@
                 <v-list-item-subtitle>{{ product.ecommerce.tax_included }}, {{ product.ecommerce.tax }}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action @click="addOrRmoveProduct(product)">
-                <v-btn v-if="!product.selected" fab small color="primary">
+                <v-btn v-if="!product.selected" fab small :color="colors.primary">
                   <v-icon>{{ icons.addCart }}</v-icon>
                 </v-btn>
-                <v-btn v-else fab small color="orange">
-                  <v-icon color="white">{{ icons.removeItem }}</v-icon>
+                <v-btn v-else fab small :color="colors.orange">
+                  <v-icon :color="colors.white">{{ icons.removeItem }}</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
@@ -354,7 +354,7 @@
         </v-expansion-panels>
       </v-card>
     </v-col>
-    <v-col md="3" sm="6" xs="12">
+    <v-col sm="4" xs="12">
       <v-card outlined tile>
         <v-card-text>
           <v-autocomplete
@@ -498,7 +498,9 @@ export default {
       },
       colors: {
         primary: COLORS.primary,
-        secondary: COLORS.secondary
+        secondary: COLORS.secondary,
+        orange: COLORS.orange,
+        white: COLORS.white
       },
       notify: {},
       products: {}
@@ -673,14 +675,15 @@ export default {
     },
     reset () {
       this._date = this.dateNow()
-      this._timeRange = ''
-      this._firstName = ''
-      this._lastName = ''
-      this._email = ''
-      this._adults = ''
-      this._kids = ''
-      this._note = ''
-      this._productSelected = []
+      this._timeRange = null
+      this._firstName = null
+      this._lastName = null
+      this._email = null
+      this._adults = null
+      this._kids = null
+      this._note = null
+      this.fields.productSelected.selected = []
+      this.fields.productSelected.value = []
       this.fetchCalendar()
       this.fetchProducts()
     },
