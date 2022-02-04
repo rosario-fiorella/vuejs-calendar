@@ -432,6 +432,7 @@ import { TEST } from './models/test'
 
 export default {
   created () {
+    this.i18n.language = I18N.getIso().substring(0, 2).toLocaleLowerCase()
     this.fetchCalendar()
     this.fetchNotify()
     this.fetchProducts()
@@ -444,7 +445,8 @@ export default {
       ),
       i18n: {
         language: '',
-        locale: I18N.getIso()
+        locale: I18N.getIso(),
+        timezone: ''
       },
       flags: {
         isLoading: false,
@@ -548,16 +550,16 @@ export default {
         return this.fields.productSelected.selected || []
       },
       set (v) {
-        if (typeof v === 'object') {
-          if (this.fields.productSelected.value.filter(o => o.id === v.id).length === 0) {
-            this.fields.productSelected.value.push(v)
-          }
-          if (this.fields.productSelected.selected.filter(o => o.id === v.id).length === 0) {
-            this.fields.productSelected.selected.push(v)
-          }
-        } else {
+        if (typeof v !== 'object') {
           this.fields.productSelected.value = []
           this.fields.productSelected.selected = []
+          return
+        }
+        if (this.fields.productSelected.value.filter(o => o.id === v.id).length === 0) {
+          this.fields.productSelected.value.push(v)
+        }
+        if (this.fields.productSelected.selected.filter(o => o.id === v.id).length === 0) {
+          this.fields.productSelected.selected.push(v)
         }
       }
     },
@@ -697,6 +699,7 @@ export default {
           throw this.labels.productsNotSelected
         }
         const formData = this.getFormData()
+        console.log('formData', formData)
         if (!formData) {
           this.showDialogError()
         }
