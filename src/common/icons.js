@@ -1,4 +1,5 @@
 export const ICONS = {
+  cart: 'add_shopping_cart',
   person: 'person',
   email: 'email',
   people: 'people',

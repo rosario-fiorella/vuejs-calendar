@@ -93,7 +93,7 @@ export const KIDS = {
 
 export const PRODUCT_SELECTED = {
   label: I18N.load().common.in_booking,
-  icon: ICONS.add,
+  icon: ICONS.cart,
   hint: I18N.load().common.autoFilled,
   selected: [],
   value: [],

@@ -22,9 +22,10 @@ export const TEST = {
   },
   page: () => {
     return {
-      title: 'Titolo',
-      description: 'description',
-      short_description: 'Breve descrizione',
+      title: 'Titolo duis arcu tortor',
+      subtitle: 'Duis arcu tortor, suscipit eget, imperdiet nec',
+      description: 'Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. Nullam vel sem. Pellentesque dapibus hendrerit tortor. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. <br /> Nullam vel sem. Pellentesque dapibus hendrerit tortor. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum.<br />Nullam vel sem. Pellentesque dapibus hendrerit tortor',
+      short_description: 'Duis arcu tortor, suscipit eget, imperdiet nec.',
       excerpt: 'Riassunto',
       note: 'Note'
     }
@@ -33,7 +34,7 @@ export const TEST = {
     const list = []
     let i
     i = 1
-    for (i; i < 10; ++i) {
+    for (i; i < 5; ++i) {
       list.push({
         text: 'Pagina - ' + i,
         icon: i === 1 ? 'home' : 'edit',
@@ -66,6 +67,8 @@ export const TEST = {
         src: '',
         size: '40'
       },
+      bg: 'https://picsum.photos/1920/1080?random',
+      color: COLORS.primary,
       list: list,
       btn: {
         color: COLORS.primary
@@ -106,7 +109,7 @@ export const TEST = {
     for (i; i < 4; ++i) {
       list.push({
         title: 'Avviso - ' + i,
-        description: ' Duis arcu tortor, suscipit eget. ',
+        description: 'Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. Nullam vel sem. Pellentesque dapibus hendrerit tortor.',
         date: {
           start: 'dal 12-12-2021 ore: 12:00',
           end: 'al 16-12-2021 ore: 15:00',
@@ -116,6 +119,7 @@ export const TEST = {
     }
 
     return {
+      type: 'info',
       list: list
     }
   },
@@ -168,6 +172,22 @@ export const TEST = {
         src: 'uploads/logo.png',
         size: '50'
       }
+    }
+  },
+  footer: () => {
+    const nav = []
+    for (let i = 0; i < 5; ++i) {
+      nav.push({
+        text: 'Social - ' + i,
+        icon: 'home',
+        url: 'http://facebook/prova'
+      })
+    }
+
+    return {
+      nav: nav,
+      copyright: '2022 - CalendarFE',
+      note: 'lorem ipsum'
     }
   },
   entities: () => {
