@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col md="4" offset-md="2">
+    <v-col md="4" sm="6" offset-md="2">
       <v-form v-model="flags.valid" ref="form">
         <v-card flat tile>
           <v-card-text>
@@ -177,7 +177,7 @@
         </v-dialog>
       </v-form>
     </v-col>
-    <v-col md="4">
+    <v-col md="4" sm="6">
       <v-card flat tile class="mb-4" v-for="(product, i) in _products" :key="i">
         <v-carousel height="auto">
           <v-carousel-item v-for="(media, m) in product.media" :key="m" :src="media.url"></v-carousel-item>

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app :color="toolbar.color" dark fade-img-on-scroll :src="toolbar.bg">
+    <v-app-bar app :color="toolbar.color" dark :src="toolbar.bg">
       <v-avatar :size="site.logo.size" class="mr-2">
         <v-img :src="site.logo.src"></v-img>
       </v-avatar>
@@ -27,7 +27,7 @@
         </v-list>
       </v-menu>
       <template v-slot:extension>
-        <v-tabs centered dark icons-and-text v-model="navigation.selected">
+        <v-tabs centered v-model="navigation.selected">
           <v-tab v-for="(item, i) in navigation.list" :key="i" :to="item.url">
             <v-icon right small>{{ item.icon }}</v-icon> {{ item.text}}
           </v-tab>
@@ -63,7 +63,7 @@
         </template>
       </v-container>
     </v-main>
-    <v-footer padless>
+    <v-footer padless dark>
       <v-card flat tile width="100%" class="text-center">
         <v-card-actions class="justify-center">
           <v-btn icon v-for="(social, i) in footer.nav" :key="i" :href="social.url" target="_blank">
@@ -79,9 +79,6 @@
 </template>
 
 <style scoped>
-  #app {
-    background-color: #efefef;
-  }
   header.v-toolbar {
     overflow-x: auto;
     overflow-y: hidden;
