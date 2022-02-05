@@ -6,9 +6,6 @@
       </v-avatar>
       <v-toolbar-title>{{ site.title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn small text v-for="(item, i) in site.list" :key="i" :to="item.url">
-        <v-icon>{{ item.icon }}</v-icon>  {{ item.text}}
-      </v-btn>
       <v-menu bottom left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" icon>
@@ -27,9 +24,13 @@
         </v-list>
       </v-menu>
       <template v-slot:extension>
-        <v-tabs centered v-model="navigation.selected">
+        <v-tabs :background-color="navigation.bgColor" dark v-model="navigation.selected">
           <v-tab v-for="(item, i) in navigation.list" :key="i" :to="item.url">
-            <v-icon right small>{{ item.icon }}</v-icon> {{ item.text}}
+            <v-icon left small>{{ item.icon }}</v-icon> {{ item.text}}
+          </v-tab>
+          <v-spacer></v-spacer>
+          <v-tab small v-for="(item, i) in site.list" :key="i" :to="item.url">
+            <v-icon left small>{{ item.icon }}</v-icon> {{ item.text}}
           </v-tab>
         </v-tabs>
       </template>
@@ -63,8 +64,8 @@
         </template>
       </v-container>
     </v-main>
-    <v-footer padless dark>
-      <v-card flat tile width="100%" class="text-center">
+    <v-footer dark padless>
+      <v-card :color="footer.bgColor" tile width="100%" class="text-center">
         <v-card-actions class="justify-center">
           <v-btn icon v-for="(social, i) in footer.nav" :key="i" :href="social.url" target="_blank">
             <v-icon>{{ social.icon }}</v-icon>

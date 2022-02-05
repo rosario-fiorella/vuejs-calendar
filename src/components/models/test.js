@@ -45,6 +45,7 @@ export const TEST = {
     return {
       select: '',
       color: COLORS.primary,
+      bgColor: 'blue-grey darken-4',
       list: list
     }
   },
@@ -185,6 +186,7 @@ export const TEST = {
     }
 
     return {
+      bgColor: 'blue-grey darken-4',
       nav: nav,
       copyright: '2022 - CalendarFE',
       note: 'lorem ipsum'

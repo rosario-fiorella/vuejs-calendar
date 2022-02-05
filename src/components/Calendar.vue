@@ -178,7 +178,7 @@
       </v-form>
     </v-col>
     <v-col md="4" sm="6">
-      <v-card flat tile class="mb-4" v-for="(product, i) in _products" :key="i">
+      <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
         <v-carousel height="auto">
           <v-carousel-item v-for="(media, m) in product.media" :key="m" :src="media.url"></v-carousel-item>
         </v-carousel>
