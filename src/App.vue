@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app :color="toolbar.color" dark :src="toolbar.bg">
+    <v-app-bar app :color="colors.primary" dark :src="toolbar.bg">
       <v-avatar :size="site.logo.size" class="mr-2">
         <v-img :src="site.logo.src"></v-img>
       </v-avatar>
@@ -14,7 +14,7 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-item-group :color="languages.btn.color">
+          <v-list-item-group :color="colors.primary">
             <v-list-item v-for="(item, i) in languages.list" :key="i" v-on:click="switchLangues(i, item.url)">
               <v-list-item-content>
                 <v-list-item-subtitle>{{ item.text }}</v-list-item-subtitle>
@@ -24,7 +24,7 @@
         </v-list>
       </v-menu>
       <template v-slot:extension>
-        <v-tabs :background-color="navigation.bgColor" dark v-model="navigation.selected">
+        <v-tabs :background-color="colors.primary" dark v-model="navigation.selected">
           <v-tab v-for="(item, i) in navigation.list" :key="i" :to="item.url">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.text}}
           </v-tab>
@@ -45,8 +45,8 @@
         <template>
           <v-bottom-sheet inset v-model="sheet">
             <template v-slot:activator="{on, attrs}">
-              <v-btn :color="notices.btn.color" v-show="!sheet" small fab fixed bottom right v-bind="attrs" v-on="on">
-                <v-icon :color="notices.icon.color">{{ notices.icon.open }}</v-icon>
+              <v-btn dark :color="colors.secondary" v-show="!sheet" small fab fixed bottom right v-bind="attrs" v-on="on">
+                <v-icon>{{ notices.icon.open }}</v-icon>
               </v-btn>
             </template>
             <v-sheet>
@@ -65,7 +65,7 @@
       </v-container>
     </v-main>
     <v-footer dark padless>
-      <v-card :color="footer.bgColor" tile width="100%" class="text-center">
+      <v-card :color="colors.primary" tile width="100%" class="text-center">
         <v-card-actions class="justify-center">
           <v-btn icon v-for="(social, i) in footer.nav" :key="i" :href="social.url" target="_blank">
             <v-icon>{{ social.icon }}</v-icon>
@@ -91,6 +91,7 @@
 
 <script>
 import './assets/load.css'
+import { COLORS } from './common/colors.js'
 import { I18N } from './common/locale.js'
 import { TEST } from './components/models/test.js'
 
@@ -111,7 +112,11 @@ export default {
       notify: {},
       site: {},
       languages: {},
-      footer: {}
+      footer: {},
+      colors: {
+        primary: COLORS.primary,
+        secondary: COLORS.secondary
+      }
     }
   },
   methods: {

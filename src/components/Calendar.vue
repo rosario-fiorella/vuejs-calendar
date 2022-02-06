@@ -155,7 +155,7 @@
             </template>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn text outlined :color="colors.secondary" @click="reset()">
+            <v-btn text outlined :color="colors.secondary" dark @click="reset()">
               {{ fields.reset.label }}
             </v-btn>
             <v-btn text outlined :color="colors.primary" @click="submit()">
@@ -205,8 +205,8 @@
                 <v-btn v-if="!product.selected" fab small :color="colors.primary">
                   <v-icon>{{ icons.addCart }}</v-icon>
                 </v-btn>
-                <v-btn v-else fab small :color="colors.orange">
-                  <v-icon :color="colors.white">{{ icons.removeItem }}</v-icon>
+                <v-btn v-else fab small dark :color="colors.secondary">
+                  <v-icon>{{ icons.removeItem }}</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
@@ -470,9 +470,7 @@ export default {
       },
       colors: {
         primary: COLORS.primary,
-        secondary: COLORS.secondary,
-        orange: COLORS.orange,
-        white: COLORS.white
+        secondary: COLORS.secondary
       },
       products: {}
     }

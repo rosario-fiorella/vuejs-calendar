@@ -1,6 +1,6 @@
 export const COLORS = {
   primary: 'primary',
-  secondary: 'secondary',
+  secondary: 'orange',
   white: 'white',
   orange: 'orange'
 }
