@@ -359,14 +359,12 @@ export const TEST = {
     }
   },
   entities: () => {
-    const loop = faker.datatype.number(10)
-    const entityId = faker.datatype.number(1000) + faker.datatype.number(10)
-    const selected = faker.datatype.boolean()
     const list = []
+    for (let i = 0; i < faker.datatype.number(10); ++i) {
+      const entityId = faker.datatype.number(1000) + faker.datatype.number(10)
+      const selected = faker.datatype.boolean()
+      const entityFactory = new EntityFactory(entityId)
 
-    const entityFactory = new EntityFactory(entityId)
-
-    for (let i = 0; i < loop; ++i) {
       const entity = new Entity({
         id: entityId,
         selected: selected,
