@@ -193,7 +193,7 @@
                 </v-list-item-title>
                 <v-list-item-subtitle v-if="product.ecommerce.price_reduction">
                   <span class="text-decoration-line-through mr-2">
-                    {{ product.ecommerce.currency }} {{ product.ecommerce.price_reduction }} {{ product.ecommerce.unit }}
+                    {{ product.ecommerce.currency }} {{ product.ecommerce.price_original }} {{ product.ecommerce.unit }}
                   </span>
                   <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
                     {{ product.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>

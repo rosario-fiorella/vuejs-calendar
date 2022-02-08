@@ -2,32 +2,244 @@ import { COLORS } from '../../common/colors'
 import { ICONS } from '../../common/icons'
 import { I18N } from '../../common/locale'
 import { Entity } from './entity'
+import { faker } from '@faker-js/faker'
+
+var randomLogo = faker.image.avatar()
+var randomBg = faker.image.imageUrl(1900, 320)
+var randomImageUrl = faker.image.imageUrl(300, 240)
+
+class EntityFactory {
+  _id = null
+
+  get id () {
+    return this._id
+  }
+
+  set id (s) {
+    this._id = s
+  }
+
+  constructor (entity) {
+    this._id = entity
+  }
+
+  createEcommerce = () => {
+    const priceOriginal = faker.datatype.float({ min: 100, max: 1000, precision: 2 })
+    const priceReduction = faker.datatype.float({ min: 10, max: 100, precision: 2 })
+    const priceCurrent = priceOriginal - priceReduction
+    const priceDiscount = ((priceReduction / priceOriginal) * 100).toFixed(2)
+    const taxIncluded = faker.datatype.boolean()
+    const taxValue = faker.datatype.float({ min: 1, max: 22, precision: 2 })
+
+    return {
+      id: faker.datatype.number(1000),
+      entity_id: this.id,
+      price_original: priceOriginal,
+      price_reduction: `-${priceDiscount}%`,
+      price_current: priceCurrent,
+      tax_included: taxIncluded,
+      tax: taxValue,
+      min_spent: faker.datatype.float({ min: 10, max: 100, precision: 2 }),
+      min_person: faker.datatype.number(),
+      min_time: 0,
+      expired_time: `${faker.datatype.number({ min: 10, max: 23 })}:00`,
+      currency: '€',
+      unit: 'd',
+      lang: faker.locale
+    }
+  }
+
+  createCalendar = () => {
+    const statusId = faker.datatype.number(3)
+    const dateStart = faker.date.future().toISOString().split('T')[0]
+    const dateEnd = faker.date.future().toISOString().split('T')[0]
+    const timeStart = faker.date.future().toISOString().split('T')[1].substring(0, 5)
+    const timeEnd = faker.date.future().toISOString().split('T')[1].substring(0, 5)
+
+    return {
+      id: faker.datatype.number(1000),
+      entity_id: this.id,
+      status_code: statusId,
+      date_start: dateStart,
+      date_end: dateEnd,
+      time_start: timeStart,
+      time_end: timeEnd
+    }
+  }
+
+  createMedia = (n) => {
+    const medias = []
+    n = n > 0 ? n : faker.datatype.number(3)
+    for (let i = 0; i < n; ++i) {
+      medias.push({
+        id: faker.datatype.number(1000) + i,
+        entity_id: this.id,
+        name: faker.lorem.lines(1),
+        alternative_name: faker.lorem.lines(1),
+        type: 'image/jpeg',
+        url: randomImageUrl,
+        lang: faker.locale
+      })
+    }
+
+    return medias
+  }
+
+  createTags = (n) => {
+    const tags = []
+    n = n > 0 ? n : faker.datatype.number(10)
+    for (let i = 0; i < n; ++i) {
+      tags.push({
+        id: faker.datatype.number(1000) + i,
+        entity_id: this.id,
+        name: faker.lorem.words(1),
+        lang: faker.locale,
+        icon: 'edit'
+      })
+    }
+
+    return tags
+  }
+
+  createContent = () => {
+    return {
+      id: faker.datatype.number(1000),
+      entity_id: this.id,
+      slug: faker.lorem.slug(),
+      name: faker.lorem.lines(1),
+      description: faker.lorem.paragraphs(3, '<br/>'),
+      short_description: faker.lorem.paragraph(),
+      excerpt: faker.lorem.paragraph(),
+      note: faker.lorem.lines(1),
+      lang: faker.locale
+    }
+  }
+
+  createResources = (n) => {
+    const list = []
+    n = n > 0 ? n : faker.datatype.number(10)
+    for (let i = 0; i < n; ++i) {
+      list.push({
+        id: faker.datatype.number(1000) + i,
+        entity_id: this.id,
+        name: faker.lorem.lines(1),
+        alternative_name: faker.lorem.lines(1),
+        url: faker.internet.url(),
+        lang: faker.locale
+      })
+    }
+
+    return list
+  }
+
+  createAttributes = (_g, _a, _v, u, c) => {
+    _g = _g > 0 ? _g : faker.datatype.number(5)
+    _a = _a > 0 ? _a : faker.datatype.number(5)
+    _v = _v > 0 ? _v : faker.datatype.number(5)
+    u = u || 'd'
+    c = c || null
+
+    const groups = []
+    for (let g = 0; g < _g; ++g) {
+      const attributes = []
+      for (let a = 0; a < _a; ++a) {
+        const values = []
+        for (let v = 0; v < _v; ++v) {
+          values.push({
+            value: faker.lorem.words(2),
+            unit: u,
+            currency: c
+          })
+        }
+
+        attributes.push({
+          id: faker.datatype.number(10000),
+          name: faker.lorem.words(3),
+          values: values
+        })
+      }
+
+      groups.push({
+        id: g,
+        name: faker.lorem.words(3),
+        lang: faker.locale,
+        attributes: attributes
+      })
+    }
+
+    return groups
+  }
+
+  createNotices = (n) => {
+    n = n > 0 ? n : faker.datatype.number(2)
+    const list = []
+    for (let i = 0; i < n; ++i) {
+      list.push({
+        calendar: this.createCalendar(),
+        content: this.createContent()
+      })
+    }
+
+    return list
+  }
+
+  createServices = (n) => {
+    n = n > 0 ? n : faker.datatype.number(10)
+    const list = []
+    for (let i = 0; i < n; ++i) {
+      list.push({
+        calendar: this.createCalendar(),
+        content: this.createContent(),
+        ecommerce: this.createEcommerce(),
+        resources: this.createResources(),
+        notices: this.createNotices()
+      })
+    }
+
+    return list
+  }
+}
 
 export const TEST = {
   dateRange: () => {
+    const dates = []
+    const n = faker.datatype.number(20)
+    const now = new Date()
+    const yFrom = now.getFullYear() - 5
+    const yTo = now.getFullYear() + 5
+    for (let i = 0; i < n; ++i) {
+      dates.push(faker.date.future().toISOString().split('T')[0])
+    }
+
     return {
-      notAvaibleDate: ['2021-12-24', '2021-12-25', '2021-12-26'],
-      from: '2019-01-01',
-      to: '2022-01-01'
+      notAvaibleDate: dates,
+      from: `${yFrom}-01-01`,
+      to: `${yTo}-01-01`
     }
   },
   timeRange: () => {
+    const times = []
+    const n = faker.datatype.number(20)
+    for (let i = 0; i < n; ++i) {
+      times.push(faker.date.future().toISOString().split('T')[1].substring(0, 5))
+    }
+
     return {
-      range: ['09:00', '10:00', '11:00'],
-      default: '10:00',
-      value: '11:00',
+      range: times,
+      default: times[0],
+      value: times[0],
       label: I18N.load().common.time_start,
       icon: ICONS.accessTime
     }
   },
   page: () => {
     return {
-      title: 'Titolo duis arcu tortor',
-      subtitle: 'Duis arcu tortor, suscipit eget, imperdiet nec',
-      description: 'Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. Nullam vel sem. Pellentesque dapibus hendrerit tortor. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. <br /> Nullam vel sem. Pellentesque dapibus hendrerit tortor. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum.<br />Nullam vel sem. Pellentesque dapibus hendrerit tortor',
-      short_description: 'Duis arcu tortor, suscipit eget, imperdiet nec.',
-      excerpt: 'Riassunto',
-      note: 'Note'
+      title: faker.lorem.lines(),
+      subtitle: faker.lorem.lines(),
+      description: faker.lorem.paragraphs(6, '<br/>'),
+      short_description: faker.lorem.paragraph(),
+      excerpt: faker.lorem.paragraph(),
+      note: faker.lorem.paragraph()
     }
   },
   navigation: () => {
@@ -36,92 +248,43 @@ export const TEST = {
     i = 1
     for (i; i < 5; ++i) {
       list.push({
-        text: 'Pagina - ' + i,
-        icon: i === 1 ? 'home' : 'edit',
-        url: i === 1 ? '/' : '/it/page-' + i
+        text: faker.lorem.words(1),
+        icon: i === 1 ? 'home' : '',
+        url: i === 1 ? '/' : '/it/' + faker.lorem.slug()
       })
     }
 
     return {
       select: '',
       color: COLORS.primary,
-      bgColor: 'blue-grey darken-4',
       list: list
-    }
-  },
-  toolbar: () => {
-    const list = []
-    let i
-    i = 1
-    for (i; i < 6; ++i) {
-      list.push({
-        text: 'Link - ' + i,
-        icon: 'edit',
-        url: '/it/page-' + i
-      })
-    }
-
-    return {
-      title: '',
-      select: '',
-      logo: {
-        src: '',
-        size: '40'
-      },
-      bg: 'https://picsum.photos/1920/1080?random',
-      color: COLORS.primary,
-      list: list,
-      btn: {
-        color: COLORS.primary
-      },
-      icon: {
-        menu: ICONS.menu
-      }
     }
   },
   notices: () => {
     const list = []
-    let i
-    i = 1
-    for (i; i < 4; ++i) {
+    for (let i = 1; i < 4; ++i) {
+      const from = faker.date.future()
+      const to = faker.date.future()
       list.push({
-        title: 'Titolo - ' + i,
-        description: ' Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. Nullam vel sem. Pellentesque dapibus hendrerit tortor. ',
-        note: 'Note - ' + i
-      })
-    }
-
-    return {
-      list: list,
-      btn: {
-        color: COLORS.white
-      },
-      icon: {
-        color: COLORS.primary,
-        open: ICONS.notify,
-        close: ICONS.close
-      }
-    }
-  },
-  notify: () => {
-    const list = []
-    let i
-    i = 1
-    for (i; i < 4; ++i) {
-      list.push({
-        title: 'Avviso - ' + i,
-        description: 'Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Suspendisse non nisl sit amet velit hendrerit rutrum. Nullam vel sem. Pellentesque dapibus hendrerit tortor.',
+        title: faker.lorem.lines(1),
+        subtitle: faker.lorem.lines(1),
+        description: faker.lorem.paragraph(1),
         date: {
-          start: 'dal 12-12-2021 ore: 12:00',
-          end: 'al 16-12-2021 ore: 15:00',
+          start: `dal ${from.getDay()}/${from.getMonth()}/${from.getFullYear()}`,
+          end: `al ${to.getDay()}/${to.getMonth()}/${to.getFullYear()}`,
           icon: ICONS.dateRange
         }
       })
     }
 
     return {
+      list: list,
       type: 'info',
-      list: list
+      icon: {
+        color: COLORS.primary,
+        open: ICONS.notify,
+        close: ICONS.close
+      }
     }
   },
   languages: () => {
@@ -150,436 +313,77 @@ export const TEST = {
     }
   },
   site: () => {
+    const email = faker.internet.email()
+    const phone = faker.phone.phoneNumber()
     const list = [
       {
         title: 'E-mail',
-        text: 'email@info.it',
+        text: email,
         icon: ICONS.email,
-        url: 'mailto:email@info.it'
+        url: `mailto:${email}`
       },
       {
         title: 'Telefono',
-        text: '+39 333333333',
+        text: phone,
         icon: ICONS.phone,
-        url: 'tel:39333333333'
+        url: `tel:${phone}`
       }
     ]
 
     return {
-      title: 'Titolo del sito',
-      subtitle: 'Slogan del sito',
+      title: faker.lorem.words(4),
+      subtitle: faker.lorem.lines(),
       list: list,
+      bg: randomBg,
       logo: {
-        src: 'uploads/logo.png',
+        src: randomLogo,
         size: '50'
       }
     }
   },
   footer: () => {
-    const nav = []
-    for (let i = 0; i < 5; ++i) {
-      nav.push({
-        text: 'Social - ' + i,
-        icon: 'home',
-        url: 'http://facebook/prova'
-      })
-    }
+    const date = new Date()
+    const year = date.getFullYear()
+    const nav = [
+      {
+        text: 'Facebook',
+        icon: 'facebook',
+        url: faker.internet.url()
+      }
+    ]
 
     return {
-      bgColor: 'blue-grey darken-4',
       nav: nav,
-      copyright: '2022 - CalendarFE',
-      note: 'lorem ipsum'
+      copyright: `${year} - ${faker.lorem.words(2)}`,
+      note: faker.lorem.lines(1)
     }
   },
   entities: () => {
+    const loop = faker.datatype.number(10)
+    const entityId = faker.datatype.number(1000) + faker.datatype.number(10)
+    const selected = faker.datatype.boolean()
     const list = []
-    let i
-    i = 1
-    for (i; i < 6; ++i) {
+
+    const entityFactory = new EntityFactory(entityId)
+
+    for (let i = 0; i < loop; ++i) {
       const entity = new Entity({
-        id: 123 + i,
-        selected: false,
-        calendar: {
-          entity_id: i,
-          id: i,
-          day: i < 6 ? i : '1',
-          status_code: 1,
-          date_start: '2021-12-15',
-          date_end: '2021-12-15',
-          time_start: '10:00',
-          time_end: '12:00'
-        },
-        content: {
-          entity_id: i,
-          id: i,
-          slug: 'prodotto-' + i,
-          name: 'Prodotto - ' + i,
-          description: 'Descrizione - ' + i,
-          short_description: 'Breve descrizione - ' + i,
-          excerpt: 'Riassunto - ' + i,
-          note: 'Note - ' + i,
-          lang: 'it'
-        },
-        ecommerce: {
-          entity_id: i,
-          id: i,
-          price_original: Number(i + '0.00'),
-          price_reduction: '-' + i + '0.00 %',
-          price_current: i + '0.00',
-          tax_included: true,
-          tax: '1.2' + i,
-          min_spent: 0,
-          min_person: 1,
-          min_time: 0,
-          expired_time: '23:59',
-          currency: '€',
-          unit: 'd',
-          lang: 'it'
-        },
-        groups: [
-          {
-            id: i,
-            name: 'Nome del gruppo - ' + i,
-            lang: 'it',
-            attributes: [
-              {
-                id: i,
-                name: 'Nome attributo - ' + i,
-                values: [
-                  {
-                    value: 'Valore attributo 1',
-                    unit: 'd',
-                    type: 'TEXT',
-                    currency: null
-                  },
-                  {
-                    value: 'Valore attributo 2',
-                    unit: 'd',
-                    type: 'TEXT',
-                    currency: null
-                  },
-                  {
-                    value: 'Valore attributo 3',
-                    unit: 'd',
-                    type: 'TEXT',
-                    currency: null
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            id: i,
-            name: 'Nome del gruppo - ' + i,
-            lang: 'it',
-            attributes: [
-              {
-                id: i,
-                name: 'Nome attributo - ' + i,
-                values: [
-                  {
-                    value: 'Valore attributo',
-                    unit: 'd',
-                    type: 'TEXT',
-                    currency: null
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        media: [
-          {
-            entity_id: i,
-            id: i,
-            name: 'Nome - ' + i,
-            alternative_name: 'Altro nome - ' + i,
-            type: 'image/jpeg',
-            url: 'uploads/img-' + (i > 7 ? 1 : i) + '.jpg',
-            lang: 'it'
-          },
-          {
-            entity_id: i,
-            id: i,
-            name: 'Nome - ' + i,
-            alternative_name: 'Altro nome - ' + i,
-            type: 'image/jpeg',
-            url: 'uploads/img-' + (i > 7 ? 1 : (i + 1)) + '.jpg',
-            lang: 'it'
-          }
-        ],
-        notices: [
-          {
-            calendar: {
-              entity_id: i,
-              id: i,
-              day: i < 6 ? i : '1',
-              status_code: 1,
-              date_start: '2021-12-15',
-              date_end: '2021-12-15',
-              time_start: '10:00',
-              time_end: '12:00'
-            },
-            content: {
-              entity_id: i,
-              id: i,
-              slug: 'avviso -' + i,
-              name: 'Avviso - ' + i,
-              description: 'Descrizione - ' + i,
-              short_description: 'Breve descrizione - ' + i,
-              excerpt: 'Riassunto - ' + i,
-              note: 'Note - ' + i,
-              lang: 'it'
-            }
-          }
-        ],
-        resources: [
-          {
-            entity_id: i,
-            id: i,
-            name: 'Nome - ' + i,
-            alternative_name: 'Altro nome - ' + i,
-            url: 'http://localhost/' + i,
-            lang: 'it'
-          }
-        ],
-        services: [
-          {
-            calendar: {
-              entity_id: i,
-              id: i,
-              day: i < 6 ? i : '1',
-              status_code: 1,
-              date_start: '2021-12-15',
-              date_end: '2021-12-15',
-              time_start: '10:00',
-              time_end: '12:00'
-            },
-            content: {
-              entity_id: i,
-              id: i,
-              slug: 'services-' + i,
-              name: 'services - ' + i,
-              description: 'Descrizione - ' + i,
-              short_description: 'Breve descrizione - ' + i,
-              excerpt: 'Riassunto - ' + i,
-              note: 'Note - ' + i,
-              lang: 'it'
-            },
-            ecommerce: {
-              entity_id: i,
-              id: i,
-              price_original: Number(i + '0.00'),
-              price_reduction: '-' + i + '0.00 %',
-              price_current: i + '0.00',
-              tax_included: true,
-              tax: '1.2' + i,
-              min_spent: 0,
-              min_person: 1,
-              min_time: 0,
-              expired_time: '23:59',
-              currency: '€',
-              unit: 'd',
-              lang: 'it'
-            },
-            notices: [
-              {
-                calendar: {
-                  entity_id: i,
-                  id: i,
-                  day: i < 6 ? i : '1',
-                  status_code: 1,
-                  date_start: '2021-12-15',
-                  date_end: '2021-12-15',
-                  time_start: '10:00',
-                  time_end: '12:00'
-                },
-                content: {
-                  entity_id: i,
-                  id: i,
-                  slug: 'avviso -' + i,
-                  name: 'Avviso - ' + i,
-                  description: 'Descrizione - ' + i,
-                  short_description: 'Breve descrizione - ' + i,
-                  excerpt: 'Riassunto - ' + i,
-                  note: 'Note - ' + i,
-                  lang: 'it'
-                }
-              }
-            ],
-            resources: [
-              {
-                entity_id: i,
-                id: i,
-                name: 'Nome - ' + i,
-                alternative_name: 'Altro nome - ' + i,
-                url: 'http://localhost/' + i,
-                lang: 'it'
-              }
-            ]
-          },
-          {
-            calendar: {
-              entity_id: i,
-              id: i,
-              day: i < 6 ? i : '1',
-              status_code: 1,
-              date_start: '2021-12-15',
-              date_end: '2021-12-15',
-              time_start: '10:00',
-              time_end: '12:00'
-            },
-            content: {
-              entity_id: i,
-              id: i,
-              slug: 'services-' + i,
-              name: 'services - ' + i,
-              description: 'Descrizione - ' + i,
-              short_description: 'Breve descrizione - ' + i,
-              excerpt: 'Riassunto - ' + i,
-              note: 'Note - ' + i,
-              lang: 'it'
-            },
-            ecommerce: {
-              entity_id: i,
-              id: i,
-              price_original: Number(i + '0.00'),
-              price_reduction: '-' + i + '0.00 %',
-              price_current: i + '0.00',
-              tax_included: true,
-              tax: '1.2' + i,
-              min_spent: 0,
-              min_person: 1,
-              min_time: 0,
-              expired_time: '23:59',
-              currency: '€',
-              unit: 'd',
-              lang: 'it'
-            },
-            notices: [
-              {
-                calendar: {
-                  entity_id: i,
-                  id: i,
-                  day: i < 6 ? i : '1',
-                  status_code: 1,
-                  date_start: '2021-12-15',
-                  date_end: '2021-12-15',
-                  time_start: '10:00',
-                  time_end: '12:00'
-                },
-                content: {
-                  entity_id: i,
-                  id: i,
-                  slug: 'avviso -' + i,
-                  name: 'Avviso - ' + i,
-                  description: 'Descrizione - ' + i,
-                  short_description: 'Breve descrizione - ' + i,
-                  excerpt: 'Riassunto - ' + i,
-                  note: 'Note - ' + i,
-                  lang: 'it'
-                }
-              }
-            ],
-            resources: [
-              {
-                entity_id: i,
-                id: i,
-                name: 'Nome - ' + i,
-                alternative_name: 'Altro nome - ' + i,
-                url: 'http://localhost/' + i,
-                lang: 'it'
-              }
-            ]
-          },
-          {
-            calendar: {
-              entity_id: i,
-              id: i,
-              day: i < 6 ? i : '1',
-              status_code: 1,
-              date_start: '2021-12-15',
-              date_end: '2021-12-15',
-              time_start: '10:00',
-              time_end: '12:00'
-            },
-            content: {
-              entity_id: i,
-              id: i,
-              slug: 'services-' + i,
-              name: 'services - ' + i,
-              description: 'Descrizione - ' + i,
-              short_description: 'Breve descrizione - ' + i,
-              excerpt: 'Riassunto - ' + i,
-              note: 'Note - ' + i,
-              lang: 'it'
-            },
-            ecommerce: {
-              entity_id: i,
-              id: i,
-              price_original: Number(i + '0.00'),
-              price_reduction: '-' + i + '0.00 %',
-              price_current: i + '0.00',
-              tax_included: true,
-              tax: '1.2' + i,
-              min_spent: 0,
-              min_person: 1,
-              min_time: 0,
-              expired_time: '23:59',
-              currency: '€',
-              unit: 'd',
-              lang: 'it'
-            },
-            notices: [
-              {
-                calendar: {
-                  entity_id: i,
-                  id: i,
-                  day: i < 6 ? i : '1',
-                  status_code: 1,
-                  date_start: '2021-12-15',
-                  date_end: '2021-12-15',
-                  time_start: '10:00',
-                  time_end: '12:00'
-                },
-                content: {
-                  entity_id: i,
-                  id: i,
-                  slug: 'avviso -' + i,
-                  name: 'Avviso - ' + i,
-                  description: 'Descrizione - ' + i,
-                  short_description: 'Breve descrizione - ' + i,
-                  excerpt: 'Riassunto - ' + i,
-                  note: 'Note - ' + i,
-                  lang: 'it'
-                }
-              }
-            ],
-            resources: [
-              {
-                entity_id: i,
-                id: i,
-                name: 'Nome - ' + i,
-                alternative_name: 'Altro nome - ' + i,
-                url: 'http://localhost/' + i,
-                lang: 'it'
-              }
-            ]
-          }
-        ],
-        tags: [
-          {
-            entity_id: i,
-            id: i,
-            name: 'tag - ' + i,
-            lang: 'it',
-            icon: 'edit'
-          }
-        ]
+        id: entityId,
+        selected: selected,
+        calendar: entityFactory.createCalendar(),
+        content: entityFactory.createContent(),
+        ecommerce: entityFactory.createEcommerce(),
+        groups: entityFactory.createAttributes(),
+        media: entityFactory.createMedia(),
+        tags: entityFactory.createTags(),
+        resources: entityFactory.createResources(),
+        notices: entityFactory.createNotices(),
+        services: entityFactory.createServices()
       })
+
       list.push(entity)
     }
+
     return list
   }
 }

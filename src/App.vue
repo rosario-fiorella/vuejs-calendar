@@ -1,11 +1,14 @@
 <template>
   <v-app>
-    <v-app-bar app :color="colors.primary" dark :src="toolbar.bg">
+    <v-app-bar app :color="colors.primary" dark :src="site.bg">
       <v-avatar :size="site.logo.size" class="mr-2">
         <v-img :src="site.logo.src"></v-img>
       </v-avatar>
       <v-toolbar-title>{{ site.title }}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tab small v-for="(item, s) in site.list" :key="s" :to="item.url">
+        <v-icon left small>{{ item.icon }}</v-icon> {{ item.text }}
+      </v-tab>
       <v-menu bottom left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" icon>
@@ -24,12 +27,8 @@
         </v-list>
       </v-menu>
       <template v-slot:extension>
-        <v-tabs :background-color="colors.primary" dark v-model="navigation.selected">
-          <v-tab v-for="(item, i) in navigation.list" :key="i" :to="item.url">
-            <v-icon left small>{{ item.icon }}</v-icon> {{ item.text}}
-          </v-tab>
-          <v-spacer></v-spacer>
-          <v-tab small v-for="(item, i) in site.list" :key="i" :to="item.url">
+        <v-tabs centered :background-color="colors.primary" dark v-model="navigation.selected">
+          <v-tab v-for="(item, n) in navigation.list" :key="n" :to="item.url">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.text}}
           </v-tab>
         </v-tabs>
@@ -50,7 +49,7 @@
               </v-btn>
             </template>
             <v-sheet>
-              <v-alert :type="notify.type" colored-border prominent border="left" v-for="(item, i) in notify.list" :key="i">
+              <v-alert :type="notices.type" colored-border prominent border="left" v-for="(item, i) in notices.list" :key="i">
                 <v-card flat>
                   <v-card-title>{{ item.title }}</v-card-title>
                   <v-card-subtitle>
@@ -107,9 +106,7 @@ export default {
     return {
       sheet: false,
       navigation: {},
-      toolbar: {},
       notices: {},
-      notify: {},
       site: {},
       languages: {},
       footer: {},
@@ -127,10 +124,8 @@ export default {
     fetchData () {
       this.site = TEST.site()
       this.navigation = TEST.navigation()
-      this.toolbar = TEST.toolbar()
       this.languages = TEST.languages()
       this.notices = TEST.notices()
-      this.notify = TEST.notify()
       this.footer = TEST.footer()
       if (this.notices.list.length > 0) {
         this.sheet = true
