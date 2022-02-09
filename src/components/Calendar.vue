@@ -218,7 +218,7 @@
             <v-expansion-panel-content>
               <v-divider></v-divider>
 
-              <v-list dense class="five-line" v-if="product.notices">
+              <v-list dense class="no-line" v-if="product.notices">
                 <v-subheader>
                   <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices }}
                 </v-subheader>
@@ -229,7 +229,7 @@
                       {{ labels.dateFrom}} {{ notice.calendar.date_start }}
                       {{ labels.dateTo}} {{ notice.calendar.date_end }}
                     </v-list-item-subtitle>
-                    <v-list-item-subtitle>{{ notice.content.description }}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-html="notice.content.description"></v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-btn icon :color="colors.primary">
@@ -244,7 +244,7 @@
                   <v-subheader>
                     <v-icon small left>{{ icons.description }}</v-icon> {{ group.name.toUpperCase() }}
                   </v-subheader>
-                  <v-list-item-group>
+                  <v-list-item-group v-if="group.attributes">
                     <v-list-item v-for="(attribute, a) in group.attributes" :key="a">
                       <v-list-item-content>
                         <v-list-item-title>{{ attribute.name }}</v-list-item-title>
@@ -277,7 +277,7 @@
                 </v-list-item-group>
               </v-list>
 
-              <v-list dense class="five-line" v-if="product.services">
+              <v-list dense class="no-line" v-if="product.services">
                 <v-subheader>
                   <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.services.toUpperCase() }}
                 </v-subheader>
@@ -288,7 +288,7 @@
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                       <v-divider></v-divider>
-                      <v-list-item-group>
+                      <v-list-item-group v-if="service.notices">
                         <v-list-item v-for="(notices, sn) in service.notices" :key="sn">
                           <v-list-item-content>
                             <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
@@ -296,7 +296,7 @@
                               <v-icon small>{{ icons.dateRange }}</v-icon>
                               {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
                             </v-list-item-subtitle>
-                            <v-list-item-subtitle>{{ notices.content.description }}</v-list-item-subtitle>
+                            <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
                           </v-list-item-content>
                           <v-list-item-action>
                             <v-btn icon :color="colors.primary">
@@ -304,6 +304,8 @@
                             </v-btn>
                           </v-list-item-action>
                         </v-list-item>
+                      </v-list-item-group>
+                      <v-list-item-group v-if="service.content.description">
                         <v-list-item>
                           <v-list-item-content>
                             <v-list-item-title>{{ labels.description }}</v-list-item-title>
@@ -311,15 +313,19 @@
                               <v-icon small>{{ icons.dateRange }}</v-icon>
                               {{ service.calendar.date_start }} - {{ service.calendar.date_end }}
                             </v-list-item-subtitle>
-                            <v-list-item-subtitle>{{ service.content.description }}</v-list-item-subtitle>
+                            <v-list-item-subtitle v-html="service.content.description"></v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
+                      </v-list-item-group>
+                      <v-list-item-group v-if="service.content.name">
                         <v-list-item>
                           <v-list-item-content>
                             <v-list-item-title>{{ labels.note }}</v-list-item-title>
                             <v-list-item-subtitle>{{ service.content.name }}</v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
+                      </v-list-item-group>
+                      <v-list-item-group v-if="service.ecommerce.price_current">
                         <v-list-item>
                           <v-list-item-content>
                             <v-list-item-title>{{ labels.price }}</v-list-item-title>
@@ -347,7 +353,7 @@
                 </v-expansion-panels>
               </v-list>
 
-              <v-list dense v-if="product.content.note">
+              <v-list dense class="no-line" v-if="product.content.note">
                 <v-subheader>
                   <v-icon small left>{{ icons.eventNote }}</v-icon> {{ labels.note.toUpperCase() }}
                 </v-subheader>
@@ -374,9 +380,9 @@
   padding: 0px !important;
 }
 
-.five-line .v-list-item__subtitle {
+.no-line .v-list-item__subtitle {
   white-space: initial;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: none;
   -webkit-box-orient: vertical;
   display: -webkit-box;
 }
