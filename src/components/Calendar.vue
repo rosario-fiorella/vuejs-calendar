@@ -177,7 +177,7 @@
         </v-dialog>
       </v-form>
     </v-col>
-    <v-col md="4" sm="6">
+    <v-col class="v-card--list" md="4" sm="6">
       <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
         <v-carousel height="auto">
           <v-carousel-item v-for="(media, m) in product.media" :key="m" :src="media.url"></v-carousel-item>
@@ -257,24 +257,20 @@
                 </v-list>
               </template>
 
-              <v-list dense v-if="product.tags">
+              <v-list dense class="no-line" v-if="product.tags">
                 <v-subheader>
                   <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.tag.toUpperCase() }}
                 </v-subheader>
-                <v-list-item-group>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ labels.features }}</v-list-item-title>
-                      <v-list-item-subtitle>
-                        <v-chip-group>
-                          <v-chip small outlined :color="colors.primary" v-for="(tag, t) in product.tags" :key="t">
-                            <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}
-                          </v-chip>
-                        </v-chip-group>
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ labels.features }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product.tags" :key="t">
+                        <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}
+                      </v-chip>
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list>
 
               <v-list dense class="no-line" v-if="product.services">
@@ -375,23 +371,23 @@
   </v-row>
 </template>
 
-<style>
-.v-card .v-expansion-panel-content__wrap {
+<style scoped>
+.v-card--list >>> .v-card .v-expansion-panel-content__wrap {
   padding: 0px !important;
 }
 
-.no-line .v-list-item__subtitle {
+.v-card--list >>> .no-line .v-list-item__subtitle {
   white-space: initial;
   -webkit-line-clamp: none;
   -webkit-box-orient: vertical;
   display: -webkit-box;
 }
 
-.v-expansion-panel-header.panel-header-1 {
+.v-card--list >>> .v-expansion-panel-header.panel-header-1 {
   min-height: 24px;
 }
 
-.v-expansion-panel--active > .v-expansion-panel-header.panel-header-1 {
+.v-card--list >>> .v-expansion-panel--active > .v-expansion-panel-header.panel-header-1 {
   min-height: 24px;
 }
 </style>

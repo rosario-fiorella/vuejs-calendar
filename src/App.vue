@@ -79,11 +79,11 @@
 </template>
 
 <style scoped>
-  header.v-toolbar {
+  #app >>> header.v-toolbar {
     overflow-x: auto;
     overflow-y: hidden;
   }
-  .v-bottom-sheet.v-dialog.v-dialog--active {
+  #app >>> .v-bottom-sheet.v-dialog.v-dialog--active {
     overflow: auto;
   }
 </style>
