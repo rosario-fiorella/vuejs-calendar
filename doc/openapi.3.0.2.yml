@@ -1,0 +1,575 @@
+openapi: "3.0.2"
+info:
+  title: API Calendar
+  description: "Client documentation for the Calendar API"
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "1.0.0"
+servers:
+  - url: https://localhost/api/v1
+  - url: http://localhost/api/v1
+
+tags:
+  - name: Auth
+    description: Endpoint Authorization
+  - name: Entity
+    description: Endpoint Entity
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        description: User login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: User logout
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Logout"
+      responses:
+        "200":
+          description: OK
+          content: {}
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+
+  /entities:
+    get:
+      tags:
+        - Entity
+      parameters:
+        - name: filter
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/EntityFilter"
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntityResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+      required:
+        - userName
+        - password
+        - passwordConfirm
+    Logout:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - accessToken
+        - refreshToken
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        userName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        status:
+          type: integer
+          description: User Status
+          format: int32
+      required:
+        - accessToken
+        - refreshToken
+        - userName
+        - firstName
+        - lastName
+        - email
+        - status
+    FilterPrice:
+      type: array
+      items:
+        type: object
+        properties:
+          field:
+            type: string
+            enum:
+              - price_original
+              - price_discount
+              - price_reduction
+          value:
+            type: number
+          operator:
+            type: string
+            enum:
+              - lower
+              - higher
+              - equal
+        required:
+          - field
+          - value
+          - operator
+    FilterWith:
+      type: array
+      items:
+        type: object
+        properties:
+          field:
+            type: integer
+            description: Record Id
+          value:
+            type: array
+            items:
+              oneOf:
+                - type: number
+                - type: string
+          operator:
+            type: string
+            enum:
+              - include
+              - exclude
+        required:
+          - field
+          - value
+          - operator
+    FilterDate:
+      type: object
+      properties:
+        from:
+          type: string
+          description: Datetime format ISO 8601
+        to:
+          type: string
+          description: Datetime format ISO 8601
+    EntityResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id: 
+            type: integer
+          calendar:
+            type: object
+            $ref: "#/components/schemas/EntityCalendar"
+          content:
+            type: object
+            $ref: "#/components/schemas/EntityContent"
+          ecommerce:
+            type: object
+            $ref: "#/components/schemas/EntityEcommerce"
+          groups: 
+            type: array
+            items: 
+              type: object
+              $ref: "#/components/schemas/EntityAttributes"
+          media: 
+            type: array
+            items: 
+              $ref: "#/components/schemas/EntityMedia"
+          tags: 
+            type: array
+            items: 
+              $ref: "#/components/schemas/EntityTag"
+          resources:
+            type: array
+            items: 
+              type: object
+              $ref: "#/components/schemas/EntityResource"
+          notices: 
+            type: array
+            items: 
+              type: object
+              $ref: "#/components/schemas/EntityNotice"
+          services: 
+            type: array
+            items: 
+              type: object
+              $ref: "#/components/schemas/EntityService"
+    EntityAttributes:
+      type: object
+      properties:
+        id: 
+          type: integer
+        name:
+          type: string
+        lang:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: integer
+              name:
+                type: string
+              values:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    values: 
+                      oneOf:
+                        - type: number
+                        - type: string
+                    unit: 
+                      type: string
+                      enum:
+                        - null
+                        - h
+                        - d
+                        - m
+                        - y
+                    currency:
+                      type: string
+    EntityContent:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_id: 
+          type: integer
+        slug:
+          type: string
+        name: 
+          type: string
+        description:
+          type: string
+        short_description: 
+          type: string
+        excerpt: 
+          type: string
+        note:
+          type: string
+        lang: 
+          type: string
+      required:
+        - id
+        - entity_id
+        - slug
+        - name
+        - description
+        - short_description
+        - excerpt
+        - note
+        - lang
+    EntityCalendar:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_id: 
+          type: integer
+        status_code:
+          type: integer
+        date_start:
+          type: string
+        date_end:
+          type: string
+        time_start:
+          type: string
+        time_end:    
+          type: string
+      required:
+        - id
+        - entity_id
+        - status_code
+        - date_start
+        - date_end
+        - time_start
+        - time_end
+    EntityEcommerce:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_id: 
+          type: integer
+        price_original:
+          type: number
+        price_reduction:
+          type: number
+        price_current:
+          type: number
+        tax_included:
+          type: boolean
+        tax:
+          type: number
+        min_spent:
+          type: number
+        min_person:
+          type: number
+        min_time:
+          type: number
+        expired_time:
+          type: string
+        currency:
+          type: string
+        unit:
+          type: string
+          enum:
+            - h
+            - d
+            - m
+            - y
+        lang:
+          type: string
+      required:
+        - id
+        - entity_id
+        - price_original
+        - price_reduction
+        - price_current
+        - tax_included
+        - tax
+        - min_spent
+        - min_person
+        - min_time
+        - expired_time
+        - currency
+        - unit
+        - lang
+    EntityMedia:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_id: 
+          type: integer
+        name:
+          type: string
+        alternative_name:
+          type: string
+        type:
+          type: string
+        url: 
+          type: string
+        lang:
+          type: string
+      required:
+        - id
+        - entity_id
+        - name
+        - alternative_name
+        - type
+        - url
+        - lang
+    EntityNotice:
+      type: array
+      items:
+        type: object
+        properties:
+          calendar:
+            type: object
+            $ref: "#/components/schemas/EntityCalendar"
+          content:
+            type: object
+            $ref: "#/components/schemas/EntityContent"
+    EntityService:
+      type: array
+      items:
+        type: object
+        properties:
+          calendar:
+            type: object
+            $ref: "#/components/schemas/EntityCalendar"
+          content:
+            type: object
+            $ref: "#/components/schemas/EntityContent"
+          ecommerce:
+            type: object
+            $ref: "#/components/schemas/EntityEcommerce"
+          resources:
+            type: object
+            $ref: "#/components/schemas/EntityResource"
+          notices:
+            type: object
+            $ref: "#/components/schemas/EntityNotice"
+    EntityResource:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          entity_id: 
+            type: integer
+          name: 
+            type: string
+          alternative_name:
+            type: string
+          url:
+            type: string
+          lang:
+            type: string
+        required:
+          - id
+          - entity_id
+          - name
+          - alternative_name
+          - url
+          - lang
+    EntityTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_id: 
+          type: integer
+        name:
+          type: string
+        lang:
+          type: string
+        icon:
+          type: string
+      required:
+        - id
+        - entity_id
+        - name
+        - lang
+        - icon
+    EntityFilter:
+      type: object
+      properties:
+        attributes:
+          $ref: "#/components/schemas/FilterWith"
+        dateRange:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterDate"
+        name:
+          type: string
+          description: Match name
+        price:
+          $ref: "#/components/schemas/FilterPrice"
+        services:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+    BadResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - ApiKeyAuth: []
+    BearerAuth: []
