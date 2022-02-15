@@ -187,46 +187,37 @@ components:
         - status
     FilterPrice:
       type: array
+      minItems: 2
+      maxItems: 2
       items:
-        type: object
-        properties:
-          field:
-            type: string
-            enum:
-              - price_original
-              - price_discount
-              - price_reduction
-          value:
-            type: number
-          operator:
-            type: string
-            enum:
-              - lower
-              - higher
-              - equal
-        required:
-          - field
-          - value
-          - operator
+        type: number
     FilterWith:
       type: array
       items:
         type: object
         properties:
           field:
-            type: integer
-            description: Record Id
+            oneOf:
+              - type: number
+              - type: string
           value:
-            type: array
-            items:
-              oneOf:
-                - type: number
-                - type: string
+            oneOf:
+              - type: string
+              - type: number
+              - type: array
+                items:
+                  oneOf:
+                    - type: number
+                    - type: string
           operator:
             type: string
             enum:
               - include
               - exclude
+              - higher
+              - higher_or_equal
+              - lower
+              - lower_or_equal
         required:
           - field
           - value

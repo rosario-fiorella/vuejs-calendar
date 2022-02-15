@@ -78,7 +78,7 @@ export const ADULTS = {
   max: 6,
   default: 1,
   icon: ICONS.people,
-  label: I18N.load().common.n_adults,
+  label: I18N.load().common.nAdults,
   value: 1
 }
 
@@ -86,14 +86,40 @@ export const KIDS = {
   min: 0,
   max: 6,
   default: 0,
-  label: I18N.load().common.n_kids,
+  label: I18N.load().common.nKids,
   icon: ICONS.people,
   value: 0
 }
 
 export const PRODUCT_SELECTED = {
-  label: I18N.load().common.in_booking,
+  label: I18N.load().common.cart,
   icon: ICONS.cart,
+  hint: I18N.load().common.autoFilled,
+  selected: [],
+  value: [],
+  required: true
+}
+
+export const RANGE_NUMBER = {
+  min: 0,
+  max: 1000,
+  range: [0, 1000],
+  label: I18N.load().common.cart,
+  icon: ICONS.euro
+}
+
+export const SERVICES_SELECTED = {
+  label: I18N.load().common.services,
+  icon: ICONS.settings,
+  hint: I18N.load().common.autoFilled,
+  selected: [],
+  value: [],
+  required: true
+}
+
+export const TAGS_SELECTED = {
+  label: I18N.load().common.tag,
+  icon: ICONS.tag,
   hint: I18N.load().common.autoFilled,
   selected: [],
   value: [],
@@ -111,7 +137,7 @@ export const NOTE = {
 
 export const CHECKIN_DATE = {
   value: '',
-  label: I18N.load().common.date_start,
+  label: I18N.load().common.dateStart,
   icon: ICONS.dateRange,
   hint: I18N.load().common.autoFilled
 }
@@ -120,14 +146,14 @@ export const CHECKIN_TIME = {
   value: '',
   default: '',
   range: [],
-  label: I18N.load().common.time_start,
+  label: I18N.load().common.timeStart,
   icon: ICONS.accessTime
 }
 
 export const CALENDAR_RANGE = {
-  notAvaibleDate: ['2021-12-24', '2021-12-25', '2021-12-26'],
-  from: '2019-01-01',
-  to: '2022-01-01'
+  notAvaibleDate: [],
+  from: `${((new Date()).getFullYear() - 5)}-01-01`,
+  to: `${((new Date()).getFullYear() + 5)}-01-01`
 }
 
 export const RESET = {
@@ -139,33 +165,21 @@ export const SUBMIT = {
 }
 
 export const FILTER_SEARCH = {
-  icon: 'search',
-  label: 'Cerca per nome del prodotto',
+  icon: ICONS.search,
+  label: I18N.load().form.filter.input,
   value: null,
-  list: [
-    'Name',
-    'Calories',
-    'Fat',
-    'Carbs',
-    'Protein',
-    'Sodium',
-    'Calcium',
-    'Iron'
-  ]
+  list: []
 }
 
 export const SORT_BY = {
   icon: {
-    alpha: 'sort_by_alpha',
-    orderDesc: 'arrow_upward',
-    orderAsc: 'arrow_downward'
+    alpha: ICONS.alpha,
+    orderDesc: ICONS.upward,
+    orderAsc: ICONS.downward
   },
-  label: 'Ordina per',
+  label: I18N.load().form.filter.sortBy,
   value: null,
-  list: [
-    'titolo',
-    'prezzo'
-  ]
+  list: []
 }
 
 export const CHECKBOX_PRIVACY = [

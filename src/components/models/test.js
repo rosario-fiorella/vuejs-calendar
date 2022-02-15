@@ -36,7 +36,7 @@ export const TEST = {
       range: times,
       default: times[0],
       value: times[0],
-      label: I18N.load().common.time_start,
+      label: I18N.load().common.timeStart,
       icon: ICONS.accessTime
     }
   },

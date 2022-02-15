@@ -28,5 +28,11 @@ export const ICONS = {
   settings: 'settings',
   description: 'description',
   addCheck: 'playlist_add_check',
-  eventNote: 'event_note'
+  eventNote: 'event_note',
+  tag: 'tag',
+  euro: 'euro',
+  search: 'search',
+  alpha: 'sort_by_alpha',
+  upward: 'arrow_upward',
+  downward: 'arrow_downward'
 }

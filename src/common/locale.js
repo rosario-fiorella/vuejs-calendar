@@ -52,28 +52,44 @@ export const I18N = {
       name: 'Nome',
       title: 'Titolo',
       description: 'Descrizione',
-      short_description: 'Descrizione breve',
+      shortDescription: 'Descrizione breve',
       excerpt: 'Riassunto',
       price: 'Prezzo',
       price_reduction: 'Riduzione del prezzo',
       tax: 'Tasse',
-      tax_included: 'Tasse incluse',
-      min_spent: 'Minima spesa',
-      min_person: 'N. minimo di persone richieste',
-      min_tim: 'Tempo minimo di permanenza',
+      taxIncluded: 'Tasse incluse',
+      minSpent: 'Minima spesa',
+      minPerson: 'N. minimo di persone richieste',
+      minTime: 'Tempo minimo di permanenza',
       expired_time: 'Scadenza',
       currency: 'Valuta',
       unit: 'Valutazione unitaria',
       day: 'Giorno',
-      date_start: 'Data di arrivo',
-      date_end: 'Data di partenza',
-      time_start: 'Orario di arrivo',
-      time_end: 'Orario di partenza',
-      date_from: 'Dal',
+      dateStart: 'Data di arrivo',
+      dateEnd: 'Data di partenza',
+      timeStart: 'Orario di arrivo',
+      timeEnd: 'Orario di partenza',
+      dateFrom: 'Dal',
       date_to: 'al',
-      in_booking: 'In prenotazione',
-      n_adults: 'Numero adulti',
-      n_kids: 'Numero bambini'
+      cart: 'In prenotazione',
+      nAdults: 'Numero adulti',
+      nKids: 'Numero bambini'
+    },
+    form: {
+      booking: {
+        title: 'Booking',
+        caption: 'Scegli una data per prenotare'
+      },
+      filter: {
+        title: 'Filtri di ricerca',
+        caption: 'Ricerca disponibilità usando i filtri',
+        input: 'Cerca per nome del prodotto',
+        sortBy: 'Ordina per'
+      },
+      signUp: {
+        title: 'Iscriviti',
+        caption: 'Riceverai una email per confermare l\'iscrizione'
+      }
     },
     unit: {
       d: 'al giorno',

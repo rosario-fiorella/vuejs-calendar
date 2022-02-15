@@ -187,7 +187,7 @@ export class Entity {
     }
 
     let taxIncluded = (Number(entity.tax_included) > 0) ? I18N.load().common.yes : I18N.load().common.no
-    taxIncluded = `${I18N.load().common.tax_included}: ${taxIncluded}`
+    taxIncluded = `${I18N.load().common.taxIncluded}: ${taxIncluded}`
     const taxValue = `${I18N.load().common.tax}: ${Number(entity.tax)}%`
     const unit = I18N.load().unit[entity.unit] || ''
 
@@ -268,5 +268,48 @@ export class Entity {
         content: this.contentMap(o.content)
       }
     })
+  }
+}
+
+export class EntityAttributes {
+  static INCLUDE = 'include'
+  static EXCLUDE = 'exclude'
+  static HIGHER = 'higher'
+  static HIGHER_OR_EQUAL = 'higher_or_equal'
+  static LOWER = 'lower'
+  static LOWER_OR_EQUAL = 'lower_or_equal'
+
+  _field = null
+  _value = null
+  _operator = null
+
+  get field () {
+    return this._field
+  }
+
+  set field (v) {
+    this._field = v
+  }
+
+  get value () {
+    return this._value
+  }
+
+  set value (v) {
+    this._value = v
+  }
+
+  get operator () {
+    return this._operator
+  }
+
+  set operator (v) {
+    this._operator = v
+  }
+
+  constructor (f, v, o) {
+    this.field = f
+    this.value = Array.isArray(v) ? v : [v]
+    this.operator = o
   }
 }

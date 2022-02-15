@@ -2,7 +2,7 @@
   <v-row>
     <v-col md="4" sm="6" offset-md="2">
       <v-form v-model="flags.valid" ref="form">
-        <v-card flat tile>
+        <v-card tile flat>
           <v-card-text>
             <v-date-picker
               full-width
@@ -11,29 +11,13 @@
               :prev-icon="icons.arrowLeft"
               :next-icon="icons.arrowRight"
               :allowed-dates="dateIsValid"
-              :color="colors.primary"
               :landscape="flags.landscape"
               :locale="i18n.locale"
               :max="fields.dateRange.to"
               :min="fields.dateRange.from"
               @click:date="fetchProducts()"
             ></v-date-picker>
-            <v-autocomplete
-              v-model="fields.search.value"
-              :items="fields.search.list"
-              :prepend-icon="fields.search.icon"
-              :label="fields.search.label"
-              outlined
-              dense
-            ></v-autocomplete>
-            <v-select
-              v-model="fields.sortBy.value"
-              :items="fields.sortBy.list"
-              :prepend-icon="fields.sortBy.icon.alpha"
-              :label="fields.sortBy.label"
-              outlined
-              dense
-            ></v-select>
+
             <v-text-field
               v-model="_date"
               :label="fields.checkInDate.label"
@@ -45,6 +29,7 @@
               readonly
               dense
             ></v-text-field>
+
             <v-select
               v-model="_timeRange"
               :items="fields.timeRange.range"
@@ -107,8 +92,87 @@
               dense
             ></v-text-field>
           </v-card-text>
-          <v-card-title>{{ labels.signin }}</v-card-title>
-          <v-card-subtitle>{{ labels.confirm }}</v-card-subtitle>
+        </v-card>
+        <v-card tile flat>
+          <v-card-title>{{ labels.formFilterTitle }}</v-card-title>
+          <v-card-subtitle>{{ labels.formFilterCaption }}</v-card-subtitle>
+          <v-card-text>
+            <v-autocomplete
+              v-model="fields.search.value"
+              :items="fields.search.list"
+              :prepend-icon="fields.search.icon"
+              :label="fields.search.label"
+              outlined
+              dense
+            ></v-autocomplete>
+
+            <v-select
+              v-model="fields.sortBy.value"
+              :items="fields.sortBy.list"
+              :prepend-icon="fields.sortBy.icon.alpha"
+              :label="fields.sortBy.label"
+              outlined
+              dense
+            ></v-select>
+
+            <v-select
+              v-model="fields.servicesSelected.value"
+              :items="fields.servicesSelected.selected"
+              item-value="id"
+              item-text="text"
+              :label="fields.servicesSelected.label"
+              :prepend-icon="fields.servicesSelected.icon"
+              :hint="fields.servicesSelected.hint"
+              chips
+              multiple
+              dense
+              @change="updateSelected()"
+            ></v-select>
+
+            <v-select
+              v-model="fields.tagSelected.value"
+              :items="fields.tagSelected.selected"
+              item-value="id"
+              item-text="text"
+              :label="fields.tagSelected.label"
+              :prepend-icon="fields.tagSelected.icon"
+              :hint="fields.tagSelected.hint"
+              chips
+              multiple
+              dense
+              @change="updateSelected()"
+            ></v-select>
+
+            <v-range-slider
+              v-model="fields.priceRange.range"
+              :max="fields.priceRange.max"
+              :min="fields.priceRange.min"
+              hide-details
+              class="align-center"
+            >
+              <template v-slot:prepend>
+                <v-text-field
+                  :value="fields.priceRange.range[0]"
+                  :prepend-icon="fields.priceRange.icon"
+                  type="number"
+                  outlined
+                  dense
+                ></v-text-field>
+              </template>
+              <template v-slot:append>
+                <v-text-field
+                  :value="fields.priceRange.range[1]"
+                  type="number"
+                  outlined
+                  dense
+                ></v-text-field>
+              </template>
+            </v-range-slider>
+          </v-card-text>
+        </v-card>
+        <v-card tile flat>
+          <v-card-title>{{ labels.formSignUpTitle }}</v-card-title>
+          <v-card-subtitle>{{ labels.formSignUpCaption }}</v-card-subtitle>
           <v-card-text>
             <v-text-field
               v-model="_firstName"
@@ -155,10 +219,10 @@
             </template>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn text outlined :color="colors.secondary" dark @click="reset()">
+            <v-btn text outlined @click="reset()">
               {{ fields.reset.label }}
             </v-btn>
-            <v-btn text outlined :color="colors.primary" @click="submit()">
+            <v-btn text outlined @click="submit()">
               {{ fields.submit.label }}
             </v-btn>
           </v-card-actions>
@@ -397,6 +461,7 @@ import { COLORS } from '../common/colors.js'
 import * as FORM from '../common/form'
 import { ICONS } from '../common/icons'
 import { I18N } from '../common/locale'
+import { EntityAttributes } from './models/entity'
 import { TEST } from './models/test'
 
 export default {
@@ -427,6 +492,9 @@ export default {
         checkInDate: FORM.CHECKIN_DATE,
         timeRange: FORM.CHECKIN_TIME,
         productSelected: FORM.PRODUCT_SELECTED,
+        servicesSelected: FORM.SERVICES_SELECTED,
+        tagSelected: FORM.TAGS_SELECTED,
+        priceRange: FORM.RANGE_NUMBER,
         adults: FORM.ADULTS,
         kids: FORM.KIDS,
         note: FORM.NOTE,
@@ -448,12 +516,18 @@ export default {
         productsNotSelected: I18N.load().validation.error.productsNotSelected,
         features: I18N.load().common.features,
         includedServices: I18N.load().common.includedServices,
-        dateFrom: I18N.load().common.date_from,
-        dateTo: I18N.load().common.date_to,
+        dateFrom: I18N.load().common.dateFrom,
+        dateTo: I18N.load().common.dateTo,
         notices: I18N.load().common.notices,
         tag: I18N.load().common.tag,
         services: I18N.load().common.services,
-        price: I18N.load().common.price
+        price: I18N.load().common.price,
+        formBookingTitle: I18N.load().form.booking.title,
+        formBookingCaption: I18N.load().form.booking.caption,
+        formFilterTitle: I18N.load().form.filter.title,
+        formFilterCaption: I18N.load().form.filter.caption,
+        formSignUpTitle: I18N.load().form.signUp.title,
+        formSignUpCaption: I18N.load().form.signUp.caption
       },
       icons: {
         arrowDown: ICONS.arrowDown,
@@ -575,11 +649,58 @@ export default {
       set (v) {
         this.fields.email.value = (v || '')
       }
+    },
+    _search: {
+      get () {
+        return this.fields.search.value || ''
+      },
+      set (v) {
+        this.fields.search.value = (v || '')
+      }
+    },
+    _sortBy: {
+      get () {
+        return this.fields.sortBy.value || ''
+      },
+      set (v) {
+        this.fields.sortBy.value = (v || '')
+      }
+    },
+    _servicesSelected: {
+      get () {
+        return this.fields.servicesSelected.value || []
+      },
+      set (v) {
+        this.fields.servicesSelected.value = (v || [])
+      }
+    },
+    _tagSelected: {
+      get () {
+        return this.fields.tagSelected.value || []
+      },
+      set (v) {
+        this.fields.tagSelected.value = (v || [])
+      }
+    },
+    _priceRange: {
+      get () {
+        return this.fields.priceRange.range || []
+      },
+      set (v) {
+        this.fields.priceRange.range = (v || [])
+      }
     }
   },
   methods: {
     dateNow () {
       return new Date().toISOString().slice(0, 10)
+    },
+    getLocale () {
+      const IntlResolve = Intl.DateTimeFormat().resolvedOptions()
+      return {
+        locale: IntlResolve.locale,
+        timeZone: IntlResolve.timeZone
+      }
     },
     getFormData () {
       return {
@@ -590,9 +711,43 @@ export default {
         adults: this._adults,
         kids: this._kids,
         note: this._note,
+        search: this._search,
+        sortBy: this._sortBy,
+        services: this._servicesSelected,
+        tags: this._tagSelected,
+        price: this._priceRange,
         firstName: this._firstName,
         lastName: this._lastName,
         email: this._email
+      }
+    },
+    getDataForAPI () {
+      const dateSelected = `${this._date}T${this._timeRange}Z`
+
+      return {
+        ...this.getLocale(),
+        attributes: [
+          {
+            field: 'adults',
+            value: this._adults,
+            operator: EntityAttributes.HIGHER_OR_EQUAL
+          },
+          {
+            field: 'kids',
+            value: this._kids,
+            operator: EntityAttributes.HIGHER_OR_EQUAL
+          }
+        ],
+        dateRange: [
+          {
+            from: dateSelected,
+            to: dateSelected
+          }
+        ],
+        name: this._search,
+        price: this._priceRange,
+        services: this._servicesSelected.map(v => v.id),
+        tags: this._tagSelected.map(v => v.id)
       }
     },
     fetchCalendar () {
@@ -650,10 +805,13 @@ export default {
       this._adults = null
       this._kids = null
       this._note = null
+      this._search = ''
+      this._sortBy = ''
+      this._servicesSelected = []
+      this._tagSelected = []
+      this._priceRange = [0, 1000]
       this.fields.productSelected.selected = []
       this.fields.productSelected.value = []
-      this.fetchCalendar()
-      this.fetchProducts()
     },
     submit () {
       try {
