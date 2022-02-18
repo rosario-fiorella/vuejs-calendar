@@ -194,7 +194,8 @@ export const TEST = {
   },
   booking: () => {
     return {
-      status: 'OK'
+      status: 'OK',
+      message: ''
     }
   }
 }

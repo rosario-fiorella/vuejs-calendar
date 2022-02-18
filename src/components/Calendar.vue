@@ -834,11 +834,11 @@ export default {
       }
       return (new Date().getTime() <= new Date(v).getTime())
     },
-    showDialogError () {
+    showDialogError (e = null) {
       this.dialog.show = true
       this.dialog.current = this.dialog.error
     },
-    showDialogSuccess () {
+    showDialogSuccess (d) {
       this.dialog.show = true
       this.dialog.current = this.dialog.done
     },
@@ -883,18 +883,17 @@ export default {
         t = setTimeout(() => {
           API.tryToBook(formData)
             .then((r) => {
-              this.showDialogSuccess()
+              this.showDialogSuccess(r)
               clearTimeout(t)
               this._loading = false
             }).catch((e) => {
-              console.log(e)
-              this.showDialogError()
+              this.showDialogError(e)
               clearTimeout(t)
               this._loading = false
             })
         }, 500)
       } catch (e) {
-        this.showDialogError()
+        this.showDialogError(e)
       }
     }
   }
