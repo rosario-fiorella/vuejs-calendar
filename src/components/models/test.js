@@ -191,5 +191,10 @@ export const TEST = {
     }
 
     return list
+  },
+  booking: () => {
+    return {
+      status: 'OK'
+    }
   }
 }

@@ -738,11 +738,6 @@ export default {
         adults: this._adults,
         kids: this._kids,
         note: this._note,
-        search: this._search,
-        sortBy: this._sortBy,
-        services: this._servicesSelected,
-        tags: this._tagSelected,
-        price: this._priceRange,
         firstName: this._firstName,
         lastName: this._lastName,
         email: this._email
@@ -871,11 +866,33 @@ export default {
         if (this._productSelected.length === 0) {
           throw this.labels.productsNotSelected
         }
+
         const formData = this.getFormData()
+        console.log(formData)
         if (!formData) {
           this.showDialogError()
         }
-        this.showDialogSuccess()
+
+        let t = null
+        if (this._loading) {
+          return
+        }
+
+        this._loading = true
+        this.t = true
+        t = setTimeout(() => {
+          API.tryToBook(formData)
+            .then((r) => {
+              this.showDialogSuccess()
+              clearTimeout(t)
+              this._loading = false
+            }).catch((e) => {
+              console.log(e)
+              this.showDialogError()
+              clearTimeout(t)
+              this._loading = false
+            })
+        }, 500)
       } catch (e) {
         this.showDialogError()
       }
