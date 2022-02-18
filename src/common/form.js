@@ -179,7 +179,16 @@ export const SORT_BY = {
   },
   label: I18N.load().form.filter.sortBy,
   value: null,
-  list: []
+  list: [
+    {
+      text: 'A-Z',
+      value: 'asc'
+    },
+    {
+      text: 'Z-A',
+      value: 'desc'
+    }
+  ]
 }
 
 export const CHECKBOX_PRIVACY = [

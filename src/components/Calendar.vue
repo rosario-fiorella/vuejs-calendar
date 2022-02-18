@@ -15,7 +15,7 @@
               :locale="i18n.locale"
               :max="fields.dateRange.to"
               :min="fields.dateRange.from"
-              @click:date="fetchProducts()"
+              @click:date="fetchEntities()"
             ></v-date-picker>
 
             <v-text-field
@@ -40,7 +40,7 @@
               required
               dense
               hide-details
-              v-on:change="fetchProducts()"
+              v-on:change="fetchEntities()"
             ></v-select>
 
             <v-select
@@ -98,12 +98,13 @@
           <v-card-subtitle>{{ labels.formFilterCaption }}</v-card-subtitle>
           <v-card-text>
             <v-autocomplete
-              v-model="fields.search.value"
+              v-model="_search"
               :items="fields.search.list"
               :prepend-icon="fields.search.icon"
               :label="fields.search.label"
               outlined
               dense
+              @change="fetchEntities()"
             ></v-autocomplete>
 
             <v-select
@@ -111,8 +112,11 @@
               :items="fields.sortBy.list"
               :prepend-icon="fields.sortBy.icon.alpha"
               :label="fields.sortBy.label"
+              item-value="value"
+              item-text="text"
               outlined
               dense
+              @change="fetchEntities()"
             ></v-select>
 
             <v-select
@@ -126,7 +130,7 @@
               chips
               multiple
               dense
-              @change="updateSelected()"
+              @change="fetchEntities()"
             ></v-select>
 
             <v-select
@@ -140,7 +144,7 @@
               chips
               multiple
               dense
-              @change="updateSelected()"
+              @change="fetchEntities()"
             ></v-select>
 
             <v-range-slider
@@ -149,6 +153,7 @@
               :min="fields.priceRange.min"
               hide-details
               class="align-center"
+              @change="fetchEntities()"
             >
               <template v-slot:prepend>
                 <v-text-field
@@ -243,30 +248,27 @@
     </v-col>
     <v-col class="v-card--list" md="4" sm="6">
       <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
-        <v-carousel height="auto">
-          <v-carousel-item v-for="(media, m) in product.media" :key="m" :src="media.url"></v-carousel-item>
-        </v-carousel>
-        <v-card-title>{{ product.content.name }}</v-card-title>
-        <v-card-subtitle>{{ product.content.short_description }}</v-card-subtitle>
+        <v-card-title>{{ product._content.name }}</v-card-title>
+        <v-card-subtitle>{{ product._content.short_description }}</v-card-subtitle>
         <v-list dense>
           <v-list-item-group>
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title>
-                  {{ product.ecommerce.currency }} {{ product.ecommerce.price_current }} {{ product.ecommerce.unit }}
+                  {{ product._ecommerce.currency }} {{ product._ecommerce.price_current }} {{ product._ecommerce.unit }}
                 </v-list-item-title>
-                <v-list-item-subtitle v-if="product.ecommerce.price_reduction">
+                <v-list-item-subtitle v-if="product._ecommerce.price_reduction">
                   <span class="text-decoration-line-through mr-2">
-                    {{ product.ecommerce.currency }} {{ product.ecommerce.price_original }} {{ product.ecommerce.unit }}
+                    {{ product._ecommerce.currency }} {{ product._ecommerce.price_original }} {{ product._ecommerce.unit }}
                   </span>
                   <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
-                    {{ product.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
+                    {{ product._ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
                   </v-chip>
                 </v-list-item-subtitle>
-                <v-list-item-subtitle>{{ product.ecommerce.tax_included }}, {{ product.ecommerce.tax }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ product._ecommerce.tax_included }}, {{ product._ecommerce.tax }}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action @click="addOrRmoveProduct(product)">
-                <v-btn v-if="!product.selected" fab small :color="colors.primary">
+                <v-btn v-if="!product._selected" fab small :color="colors.primary">
                   <v-icon>{{ icons.addCart }}</v-icon>
                 </v-btn>
                 <v-btn v-else fab small dark :color="colors.secondary">
@@ -282,11 +284,11 @@
             <v-expansion-panel-content>
               <v-divider></v-divider>
 
-              <v-list dense class="no-line" v-if="product.notices">
+              <v-list dense class="no-line" v-if="product._notices">
                 <v-subheader>
                   <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices }}
                 </v-subheader>
-                <v-list-item v-for="(notice, n) in product.notices" :key="n">
+                <v-list-item v-for="(notice, n) in product._notices" :key="n">
                   <v-list-item-content>
                     <v-list-item-title>{{ notice.content.name }}</v-list-item-title>
                     <v-list-item-subtitle>
@@ -303,8 +305,8 @@
                 </v-list-item>
               </v-list>
 
-              <template v-if="product.attributes">
-                <v-list dense v-for="(group, g) in product.attributes" :key="g">
+              <template v-if="product._attributes">
+                <v-list dense v-for="(group, g) in product._attributes" :key="g">
                   <v-subheader>
                     <v-icon small left>{{ icons.description }}</v-icon> {{ group.name.toUpperCase() }}
                   </v-subheader>
@@ -321,7 +323,7 @@
                 </v-list>
               </template>
 
-              <v-list dense class="no-line" v-if="product.tags">
+              <v-list dense class="no-line" v-if="product._tags">
                 <v-subheader>
                   <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.tag.toUpperCase() }}
                 </v-subheader>
@@ -329,7 +331,7 @@
                   <v-list-item-content>
                     <v-list-item-title>{{ labels.features }}</v-list-item-title>
                     <v-list-item-subtitle>
-                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product.tags" :key="t">
+                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product._tags" :key="t">
                         <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}
                       </v-chip>
                     </v-list-item-subtitle>
@@ -337,7 +339,7 @@
                 </v-list-item>
               </v-list>
 
-              <v-list dense class="no-line" v-if="product.services">
+              <v-list dense class="no-line" v-if="product._services">
                 <v-subheader>
                   <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.services.toUpperCase() }}
                 </v-subheader>
@@ -413,7 +415,7 @@
                 </v-expansion-panels>
               </v-list>
 
-              <v-list dense class="no-line" v-if="product.content.note">
+              <v-list dense class="no-line" v-if="product._content.note">
                 <v-subheader>
                   <v-icon small left>{{ icons.eventNote }}</v-icon> {{ labels.note.toUpperCase() }}
                 </v-subheader>
@@ -421,7 +423,7 @@
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title>{{ labels.note }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ product.content.note }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{ product._content.note }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -430,6 +432,10 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
+      </v-card>
+      <v-card flat>
+        <v-card-actions>
+          <v-spacer></v-spacer>{{ labels.nResults }}: {{ _productCount }}</v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -459,6 +465,7 @@
 <script>
 import { COLORS } from '../common/colors.js'
 import * as FORM from '../common/form'
+import { API } from '../common/http'
 import { ICONS } from '../common/icons'
 import { I18N } from '../common/locale'
 import { EntityAttributes } from './models/entity'
@@ -468,7 +475,7 @@ export default {
   created () {
     this.i18n.language = I18N.getIso().substring(0, 2).toLocaleLowerCase()
     this.fetchCalendar()
-    this.fetchProducts()
+    this.fetchEntities()
   },
   data () {
     return {
@@ -482,7 +489,7 @@ export default {
         timezone: ''
       },
       flags: {
-        isLoading: false,
+        loading: false,
         valid: false,
         landscape: false
       },
@@ -527,7 +534,8 @@ export default {
         formFilterTitle: I18N.load().form.filter.title,
         formFilterCaption: I18N.load().form.filter.caption,
         formSignUpTitle: I18N.load().form.signUp.title,
-        formSignUpCaption: I18N.load().form.signUp.caption
+        formSignUpCaption: I18N.load().form.signUp.caption,
+        nResults: I18N.load().common.nRecord
       },
       icons: {
         arrowDown: ICONS.arrowDown,
@@ -548,7 +556,7 @@ export default {
         primary: COLORS.primary,
         secondary: COLORS.secondary
       },
-      products: {}
+      products: []
     }
   },
   computed: {
@@ -558,6 +566,14 @@ export default {
       },
       set (v) {
         this.i18n.language = (v || I18N.getIso())
+      }
+    },
+    _loading: {
+      get () {
+        return this.flags.loading
+      },
+      set (v) {
+        this.flags.loading = (v || false)
       }
     },
     _date: {
@@ -574,6 +590,11 @@ export default {
       },
       set (v) {
         this.fields.timeRange.value = (v || this.fields.timeRange.default || '')
+      }
+    },
+    _productCount: {
+      get () {
+        return this._products.length || 0
       }
     },
     _products: {
@@ -689,6 +710,12 @@ export default {
       set (v) {
         this.fields.priceRange.range = (v || [])
       }
+    },
+    _page: {
+      get () {
+        const url = new URL(window.location.href)
+        return url.searchParams.get('page') || 1
+      }
     }
   },
   methods: {
@@ -721,8 +748,8 @@ export default {
         email: this._email
       }
     },
-    getDataForAPI () {
-      const dateSelected = `${this._date}T${this._timeRange}Z`
+    getFormFilter () {
+      const dateSelected = `${this._date}T${this._timeRange}`
 
       return {
         ...this.getLocale(),
@@ -744,6 +771,9 @@ export default {
             to: dateSelected
           }
         ],
+        sort: this._sortBy,
+        page: this._page,
+        per_page: process.env.VUE_APP_API_PER_PAGE,
         name: this._search,
         price: this._priceRange,
         services: this._servicesSelected.map(v => v.id),
@@ -754,30 +784,51 @@ export default {
       this.fields.timeRange = TEST.timeRange()
       this.fields.dateRange = TEST.dateRange()
     },
-    fetchProducts () {
-      this.products = TEST.entities()
+    fetchEntities () {
+      const data = this.getFormFilter()
+      let t = null
+      if (this._loading) {
+        return
+      }
+      this._loading = true
+      this.t = true
+      t = setTimeout(() => {
+        API.filterEntities(data)
+          .then((r) => {
+            this._products = r
+            if (!this._search) {
+              this.fields.search.list = this._products.map(v => v._content.name)
+            }
+            clearTimeout(t)
+            this._loading = false
+          }).catch((e) => {
+            this.showDialogError()
+            clearTimeout(t)
+            this._loading = false
+          })
+      }, 500)
     },
     updateSelected () {
       const ids = this.fields.productSelected.value
-      for (const i in this.products) {
-        if (ids.includes(this.products[i].id)) {
-          this.products[i].selected = true
+      for (const i in this._products) {
+        if (ids.includes(this._products[i]._id)) {
+          this._products[i]._selected = true
         } else {
-          this.products[i].selected = false
+          this._products[i]._selected = false
         }
       }
     },
     addOrRmoveProduct (o) {
       this.fields.productSelected.value = []
       this.fields.productSelected.selected = []
-      for (const i in this.products) {
-        if (this.products[i].id === o.id) {
-          this.products[i].selected = !this.products[i].selected
+      for (const i in this._products) {
+        if (this._products[i]._id === o._id) {
+          this._products[i]._selected = !this._products[i]._selected
         }
-        if (this.products[i].selected) {
+        if (this._products[i]._selected) {
           this._productSelected = {
-            id: this.products[i].id,
-            text: this.products[i].content.name
+            id: this._products[i]._id,
+            text: this._products[i]._content.name
           }
         }
       }
@@ -812,6 +863,8 @@ export default {
       this._priceRange = [0, 1000]
       this.fields.productSelected.selected = []
       this.fields.productSelected.value = []
+      this.fetchCalendar()
+      this.fetchEntities()
     },
     submit () {
       try {
@@ -819,7 +872,6 @@ export default {
           throw this.labels.productsNotSelected
         }
         const formData = this.getFormData()
-        console.log('formData', formData)
         if (!formData) {
           this.showDialogError()
         }

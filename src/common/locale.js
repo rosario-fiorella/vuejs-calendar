@@ -73,7 +73,8 @@ export const I18N = {
       date_to: 'al',
       cart: 'In prenotazione',
       nAdults: 'Numero adulti',
-      nKids: 'Numero bambini'
+      nKids: 'Numero bambini',
+      nRecord: 'Numero di risultati'
     },
     form: {
       booking: {

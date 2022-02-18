@@ -26,7 +26,7 @@ export class EntityFactory {
     const taxValue = faker.datatype.float({ min: 1, max: 22, precision: 2 })
 
     return {
-      id: faker.datatype.number(1000),
+      id: faker.datatype.number({ min: 100, max: 1000 }),
       entity_id: this.id,
       price_original: priceOriginal,
       price_reduction: `-${priceDiscount}%`,
@@ -34,7 +34,7 @@ export class EntityFactory {
       tax_included: taxIncluded,
       tax: taxValue,
       min_spent: faker.datatype.float({ min: 10, max: 100, precision: 2 }),
-      min_person: faker.datatype.number(),
+      min_person: faker.datatype.number({ min: 1, max: 6 }),
       min_time: 0,
       expired_time: `${faker.datatype.number({ min: 10, max: 23 })}:00`,
       currency: '€',
@@ -44,14 +44,14 @@ export class EntityFactory {
   }
 
   createCalendar = () => {
-    const statusId = faker.datatype.number(3)
+    const statusId = faker.datatype.number({ min: 1, max: 5 })
     const dateStart = faker.date.future().toISOString().split('T')[0]
     const dateEnd = faker.date.future().toISOString().split('T')[0]
     const timeStart = faker.date.future().toISOString().split('T')[1].substring(0, 5)
     const timeEnd = faker.date.future().toISOString().split('T')[1].substring(0, 5)
 
     return {
-      id: faker.datatype.number(1000),
+      id: faker.datatype.number({ min: 100, max: 1000 }),
       entity_id: this.id,
       status_code: statusId,
       date_start: dateStart,
@@ -63,10 +63,10 @@ export class EntityFactory {
 
   createMedia = (n) => {
     const medias = []
-    n = n > 0 ? n : faker.datatype.number(3)
+    n = n > 0 ? n : faker.datatype.number({ min: 2, max: 6 })
     for (let i = 0; i < n; ++i) {
       medias.push({
-        id: faker.datatype.number(1000) + i,
+        id: faker.datatype.number({ min: 100, max: 1000 }) + i,
         entity_id: this.id,
         name: faker.lorem.lines(1),
         alternative_name: faker.lorem.lines(1),
@@ -81,10 +81,10 @@ export class EntityFactory {
 
   createTags = (n) => {
     const tags = []
-    n = n > 0 ? n : faker.datatype.number(10)
+    n = n > 0 ? n : faker.datatype.number({ min: 5, max: 15 })
     for (let i = 0; i < n; ++i) {
       tags.push({
-        id: faker.datatype.number(1000) + i,
+        id: faker.datatype.number({ min: 100, max: 1000 }) + i,
         entity_id: this.id,
         name: faker.lorem.words(1),
         lang: faker.locale,
@@ -97,7 +97,7 @@ export class EntityFactory {
 
   createContent = () => {
     return {
-      id: faker.datatype.number(1000),
+      id: faker.datatype.number({ min: 100, max: 1000 }),
       entity_id: this.id,
       slug: faker.lorem.slug(),
       name: faker.lorem.lines(1),
@@ -111,10 +111,10 @@ export class EntityFactory {
 
   createResources = (n) => {
     const list = []
-    n = n > 0 ? n : faker.datatype.number(10)
+    n = n > 0 ? n : faker.datatype.number({ min: 5, max: 20 })
     for (let i = 0; i < n; ++i) {
       list.push({
-        id: faker.datatype.number(1000) + i,
+        id: faker.datatype.number({ min: 100, max: 1000 }) + i,
         entity_id: this.id,
         name: faker.lorem.lines(1),
         alternative_name: faker.lorem.lines(1),
@@ -127,9 +127,9 @@ export class EntityFactory {
   }
 
   createAttributes = (_g, _a, _v, u, c) => {
-    _g = _g > 0 ? _g : faker.datatype.number(5)
-    _a = _a > 0 ? _a : faker.datatype.number(5)
-    _v = _v > 0 ? _v : faker.datatype.number(5)
+    _g = _g > 0 ? _g : faker.datatype.number({ min: 5, max: 10 })
+    _a = _a > 0 ? _a : faker.datatype.number({ min: 5, max: 10 })
+    _v = _v > 0 ? _v : faker.datatype.number({ min: 5, max: 10 })
     u = u || 'd'
     c = c || null
 
@@ -147,7 +147,7 @@ export class EntityFactory {
         }
 
         attributes.push({
-          id: faker.datatype.number(10000),
+          id: faker.datatype.number({ min: 100, max: 1000 }),
           name: faker.lorem.words(3),
           values: values
         })
@@ -165,7 +165,7 @@ export class EntityFactory {
   }
 
   createNotices = (n) => {
-    n = n > 0 ? n : faker.datatype.number(2)
+    n = n > 0 ? n : faker.datatype.number({ min: 1, max: 3 })
     const list = []
     for (let i = 0; i < n; ++i) {
       list.push({
@@ -178,7 +178,7 @@ export class EntityFactory {
   }
 
   createServices = (n) => {
-    n = n > 0 ? n : faker.datatype.number(10)
+    n = n > 0 ? n : faker.datatype.number({ min: 1, max: 10 })
     const list = []
     for (let i = 0; i < n; ++i) {
       list.push({

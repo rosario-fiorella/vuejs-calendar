@@ -11,7 +11,7 @@ var randomBg = faker.image.imageUrl(1900, 320)
 export const TEST = {
   dateRange: () => {
     const dates = []
-    const n = faker.datatype.number(20)
+    const n = faker.datatype.number({ min: 10, max: 20 })
     const now = new Date()
     const yFrom = now.getFullYear() - 5
     const yTo = now.getFullYear() + 5
@@ -27,7 +27,7 @@ export const TEST = {
   },
   timeRange: () => {
     const times = []
-    const n = faker.datatype.number(20)
+    const n = faker.datatype.number({ min: 10, max: 20 })
     for (let i = 0; i < n; ++i) {
       times.push(faker.date.future().toISOString().split('T')[1].substring(0, 5))
     }
@@ -168,8 +168,8 @@ export const TEST = {
   },
   entities: () => {
     const list = []
-    for (let i = 0; i < faker.datatype.number(10); ++i) {
-      const entityId = faker.datatype.number(1000) + faker.datatype.number(10)
+    for (let i = 0; i < faker.datatype.number({ min: 10, max: 20 }); ++i) {
+      const entityId = faker.datatype.number({ min: 10, max: 1000 }) + faker.datatype.number({ min: 10, max: 1000 })
       const selected = faker.datatype.boolean()
       const entityFactory = new EntityFactory(entityId)
 
