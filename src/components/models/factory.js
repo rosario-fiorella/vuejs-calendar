@@ -65,7 +65,7 @@ export class EntityFactory {
     let img = 1
     if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
       n = 2
-      img = faker.datatype.number({ min: 1, max: 3 })
+      img = 3
     } else {
       n = n > 0 ? n : faker.datatype.number({ min: 2, max: 4 })
       img = faker.datatype.number({ min: 1, max: 5 })
