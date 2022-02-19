@@ -30,7 +30,7 @@ export const API = {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_ENTITIES}`
     const s = `${endpoint}?q=${query}&sort=${sort}&page=${page}&per_page=${perPage}`
 
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.LOCAL) {
+    if (process.env.VUE_APP_NODE_ENV !== EnvEnum.PRODUCTION) {
       const mock = new MockAdapter(axios)
       mock.onGet(new RegExp(`${process.env.VUE_APP_API_ENTITIES}.+`)).reply(200, TEST.entities())
     }
@@ -41,7 +41,7 @@ export const API = {
   tryToBook: async (data) => {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_BOOKING}`
 
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.LOCAL) {
+    if (process.env.VUE_APP_NODE_ENV !== EnvEnum.PRODUCTION) {
       const mock = new MockAdapter(axios)
       mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.booking(data))
     }

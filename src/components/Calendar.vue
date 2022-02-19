@@ -293,7 +293,7 @@
 
               <v-list dense class="no-line" v-if="product._notices">
                 <v-subheader>
-                  <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices }}
+                  <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices.toUpperCase() }}
                 </v-subheader>
                 <v-list-item v-for="(notice, n) in product._notices" :key="n">
                   <v-list-item-content>
@@ -332,11 +332,10 @@
 
               <v-list dense class="no-line" v-if="product._tags">
                 <v-subheader>
-                  <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.tag.toUpperCase() }}
+                  <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.features.toUpperCase() }}
                 </v-subheader>
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title>{{ labels.features }}</v-list-item-title>
                     <v-list-item-subtitle>
                       <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product._tags" :key="t">
                         <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}

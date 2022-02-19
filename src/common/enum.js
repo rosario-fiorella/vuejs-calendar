@@ -4,4 +4,5 @@ export class EnvEnum {
     static DEVELOP = 'develop'
     static STAGING = 'staging'
     static PRODUCTION = 'production'
+    static DEMO = 'demo'
 }

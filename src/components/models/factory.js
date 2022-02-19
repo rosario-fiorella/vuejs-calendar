@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { EnvEnum } from '../../common/enum'
 
 export class EntityFactory {
   _id = null
@@ -61,7 +62,15 @@ export class EntityFactory {
 
   createMedia = (n) => {
     const medias = []
-    n = n > 0 ? n : faker.datatype.number({ min: 2, max: 4 })
+    let img = 1
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      n = 2
+      img = faker.datatype.number({ min: 1, max: 3 })
+    } else {
+      n = n > 0 ? n : faker.datatype.number({ min: 2, max: 4 })
+      img = faker.datatype.number({ min: 1, max: 5 })
+    }
+
     for (let i = 0; i < n; ++i) {
       medias.push({
         id: faker.datatype.number({ min: 100, max: 1000 }) + i,
@@ -69,7 +78,7 @@ export class EntityFactory {
         name: faker.lorem.lines(1),
         alternative_name: faker.lorem.lines(1),
         type: 'image/jpeg',
-        url: `/uploads/${faker.datatype.number({ min: 1, max: 5 })}.jpg`,
+        url: `/uploads/${img}.jpg`,
         lang: faker.locale
       })
     }
@@ -78,6 +87,32 @@ export class EntityFactory {
   }
 
   createTags = (n) => {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      return [
+        {
+          id: 1211,
+          entity_id: 1,
+          name: 'viaggi di gruppo',
+          lang: 'it-IT',
+          icon: 'edit'
+        },
+        {
+          id: 1212,
+          entity_id: 1,
+          name: 'tour',
+          lang: 'it-IT',
+          icon: 'edit'
+        },
+        {
+          id: 1213,
+          entity_id: 1,
+          name: 'guida turistica',
+          lang: 'it-IT',
+          icon: 'edit'
+        }
+      ]
+    }
+
     const tags = []
     n = n > 0 ? n : faker.datatype.number({ min: 5, max: 15 })
     for (let i = 0; i < n; ++i) {
@@ -125,6 +160,40 @@ export class EntityFactory {
   }
 
   createAttributes = (_g, _a, _v, u, c) => {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      return [
+        {
+          id: 1111,
+          name: 'Optional inclusi',
+          lang: 'it-IT',
+          attributes: [
+            {
+              id: 2221,
+              name: 'Capitano a bordo',
+              values: [
+                {
+                  value: 'Si',
+                  unit: null,
+                  currency: null
+                }
+              ]
+            },
+            {
+              id: 2222,
+              name: 'Possibilità di cancellazione senza penale',
+              values: [
+                {
+                  value: 'Si',
+                  unit: null,
+                  currency: null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
     _g = _g > 0 ? _g : faker.datatype.number({ min: 2, max: 5 })
     _a = _a > 0 ? _a : faker.datatype.number({ min: 2, max: 5 })
     _v = _v > 0 ? _v : faker.datatype.number({ min: 2, max: 5 })
@@ -163,6 +232,25 @@ export class EntityFactory {
   }
 
   createNotices = (n) => {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      return [
+        {
+          calendar: this.createCalendar(),
+          content: {
+            id: 3333,
+            entity_id: 1,
+            slug: 'avviso-min-6-persone',
+            name: 'Avviso: richiesto min. 6 persone ',
+            description: 'Prenotazione online disponibile per gruppi o famigli di almeno 6 persone.',
+            short_description: '',
+            excerpt: '',
+            note: '',
+            lang: 'it-IT'
+          }
+        }
+      ]
+    }
+
     n = n > 0 ? n : faker.datatype.number({ min: 1, max: 2 })
     const list = []
     for (let i = 0; i < n; ++i) {
@@ -176,6 +264,58 @@ export class EntityFactory {
   }
 
   createServices = (n) => {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      return [
+        {
+          calendar: this.createCalendar(),
+          content: {
+            id: 4444,
+            entity_id: 1,
+            slug: 'sala-pranzo-a-bordo',
+            name: 'Sala pranzo a bordo, ogni tavolo può ospitare fino a 4 coperti',
+            description: '',
+            short_description: 'Pranzo all\'aperto nella nostra sala dedicata fino a 20 coperti.',
+            excerpt: '',
+            note: '',
+            lang: 'it-IT'
+          },
+          ecommerce: {
+            id: 5555,
+            entity_id: 1,
+            price_original: '60.00',
+            price_reduction: '-20%',
+            price_current: '48.00',
+            tax_included: 'Si',
+            tax: '22',
+            min_spent: '10.00',
+            min_person: '1',
+            min_time: 0,
+            expired_time: '23:00',
+            currency: '€',
+            unit: 'cad',
+            lang: 'it-IT'
+          },
+          resources: [],
+          notices: [
+            {
+              calendar: this.createCalendar(),
+              content: {
+                id: 3333,
+                entity_id: 1,
+                slug: 'avviso-min-6-persone',
+                name: 'Avviso: il costo del pranzo a bordo è escluso dal costo del tour',
+                description: 'Goditi la comodità del pranzo in barca, esperienza unica con i nostri cuochi chef.',
+                short_description: '',
+                excerpt: '',
+                note: '',
+                lang: 'it-IT'
+              }
+            }
+          ]
+        }
+      ]
+    }
+
     n = n > 0 ? n : faker.datatype.number({ min: 1, max: 5 })
     const list = []
     for (let i = 0; i < n; ++i) {

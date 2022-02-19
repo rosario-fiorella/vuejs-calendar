@@ -70,9 +70,9 @@
             <v-icon>{{ social.icon }}</v-icon>
           </v-btn>
         </v-card-actions>
-        <v-card-text>{{ footer.note }}</v-card-text>
+        <v-card-text v-if="footer.note" v-html="footer.note"></v-card-text>
         <v-divider></v-divider>
-        <v-card-text>{{ footer.copyright }}</v-card-text>
+        <v-card-text v-html="footer.copyright"></v-card-text>
       </v-card>
     </v-footer>
   </v-app>

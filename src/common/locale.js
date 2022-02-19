@@ -93,7 +93,8 @@ export const I18N = {
     unit: {
       d: 'al giorno',
       h: 'all\'ora',
-      m: 'al minuto'
+      m: 'al minuto',
+      cad: 'a persona'
     },
     actions: {
       booking: {
