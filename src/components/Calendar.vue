@@ -252,6 +252,9 @@
     </v-col>
     <v-col class="v-card--list" md="4" sm="6">
       <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
+        <v-carousel v-if="product._media" height="auto">
+          <v-carousel-item v-for="(media, m) in product._media" :key="m" :src="media.url"></v-carousel-item>
+        </v-carousel>
         <v-card-title>{{ product._content.name }}</v-card-title>
         <v-card-subtitle>{{ product._content.short_description }}</v-card-subtitle>
         <v-list dense>
