@@ -326,11 +326,18 @@ export const TEST = {
   },
   booking: (data) => {
     const products = []
-    for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
       products.push({
-        id: faker.datatype.number({ min: 1, max: 100 }),
-        text: faker.lorem.words(3)
+        id: 1111,
+        text: 'Lumenia XR-1000 del 2008'
       })
+    } else {
+      for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
+        products.push({
+          id: faker.datatype.number({ min: 1, max: 100 }),
+          text: faker.lorem.words(3)
+        })
+      }
     }
 
     return {
