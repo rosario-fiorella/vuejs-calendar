@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col md="4" sm="6" offset-md="2">
-      <v-form v-model="flags.valid" ref="form">
+      <v-form v-model="flags.valid" ref="form" lazy-validation @submit.prevent="submit()">
         <v-card tile flat>
           <v-card-text>
             <v-date-picker
@@ -28,6 +28,7 @@
               persistent-hint
               readonly
               dense
+              required
             ></v-text-field>
 
             <v-select
@@ -53,6 +54,7 @@
               :hint="fields.productSelected.hint"
               chips
               multiple
+              required
               @change="updateSelected()"
             ></v-select>
 
@@ -65,8 +67,8 @@
               :max="fields.adults.max"
               :value="fields.adults.default"
               outlined
-              required
               dense
+              required
               type="number"
             ></v-text-field>
 
@@ -79,6 +81,7 @@
               :value="fields.kids.default"
               outlined
               dense
+              required
               type="number"
             ></v-text-field>
 
@@ -227,19 +230,20 @@
             <v-btn text outlined @click="reset()">
               {{ fields.reset.label }}
             </v-btn>
-            <v-btn text outlined @click="submit()">
+            <v-btn text outlined @click="submit()" type="submit">
               {{ fields.submit.label }}
             </v-btn>
           </v-card-actions>
         </v-card>
+
         <v-dialog v-model="dialog.show" persistent max-width="290">
           <v-card>
-            <v-card-title class="headline">{{ dialog.current.title }}</v-card-title>
-            <v-card-text>{{ dialog.current.text }}</v-card-text>
+            <v-card-title class="headline">{{ dialog.title }}</v-card-title>
+            <v-card-text v-html="dialog.text"></v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog.show = false">
-                {{ dialog.current.actions.label }}
+                {{ dialog.actions.label }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -479,10 +483,7 @@ export default {
   },
   data () {
     return {
-      dialog: FORM.DIALOG(
-        I18N.load().actions.booking.success,
-        I18N.load().validation.error.required
-      ),
+      dialog: FORM.DIALOG(false),
       i18n: {
         language: '',
         locale: I18N.getIso(),
@@ -730,17 +731,18 @@ export default {
       }
     },
     getFormData () {
+      const dateStart = `${this._date}T${this._timeRange}`
+
       return {
-        language: this._language,
-        date: this._date,
-        time: this._timeRange,
-        products: this._productSelected,
+        firstName: this._firstName,
+        lastName: this._lastName,
+        email: this._email,
         adults: this._adults,
         kids: this._kids,
         note: this._note,
-        firstName: this._firstName,
-        lastName: this._lastName,
-        email: this._email
+        entities: this._productSelected,
+        date_start: dateStart,
+        date_end: dateStart
       }
     },
     getFormFilter () {
@@ -797,7 +799,7 @@ export default {
             clearTimeout(t)
             this._loading = false
           }).catch((e) => {
-            this.showDialogError()
+            this.showDialogError(e)
             clearTimeout(t)
             this._loading = false
           })
@@ -835,12 +837,43 @@ export default {
       return (new Date().getTime() <= new Date(v).getTime())
     },
     showDialogError (e = null) {
-      this.dialog.show = true
-      this.dialog.current = this.dialog.error
+      this.dialog = FORM.DIALOG(
+        true,
+        I18N.load().common.error,
+        e || I18N.load().validation.error.requiredFields,
+        I18N.load().common.ok
+      )
     },
-    showDialogSuccess (d) {
-      this.dialog.show = true
-      this.dialog.current = this.dialog.done
+    showDialogSuccess (d = null) {
+      let text
+      if (d) {
+        let product = d.entities || []
+        product = product.map(v => v.text).join('<br>')
+        text = `
+          <div><strong>${I18N.load().common.firstName}:</strong> ${d.firstName}</div>
+          <div><strong>${I18N.load().common.lastName}:</strong> ${d.lastName}</div>
+          <div><strong>${I18N.load().common.email}:</strong> ${d.email}</div>
+          <div><strong>${I18N.load().common.nAdults}:</strong> ${d.adults}</div>
+          <div><strong>${I18N.load().common.nKids}:</strong> ${d.kids}</div>
+          <div><strong>${I18N.load().common.note}:</strong> ${d.note}</div>
+          <div><strong>${I18N.load().common.dateStart}:</strong> ${d.date_start}</div>
+          <div><strong>${I18N.load().common.dateEnd}:</strong> ${d.date_end}</div>
+          <div><strong>${I18N.load().common.productsList}:</strong><div>${product}</div></div>
+        `
+      }
+
+      this.dialog = FORM.DIALOG(
+        true,
+        I18N.load().common.success,
+        text || '',
+        I18N.load().common.ok
+      )
+    },
+    validate () {
+      return this.$refs.form.validate()
+    },
+    resetValidation () {
+      return this.$refs.form.resetValidation()
     },
     reset () {
       this._date = this.dateNow()
@@ -858,19 +891,19 @@ export default {
       this._priceRange = [0, 1000]
       this.fields.productSelected.selected = []
       this.fields.productSelected.value = []
+      this.resetValidation()
       this.fetchCalendar()
       this.fetchEntities()
     },
     submit () {
       try {
-        if (this._productSelected.length === 0) {
-          throw this.labels.productsNotSelected
+        if (!this.validate()) {
+          throw I18N.load().validation.error.requiredFields
         }
 
         const formData = this.getFormData()
-        console.log(formData)
-        if (!formData) {
-          this.showDialogError()
+        if (this._productSelected.length === 0) {
+          throw this.labels.productsNotSelected
         }
 
         let t = null
@@ -894,6 +927,7 @@ export default {
         }, 500)
       } catch (e) {
         this.showDialogError(e)
+        this.resetValidation()
       }
     }
   }

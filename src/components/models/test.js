@@ -192,10 +192,25 @@ export const TEST = {
 
     return list
   },
-  booking: () => {
+  booking: (data) => {
+    const products = []
+    for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
+      products.push({
+        id: faker.datatype.number({ min: 1, max: 100 }),
+        text: faker.lorem.words(3)
+      })
+    }
+
     return {
-      status: 'OK',
-      message: ''
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      adults: data.adults,
+      kids: data.kids,
+      note: data.note,
+      entities: products,
+      date_start: data.date_start.replace('T', ' '),
+      date_end: data.date_end.replace('T', ' ')
     }
   }
 }

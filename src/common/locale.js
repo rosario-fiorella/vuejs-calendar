@@ -55,13 +55,11 @@ export const I18N = {
       shortDescription: 'Descrizione breve',
       excerpt: 'Riassunto',
       price: 'Prezzo',
-      price_reduction: 'Riduzione del prezzo',
       tax: 'Tasse',
       taxIncluded: 'Tasse incluse',
       minSpent: 'Minima spesa',
       minPerson: 'N. minimo di persone richieste',
       minTime: 'Tempo minimo di permanenza',
-      expired_time: 'Scadenza',
       currency: 'Valuta',
       unit: 'Valutazione unitaria',
       day: 'Giorno',
@@ -70,11 +68,11 @@ export const I18N = {
       timeStart: 'Orario di arrivo',
       timeEnd: 'Orario di partenza',
       dateFrom: 'Dal',
-      date_to: 'al',
       cart: 'In prenotazione',
       nAdults: 'Numero adulti',
       nKids: 'Numero bambini',
-      nRecord: 'Numero di risultati'
+      nRecord: 'Numero di risultati',
+      productsList: 'Prodotti'
     },
     form: {
       booking: {
@@ -107,7 +105,7 @@ export const I18N = {
       badChar: 'Caratteri non validi',
       error: {
         email: 'Inserisci un indirizzo E-mail valido',
-        required: 'Verificare i campi obbligatori',
+        requiredFields: 'Verificare i campi obbligatori',
         productsNotSelected: 'Aggiungi almeno 1 prodotto per prenotare'
       },
       minLength: (n) => {

@@ -38,13 +38,9 @@ export const API = {
   tryToBook: async (data) => {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_BOOKING}`
     const mock = new MockAdapter(axios)
-    mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.booking())
+    mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.booking(data))
 
-    const r = await axios.post(
-      endpoint,
-      JSON.stringify(data),
-      HTTP.headers)
-
+    const r = await axios.post(endpoint, data, HTTP.headers)
     return r.data
   }
 }

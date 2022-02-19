@@ -16,6 +16,8 @@ tags:
     description: Endpoint Authorization
   - name: Entity
     description: Endpoint Entity
+  - name: Booking
+    description: Booking Request
 
 paths:
   /auth/login:
@@ -98,7 +100,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadResponse"
-
+  /orders:
+    post:
+      tags:
+        - Booking
+      requestBody:
+        description: Booking request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Booking"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadResponse"
   /entities:
     get:
       tags:
@@ -540,6 +564,39 @@ components:
           type: array
           items:
             type: integer
+    Booking:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email: 
+          type: string
+        adults:
+          type: number
+        kids:
+          type: number
+        note:
+          type: string
+        entities:
+          type: array
+          items:
+            type: number            
+        date_start:
+          type: string
+        date_end:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - email
+        - adults
+        - kids
+        - note
+        - entities
+        - date_start
+        - date_end
     BadResponse:
       type: object
       properties:
@@ -551,6 +608,7 @@ components:
           type: string
         data:
           type: object
+
   securitySchemes:
     BearerAuth:
       type: http

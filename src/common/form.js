@@ -214,29 +214,13 @@ export const CHECKBOX_PRIVACY = [
   }
 ]
 
-export const DIALOG = (textSuccess, textError) => {
+export const DIALOG = (show, title, text, label) => {
   return {
-    show: false,
-    current: {
-      title: null,
-      text: null,
-      actions: {
-        label: null
-      }
-    },
-    done: {
-      title: I18N.load().common.success,
-      text: textSuccess || '',
-      actions: {
-        label: I18N.load().common.ok
-      }
-    },
-    error: {
-      title: I18N.load().common.error,
-      text: textError || I18N.load().validation.error.required,
-      actions: {
-        label: I18N.load().common.ok
-      }
+    show: show || false,
+    title: title || '',
+    text: text || '',
+    actions: {
+      label: label || I18N.load().common.ok || ''
     }
   }
 }
