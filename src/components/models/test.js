@@ -139,7 +139,7 @@ export const TEST = {
       title: faker.lorem.words(4),
       subtitle: faker.lorem.lines(),
       list: list,
-      bg: 'uploads/6.jpg',
+      bg: '/uploads/6.jpg',
       logo: {
         src: ICONS.boat,
         size: '50'

@@ -69,7 +69,7 @@ export class EntityFactory {
         name: faker.lorem.lines(1),
         alternative_name: faker.lorem.lines(1),
         type: 'image/jpeg',
-        url: `uploads/${faker.datatype.number({ min: 1, max: 5 })}.jpg`,
+        url: `/uploads/${faker.datatype.number({ min: 1, max: 5 })}.jpg`,
         lang: faker.locale
       })
     }

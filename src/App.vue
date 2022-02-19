@@ -118,8 +118,7 @@ export default {
   },
   methods: {
     switchLangues (i, e) {
-      console.log('i', i)
-      console.log('e', e)
+      this.$router.push(e)
     },
     fetchData () {
       this.site = TEST.site()
