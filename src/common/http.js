@@ -1,6 +1,7 @@
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 import { TEST } from '../components/models/test'
+import { EnvEnum } from './enum'
 
 export const HTTP = {
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -29,16 +30,21 @@ export const API = {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_ENTITIES}`
     const s = `${endpoint}?q=${query}&sort=${sort}&page=${page}&per_page=${perPage}`
 
-    const mock = new MockAdapter(axios)
-    mock.onGet(new RegExp(`${process.env.VUE_APP_API_ENTITIES}.+`)).reply(200, TEST.entities())
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.LOCAL) {
+      const mock = new MockAdapter(axios)
+      mock.onGet(new RegExp(`${process.env.VUE_APP_API_ENTITIES}.+`)).reply(200, TEST.entities())
+    }
 
     const r = await axios.get(s, HTTP.headers)
     return r.data
   },
   tryToBook: async (data) => {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_BOOKING}`
-    const mock = new MockAdapter(axios)
-    mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.booking(data))
+
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.LOCAL) {
+      const mock = new MockAdapter(axios)
+      mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.booking(data))
+    }
 
     const r = await axios.post(endpoint, data, HTTP.headers)
     return r.data
