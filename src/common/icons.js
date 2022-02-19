@@ -34,5 +34,6 @@ export const ICONS = {
   search: 'search',
   alpha: 'sort_by_alpha',
   upward: 'arrow_upward',
-  downward: 'arrow_downward'
+  downward: 'arrow_downward',
+  boat: 'directions_boat'
 }

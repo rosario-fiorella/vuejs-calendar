@@ -20,5 +20,14 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-public/uploads
+public/uploads/*
 !public/uploads/.gitkeep
+!public/uploads/index.html
+!public/uploads/1.jpg
+!public/uploads/2.jpg
+!public/uploads/3.jpg
+!public/uploads/4.jpg
+!public/uploads/5.jpg
+!public/uploads/6.jpg
+!public/uploads/README.md
+.ignore

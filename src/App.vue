@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <v-app-bar app :color="colors.primary" dark :src="site.bg">
-      <v-avatar :size="site.logo.size" class="mr-2">
-        <v-img :src="site.logo.src"></v-img>
+      <v-avatar :size="site.logo.size" class="mr-2" :color="colors.secondary">
+        <v-icon dark>{{ site.logo.src }}</v-icon>
       </v-avatar>
       <v-toolbar-title>{{ site.title }}</v-toolbar-title>
       <v-spacer></v-spacer>

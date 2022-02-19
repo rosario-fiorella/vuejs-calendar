@@ -5,9 +5,6 @@ import { Entity } from './entity'
 import { EntityFactory } from './factory'
 import { faker } from '@faker-js/faker'
 
-var randomLogo = faker.image.avatar()
-var randomBg = faker.image.imageUrl(1900, 320)
-
 export const TEST = {
   dateRange: () => {
     const dates = []
@@ -142,9 +139,9 @@ export const TEST = {
       title: faker.lorem.words(4),
       subtitle: faker.lorem.lines(),
       list: list,
-      bg: randomBg,
+      bg: 'uploads/6.jpg',
       logo: {
-        src: randomLogo,
+        src: ICONS.boat,
         size: '50'
       }
     }
@@ -168,7 +165,7 @@ export const TEST = {
   },
   entities: () => {
     const list = []
-    for (let i = 0; i < faker.datatype.number({ min: 10, max: 20 }); ++i) {
+    for (let i = 0; i < faker.datatype.number({ min: 2, max: 5 }); ++i) {
       const entityId = faker.datatype.number({ min: 10, max: 1000 }) + faker.datatype.number({ min: 10, max: 1000 })
       const selected = faker.datatype.boolean()
       const entityFactory = new EntityFactory(entityId)
