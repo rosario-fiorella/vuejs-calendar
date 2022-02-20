@@ -23,14 +23,12 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-### Icons
-- https://pictogrammers.github.io/@mdi/font/5.4.55/
-- https://jossef.github.io/material-design-icons-iconfont/
+## API Services
+### Mock API request/response model
+The default settings use a simulated api response template, if you want to use a real API request/response you need to edit the ".env" file and enter the api URL which implements the data model suggested by the file "doc/openapi.3.0.2.yml". 
+> This project does not implement server side backend api services 
 
-## Post build
-- https://cli.vuejs.org/guide/deployment.html
-
-## ENV Config, edit file ".env"
+### Environment
 - VUE_APP_NODE_ENV: see "src/common/enum.js", use "demo" to use mock api
 - VUE_APP_TITLE=```string```
 - VUE_APP_API_BASE_URL=```url, example: http://localhost/api/```
@@ -41,6 +39,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - VUE_APP_LINK_PRIVACY_POLICY=```url```
 - VUE_APP_API_PER_PAGE=```number```
 - VUE_APP_API_KEY=```string```
+
+## Icons
+- https://pictogrammers.github.io/@mdi/font/5.4.55/
+- https://jossef.github.io/material-design-icons-iconfont/
+
+## Post build
+- https://cli.vuejs.org/guide/deployment.html
 
 ## CHANGE THEME COLOR
 - Edit file: "src/common/colors.js"
