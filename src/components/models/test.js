@@ -279,8 +279,8 @@ export const TEST = {
         content: {
           id: 1001,
           entity_id: entityId,
-          slug: 'lumenia-XR-1000-2008',
-          name: 'Lumenia XR-1000 del 2008',
+          slug: 'lumenia-XR-1000-anno-2008',
+          name: 'Lumenia XR-1000. Anno: 2008',
           description: '',
           short_description: 'Trascorri splendide giornate in famiglia, scegli la nostra barca "Lumenia"',
           excerpt: '',
@@ -329,7 +329,7 @@ export const TEST = {
     if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
       products.push({
         id: 1111,
-        text: 'Lumenia XR-1000 del 2008'
+        text: 'Lumenia XR-1000. Anno: 2008'
       })
     } else {
       for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
