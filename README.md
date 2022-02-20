@@ -50,5 +50,3 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ![2-home-products](https://user-images.githubusercontent.com/41728059/154848913-f07b61c9-cc7c-4ad1-815c-3e3e0803042b.png)
 ![3-home-selected](https://user-images.githubusercontent.com/41728059/154848922-98409dbe-c628-46e6-af38-fb1dccd793a2.png)
 ![4-home-detail](https://user-images.githubusercontent.com/41728059/154848929-3ec20670-2f21-4c08-a982-88da7654b77d.png)
-![5-booking](https://user-images.githubusercontent.com/41728059/154848933-65d27be1-479b-4d17-a7b2-59937eb27e49.png)
-
