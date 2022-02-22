@@ -236,7 +236,7 @@
           </v-card-actions>
         </v-card>
 
-        <v-dialog v-model="dialog.show" persistent max-width="290">
+        <v-dialog v-model="dialog.show" persistent max-width="320">
           <v-card>
             <v-card-title class="headline">{{ dialog.title }}</v-card-title>
             <v-card-text v-html="dialog.text"></v-card-text>
@@ -859,7 +859,6 @@ export default {
           <div><strong>${I18N.load().common.nKids}:</strong> ${d.kids}</div>
           <div><strong>${I18N.load().common.note}:</strong> ${d.note}</div>
           <div><strong>${I18N.load().common.dateStart}:</strong> ${d.date_start}</div>
-          <div><strong>${I18N.load().common.dateEnd}:</strong> ${d.date_end}</div>
           <div><strong>${I18N.load().common.productsList}:</strong><div>${product}</div></div>
         `
       }

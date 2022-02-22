@@ -180,7 +180,7 @@ export const TEST = {
       const email = 'demo@example.it'
       const phone = '+39 3331234567'
       return {
-        title: '(Demo) OBO - Open Booking online',
+        title: '(Demo) Open Booking online',
         subtitle: 'Prenota il tuo tour!',
         list: [
           {
@@ -279,10 +279,10 @@ export const TEST = {
         content: {
           id: 1001,
           entity_id: entityId,
-          slug: 'lumenia-XR-1000-anno-2008',
-          name: 'Lumenia XR-1000. Anno: 2008',
+          slug: 'tour-in-barca-dal-porto-di-marina-di-pisa',
+          name: 'Tour in battello con pranzo a bordo dal porto di Marina di Pisa',
           description: '',
-          short_description: 'Trascorri splendide giornate in famiglia, scegli la nostra barca "Lumenia"',
+          short_description: 'Trascorri splendide giornate in famiglia, scopri le nostre offerte',
           excerpt: '',
           note: 'Disponibile fino a 5 persone',
           lang: 'it-IT'
