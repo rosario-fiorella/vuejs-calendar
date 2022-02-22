@@ -236,7 +236,7 @@
           </v-card-actions>
         </v-card>
 
-        <v-dialog v-model="dialog.show" persistent max-width="290">
+        <v-dialog v-model="dialog.show" persistent max-width="320">
           <v-card>
             <v-card-title class="headline">{{ dialog.title }}</v-card-title>
             <v-card-text v-html="dialog.text"></v-card-text>
