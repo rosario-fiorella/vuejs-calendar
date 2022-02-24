@@ -354,7 +354,7 @@
                     <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
                       {{ service.content.name }}
                     </v-expansion-panel-header>
-                    <v-expansion-panel-content>
+                    <v-expansion-panel-content color="grey lighten-4">
                       <v-divider></v-divider>
                       <v-list-item-group v-if="service.notices">
                         <v-list-item v-for="(notices, sn) in service.notices" :key="sn">
@@ -459,12 +459,20 @@
   display: -webkit-box;
 }
 
+.v-card--list >>> .no-line .v-list-item__title {
+  white-space: normal;
+}
+
 .v-card--list >>> .v-expansion-panel-header.panel-header-1 {
   min-height: 24px;
 }
 
 .v-card--list >>> .v-expansion-panel--active > .v-expansion-panel-header.panel-header-1 {
   min-height: 24px;
+}
+
+.v-card--list >>> .v-card__title {
+  word-break: break-word;
 }
 </style>
 
