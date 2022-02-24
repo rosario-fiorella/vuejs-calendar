@@ -53,7 +53,7 @@ The default settings use a simulated api response template, if you want to use a
 - Edit file: "src/common/colors.js"
 
 ## DEMO TEMPLATE
-![1-home-dialog](https://user-images.githubusercontent.com/41728059/155183988-7f52c1be-1e30-4d11-b44f-657a28094d5c.png)
-![2-home](https://user-images.githubusercontent.com/41728059/155184021-4eb84f81-66a4-474b-8086-e7693b12b393.png)
-![3-home-selected](https://user-images.githubusercontent.com/41728059/155184040-6bee4e7e-b892-481f-9c60-0419ca3076d4.png)
-![4-home-booking](https://user-images.githubusercontent.com/41728059/155184052-8678421b-c824-449f-8d6e-5a4ddbf5903b.png)
+![1-home-dialog](https://user-images.githubusercontent.com/41728059/155615448-485a4c97-3720-4c91-bb2d-faf201fc957e.png)
+![2-home](https://user-images.githubusercontent.com/41728059/155615456-a1506fb9-fe77-4101-b852-2a61672f479c.png)
+![3-home-selected](https://user-images.githubusercontent.com/41728059/155615467-61cd0777-b9e1-460d-bcd5-43c03002c050.png)
+![4-home-booking](https://user-images.githubusercontent.com/41728059/155615473-7f0357db-602c-4716-ad89-abcac8d5dc32.png)
