@@ -16,11 +16,12 @@
 </template>
 
 <script>
-import { TEST } from './models/test.js'
+import { API } from '../common/http'
 
 export default {
   data () {
     return {
+      loading: false,
       title: '',
       subtitle: '',
       description: '',
@@ -30,19 +31,37 @@ export default {
     }
   },
   created () {
-    this.init()
+    this.getPage()
   },
   watch: {
-    $route: 'init'
+    $route: 'getPage'
   },
   methods: {
-    init () {
-      this.title = TEST.page().title
-      this.subtitle = TEST.page().subtitle
-      this.description = TEST.page().description
-      this.short_description = TEST.page().short_description
-      this.excerpt = TEST.page().excerpt
-      this.note = TEST.page().note
+    getPage () {
+      const data = this.$route.params
+      let t = null
+      if (this.loading) {
+        return
+      }
+      this.loading = true
+      this.t = true
+      t = setTimeout(() => {
+        API.fetchContent(data)
+          .then((r) => {
+            this.title = r.title
+            this.subtitle = r.subtitle
+            this.description = r.description
+            this.short_description = r.short_description
+            this.excerpt = r.excerpt
+            this.note = r.note
+            clearTimeout(t)
+            this.loading = false
+          }).catch((e) => {
+            this.showDialogError(e)
+            clearTimeout(t)
+            this.loading = false
+          })
+      }, 500)
     }
   }
 }

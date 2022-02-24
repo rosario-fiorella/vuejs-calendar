@@ -48,5 +48,33 @@ export const API = {
 
     const r = await axios.post(endpoint, data, HTTP.headers)
     return r.data
+  },
+  fetchContent: async (data) => {
+    const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_CONTENTS}`
+
+    if (process.env.VUE_APP_NODE_ENV !== EnvEnum.PRODUCTION) {
+      const mock = new MockAdapter(axios)
+      mock.onPost(new RegExp(`${endpoint}`)).reply(200, TEST.page())
+    }
+
+    const r = await axios.post(endpoint, data, HTTP.headers)
+    return r.data
+  },
+  fetchData: async (data) => {
+    const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_DATA}`
+
+    if (process.env.VUE_APP_NODE_ENV !== EnvEnum.PRODUCTION) {
+      const mock = new MockAdapter(axios)
+      mock.onPost(new RegExp(`${endpoint}`)).reply(200, {
+        site: TEST.site(),
+        navigation: TEST.navigation(),
+        languages: TEST.languages(),
+        notices: TEST.notices(),
+        footer: TEST.footer()
+      })
+    }
+
+    const r = await axios.post(endpoint, data, HTTP.headers)
+    return r.data
   }
 }

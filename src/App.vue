@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app :color="colors.primary" dark :src="site.bg">
-      <v-avatar :size="site.logo.size" class="mr-2" :color="colors.secondary">
+      <v-avatar :size="site.logo.size" class="mr-2" :color="colors.secondary" v-if="site.logo">
         <v-icon dark>{{ site.logo.src }}</v-icon>
       </v-avatar>
       <v-toolbar-title>{{ site.title }}</v-toolbar-title>
@@ -11,7 +11,7 @@
       </v-tab>
       <v-menu bottom left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" icon>
+          <v-btn v-bind="attrs" v-on="on" icon v-if="languages.icon">
             <v-icon>{{ languages.icon.translate }}</v-icon>
             <v-icon>{{ languages.icon.arrowDown }}</v-icon>
           </v-btn>
@@ -44,7 +44,7 @@
         <template>
           <v-bottom-sheet inset v-model="sheet">
             <template v-slot:activator="{on, attrs}">
-              <v-btn dark :color="colors.secondary" v-show="!sheet" small fab fixed bottom right v-bind="attrs" v-on="on">
+              <v-btn dark :color="colors.secondary" v-show="!sheet" small fab fixed bottom right v-bind="attrs" v-on="on" v-if="notices.icon">
                 <v-icon>{{ notices.icon.open }}</v-icon>
               </v-btn>
             </template>
@@ -92,7 +92,7 @@
 import './assets/load.css'
 import { COLORS } from './common/colors.js'
 import { I18N } from './common/locale.js'
-import { TEST } from './components/models/test.js'
+import { API } from './common/http'
 
 export default {
   name: 'App',
@@ -100,10 +100,11 @@ export default {
     if (typeof (Storage) === 'undefined') {
       alert(I18N.load().common.browserNotSupported)
     }
-    this.fetchData()
+    this.getData()
   },
   data () {
     return {
+      loading: false,
       sheet: false,
       navigation: {},
       notices: {},
@@ -120,15 +121,34 @@ export default {
     switchLangues (i, e) {
       this.$router.push(e)
     },
-    fetchData () {
-      this.site = TEST.site()
-      this.navigation = TEST.navigation()
-      this.languages = TEST.languages()
-      this.notices = TEST.notices()
-      this.footer = TEST.footer()
-      if (this.notices.list.length > 0) {
-        this.sheet = true
+    getData () {
+      const data = this.$route.params
+      let t = null
+      if (this.loading) {
+        return
       }
+      this.loading = true
+      this.t = true
+      t = setTimeout(() => {
+        API.fetchData(data)
+          .then((r) => {
+            this.site = r.site
+            this.navigation = r.navigation
+            this.languages = r.languages
+            this.notices = r.notices
+            this.footer = r.footer
+
+            if (this.notices.list.length > 0) {
+              this.sheet = true
+            }
+            clearTimeout(t)
+            this.loading = false
+          }).catch((e) => {
+            this.showDialogError(e)
+            clearTimeout(t)
+            this.loading = false
+          })
+      }, 500)
     }
   }
 }
