@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col md="4" sm="6" offset-md="2">
+    <v-col md="4" sm="6" offset-md="2" class="v-card--form">
       <v-form v-model="flags.valid" ref="form" lazy-validation @submit.prevent="submit()">
         <v-card tile flat>
           <v-card-text>
@@ -29,6 +29,7 @@
               readonly
               dense
               required
+              v-show="fields.checkInDate.show"
             ></v-text-field>
 
             <v-select
@@ -227,10 +228,10 @@
             </template>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn text outlined @click="reset()">
+            <v-btn text outlined :color="colors.secondary" @click="reset()">
               {{ fields.reset.label }}
             </v-btn>
-            <v-btn text outlined @click="submit()" type="submit">
+            <v-btn text outlined :color="colors.primary" @click="submit()" type="submit">
               {{ fields.submit.label }}
             </v-btn>
           </v-card-actions>
@@ -471,6 +472,7 @@
   min-height: 24px;
 }
 
+.v-card--form >>> .v-card__title,
 .v-card--list >>> .v-card__title {
   word-break: break-word;
 }
@@ -867,7 +869,7 @@ export default {
           <div><strong>${I18N.load().common.nKids}:</strong> ${d.kids}</div>
           <div><strong>${I18N.load().common.note}:</strong> ${d.note}</div>
           <div><strong>${I18N.load().common.dateStart}:</strong> ${d.date_start}</div>
-          <div><strong>${I18N.load().common.productsList}:</strong><div>${product}</div></div>
+          <div><strong>${I18N.load().common.cart}:</strong><div>${product}</div></div>
         `
       }
 

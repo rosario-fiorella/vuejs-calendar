@@ -3,7 +3,7 @@
     <v-col md="3" offset-md="2">
       <v-card flat>
         <v-card-title>{{ title }}</v-card-title>
-        <v-card-subtitle v-html="subtitle"></v-card-subtitle>
+        <v-card-subtitle v-text="subtitle"></v-card-subtitle>
         <v-card-text v-html="short_description"></v-card-text>
       </v-card>
     </v-col>
@@ -57,7 +57,6 @@ export default {
             clearTimeout(t)
             this.loading = false
           }).catch((e) => {
-            this.showDialogError(e)
             clearTimeout(t)
             this.loading = false
           })

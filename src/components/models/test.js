@@ -245,7 +245,7 @@ export const TEST = {
             url: 'https://it-it.facebook.com/'
           }
         ],
-        copyright: `&copy;${year} OBO - (Demo) Open Booking online. Tutti i diritti riservati`,
+        copyright: `&copy;${year} (Demo) Open Booking online. Tutti i diritti riservati`,
         note: ''
       }
     }
@@ -329,7 +329,7 @@ export const TEST = {
     if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
       products.push({
         id: 1111,
-        text: 'Lumenia XR-1000. Anno: 2008'
+        text: 'Tour in barca Lumenia XR-1000.'
       })
     } else {
       for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {

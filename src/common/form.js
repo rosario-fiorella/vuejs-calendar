@@ -139,7 +139,8 @@ export const CHECKIN_DATE = {
   value: '',
   label: I18N.load().common.dateStart,
   icon: ICONS.dateRange,
-  hint: I18N.load().common.autoFilled
+  hint: I18N.load().common.autoFilled,
+  show: false
 }
 
 export const CHECKIN_TIME = {
@@ -181,11 +182,11 @@ export const SORT_BY = {
   value: null,
   list: [
     {
-      text: 'A-Z',
+      text: 'A-Z: ordine crescente',
       value: 'asc'
     },
     {
-      text: 'Z-A',
+      text: 'Z-A: ordine decrescente',
       value: 'desc'
     }
   ]
@@ -195,17 +196,7 @@ export const CHECKBOX_PRIVACY = [
   {
     href: process.env.VUE_APP_LINK_PRIVACY_TERM,
     label: I18N.load().common.terms,
-    text: I18N.load().common.terms,
-    checkbox: false,
-    required: true,
-    rules: [
-      v => !!v || I18N.load().validation.required
-    ]
-  },
-  {
-    href: process.env.VUE_APP_LINK_PRIVACY_CONDITION,
-    label: I18N.load().common.conditions,
-    text: I18N.load().common.condition,
+    text: '',
     checkbox: false,
     required: true,
     rules: [

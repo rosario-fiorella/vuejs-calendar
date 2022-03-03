@@ -19,7 +19,6 @@ export const I18N = {
       notAvaible: 'Nessuna disponibilità',
       notFound: 'La pagina richiesta non è stata trovata',
       browserNotSupported: 'Questo browser non supporta la persistenza dei dati, si consiglia di provare un altro browser.',
-      conditions: 'Condizioni',
       lastUpdate: 'Ultimi aggiornamenti',
       notices: 'Avvisi',
       notify: 'Notifiche',
@@ -43,8 +42,7 @@ export const I18N = {
       family: 'Famiglia',
       couple: 'Coppia',
       friends: 'Amici',
-      condition: 'Accetta le condizioni per continuare',
-      terms: 'Accetta i termini per continuare',
+      terms: 'Accetta i termini e le condizioni sul trattamento dei dati per continuare',
       autoFilled: 'Campo compilato in automatico',
       signin: 'Iscriviti',
       confirm: 'Riceverai una email per confermare l\'iscrizione',
@@ -68,7 +66,7 @@ export const I18N = {
       timeStart: 'Orario di arrivo',
       timeEnd: 'Orario di partenza',
       dateFrom: 'Dal',
-      cart: 'In prenotazione',
+      cart: 'Prenotazioni che hai scelto',
       nAdults: 'Numero adulti',
       nKids: 'Numero bambini',
       nRecord: 'Numero di risultati',
@@ -86,8 +84,8 @@ export const I18N = {
         sortBy: 'Ordina per'
       },
       signUp: {
-        title: 'Iscriviti',
-        caption: 'Riceverai una email per confermare l\'iscrizione'
+        title: 'Inserisci i tuoi contatti per completare la prenotazione',
+        caption: 'Riceverai una email di conferma'
       }
     },
     unit: {
