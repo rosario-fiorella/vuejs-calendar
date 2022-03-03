@@ -2,16 +2,17 @@ openapi: "3.0.2"
 info:
   title: API Calendar
   description: "Client documentation for the Calendar API"
-  termsOfService: http://swagger.io/terms/
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: "1.0.0"
+    name: MIT License
+    url: https://github.com/rosario-fiorella/calendar-fe/blob/master/LICENSE
+  version: "1.0.5"
 servers:
   - url: https://localhost/api/v1
   - url: http://localhost/api/v1
 
 tags:
+  - name: App
+    description: App data first request
   - name: Auth
     description: Endpoint Authorization
   - name: Entity
@@ -146,6 +147,11 @@ paths:
           in: query
           schema:
             type: integer
+        - name: language
+          in: query
+          schema:
+            type: string
+            description: iso 639-1
       responses:
         "200":
           description: OK
@@ -554,6 +560,9 @@ components:
         name:
           type: string
           description: Match name
+        slug:
+          type: string
+          description: Match slug
         price:
           $ref: "#/components/schemas/FilterPrice"
         services:
