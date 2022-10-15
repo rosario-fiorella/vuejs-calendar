@@ -17,12 +17,20 @@ export class EntityFactory {
   }
 
   createEcommerce = () => {
+    const datePast = faker.date.past().toLocaleDateString('it-IT')
+    const dateFuture = faker.date.future().toLocaleDateString('it-IT')
     const priceOriginal = faker.datatype.float({ min: 100, max: 1000, precision: 2 })
     const priceReduction = faker.datatype.float({ min: 10, max: 100, precision: 2 })
     const priceCurrent = priceOriginal - priceReduction
     const priceDiscount = ((priceReduction / priceOriginal) * 100).toFixed(2)
-    const taxIncluded = faker.datatype.boolean()
-    const taxValue = faker.datatype.float({ min: 1, max: 22, precision: 2 })
+    const taxIncluded = faker.datatype.boolean() ? 'Si' : 'no'
+    const taxValue = `
+      <div>Tasse incluse: ${taxIncluded}</div>
+      <div>Tassa in percentuale: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })}%</div>
+      <div>Tassa fissa: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+      <div>Tassa ricorrente: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+      <div>Tassa ricorrente dal giorno: ${datePast}</div>
+      <div>Tassa ricorrente fino al giorno: ${dateFuture}</div>`
 
     return {
       id: faker.datatype.number({ min: 100, max: 1000 }),
@@ -32,9 +40,6 @@ export class EntityFactory {
       price_current: priceCurrent,
       tax_included: taxIncluded,
       tax: taxValue,
-      min_spent: faker.datatype.float({ min: 10, max: 100, precision: 2 }),
-      min_person: faker.datatype.number({ min: 1, max: 6 }),
-      min_time: 0,
       expired_time: `${faker.datatype.number({ min: 10, max: 23 })}:00`,
       currency: '€',
       unit: 'd',
@@ -265,6 +270,17 @@ export class EntityFactory {
 
   createServices = (n) => {
     if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      const datePast = faker.date.past().toLocaleDateString('it-IT')
+      const dateFuture = faker.date.future().toLocaleDateString('it-IT')
+      const taxIncluded = faker.datatype.boolean() ? 'Si' : 'no'
+      const taxValue = `
+        <div>Tasse incluse: ${taxIncluded}</div>
+        <div>Tassa in percentuale: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })}%</div>
+        <div>Tassa fissa: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+        <div>Tassa ricorrente: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+        <div>Tassa ricorrente dal giorno: ${datePast}</div>
+        <div>Tassa ricorrente fino al giorno: ${dateFuture}</div>`
+
       return [
         {
           calendar: this.createCalendar(),
@@ -286,10 +302,7 @@ export class EntityFactory {
             price_reduction: '-20%',
             price_current: '48.00',
             tax_included: 'Si',
-            tax: '22',
-            min_spent: '10.00',
-            min_person: '1',
-            min_time: 0,
+            tax: taxValue,
             expired_time: '23:00',
             currency: '€',
             unit: 'cad',

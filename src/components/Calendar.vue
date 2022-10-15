@@ -138,6 +138,20 @@
             ></v-select>
 
             <v-select
+              v-model="fields.optionalsSelected.value"
+              :items="fields.optionalsSelected.selected"
+              item-value="id"
+              item-text="text"
+              :label="fields.optionalsSelected.label"
+              :prepend-icon="fields.optionalsSelected.icon"
+              :hint="fields.optionalsSelected.hint"
+              chips
+              multiple
+              dense
+              @change="fetchEntities()"
+            ></v-select>
+
+            <v-select
               v-model="fields.tagSelected.value"
               :items="fields.tagSelected.selected"
               item-value="id"
@@ -251,194 +265,275 @@
         </v-dialog>
       </v-form>
     </v-col>
-    <v-col class="v-card--list" md="4" sm="6">
+    <v-col class="v-card--list" md="4" sm="6" v-if="!_products.length">
+      {{ labels.notAvaible }}
+    </v-col>
+    <v-col class="v-card--list" md="4" sm="6" v-if="_products.length">
       <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
-        <v-carousel v-if="product._media" height="auto">
-          <v-carousel-item v-for="(media, m) in product._media" :key="m" :src="media.url"></v-carousel-item>
-        </v-carousel>
-        <v-card-title>{{ product._content.name }}</v-card-title>
-        <v-card-subtitle>{{ product._content.short_description }}</v-card-subtitle>
-        <v-list dense>
-          <v-list-item-group>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ product._ecommerce.currency }} {{ product._ecommerce.price_current }} {{ product._ecommerce.unit }}
-                </v-list-item-title>
-                <v-list-item-subtitle v-if="product._ecommerce.price_reduction">
-                  <span class="text-decoration-line-through mr-2">
-                    {{ product._ecommerce.currency }} {{ product._ecommerce.price_original }} {{ product._ecommerce.unit }}
-                  </span>
-                  <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
-                    {{ product._ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
-                  </v-chip>
-                </v-list-item-subtitle>
-                <v-list-item-subtitle>{{ product._ecommerce.tax_included }}, {{ product._ecommerce.tax }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action @click="addOrRmoveProduct(product)">
-                <v-btn v-if="!product._selected" fab small :color="colors.primary">
-                  <v-icon>{{ icons.addCart }}</v-icon>
-                </v-btn>
-                <v-btn v-else fab small dark :color="colors.secondary">
-                  <v-icon>{{ icons.removeItem }}</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-        <v-expansion-panels flat>
-          <v-expansion-panel>
-            <v-expansion-panel-header :expand-icon="icons.arrowDown"></v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-divider></v-divider>
+        <template v-if="product.id">
+          <v-carousel v-if="product._media" height="auto">
+            <v-carousel-item v-for="(media, m) in product._media" :key="m" :src="media.url"></v-carousel-item>
+          </v-carousel>
+          <v-card-title>{{ product._content.name }}</v-card-title>
+          <v-card-subtitle>{{ product._content.short_description }}</v-card-subtitle>
+          <v-list dense class="no-line">
+            <v-list-item-group>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ product._ecommerce.currency }} {{ product._ecommerce.price_current }} {{ product._ecommerce.unit }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-if="product._ecommerce.price_reduction">
+                    <span class="text-decoration-line-through mr-2">
+                      {{ product._ecommerce.currency }} {{ product._ecommerce.price_original }} {{ product._ecommerce.unit }}
+                    </span>
+                    <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
+                      {{ product._ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
+                    </v-chip>
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-html="product._ecommerce.tax"></v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action @click="addOrRmoveProduct(product)">
+                  <v-btn v-if="!product._selected" fab small :color="colors.primary">
+                    <v-icon>{{ icons.addCart }}</v-icon>
+                  </v-btn>
+                  <v-btn v-else fab small dark :color="colors.secondary">
+                    <v-icon>{{ icons.removeItem }}</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+          <v-expansion-panels flat>
+            <v-expansion-panel>
+              <v-expansion-panel-header :expand-icon="icons.arrowDown"></v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-divider></v-divider>
 
-              <v-list dense class="no-line" v-if="product._notices">
-                <v-subheader>
-                  <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices.toUpperCase() }}
-                </v-subheader>
-                <v-list-item v-for="(notice, n) in product._notices" :key="n">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ notice.content.name }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ labels.dateFrom}} {{ notice.calendar.date_start }}
-                      {{ labels.dateTo}} {{ notice.calendar.date_end }}
-                    </v-list-item-subtitle>
-                    <v-list-item-subtitle v-html="notice.content.description"></v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn icon :color="colors.primary">
-                      <v-icon>{{ icons.info }}</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list>
-
-              <template v-if="product._attributes">
-                <v-list dense v-for="(group, g) in product._attributes" :key="g">
+                <v-list dense class="no-line" v-if="product._notices.length">
                   <v-subheader>
-                    <v-icon small left>{{ icons.description }}</v-icon> {{ group.name.toUpperCase() }}
+                    <v-icon small left>{{ icons.info }}</v-icon> {{ labels.notices.toUpperCase() }}
                   </v-subheader>
-                  <v-list-item-group v-if="group.attributes">
-                    <v-list-item v-for="(attribute, a) in group.attributes" :key="a">
+                  <v-list-item v-for="(notice, n) in product._notices" :key="n">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ notice.content.name }}</v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ labels.dateFrom}} {{ notice.calendar.date_start }}
+                        {{ labels.dateTo}} {{ notice.calendar.date_end }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle v-html="notice.content.description"></v-list-item-subtitle>
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-btn icon :color="colors.primary">
+                        <v-icon>{{ icons.info }}</v-icon>
+                      </v-btn>
+                    </v-list-item-action>
+                  </v-list-item>
+                </v-list>
+
+                <template v-if="product._attributes.length">
+                  <v-list dense v-for="(group, g) in product._attributes" :key="g">
+                    <v-subheader>
+                      <v-icon small left>{{ icons.description }}</v-icon> {{ group.name.toUpperCase() }}
+                    </v-subheader>
+                    <v-list-item-group v-if="group.attributes.length">
+                      <v-list-item v-for="(attribute, a) in group.attributes" :key="a">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ attribute.name }}</v-list-item-title>
+                          <v-list-item-subtitle v-for="(data, v) in attribute.values" :key="v">
+                            {{ data.value }}
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list-item-group>
+                  </v-list>
+                </template>
+
+                <v-list dense class="no-line" v-if="product._tags.length">
+                  <v-subheader>
+                    <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.features.toUpperCase() }}
+                  </v-subheader>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-subtitle>
+                        <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product._tags" :key="t">
+                          <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}
+                        </v-chip>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+
+                <v-list dense class="no-line" v-if="product._services.length">
+                  <v-subheader>
+                    <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.services.toUpperCase() }}
+                  </v-subheader>
+                  <v-expansion-panels flat>
+                    <v-expansion-panel v-for="(service, s) in product._services" :key="s">
+                      <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
+                        {{ service.content.name }}
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content color="grey lighten-4">
+                        <v-divider></v-divider>
+                        <v-list-item-group v-if="service.notices">
+                          <v-list-item v-for="(notices, sn) in service.notices" :key="sn">
+                            <v-list-item-content>
+                              <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
+                              <v-list-item-subtitle>
+                                <v-icon small>{{ icons.dateRange }}</v-icon>
+                                {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                              <v-btn icon :color="colors.primary">
+                                <v-icon>{{ icons.info }}</v-icon>
+                              </v-btn>
+                            </v-list-item-action>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="service.content.description">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.description }}</v-list-item-title>
+                              <v-list-item-subtitle>
+                                <v-icon small>{{ icons.dateRange }}</v-icon>
+                                {{ service.calendar.date_start }} - {{ service.calendar.date_end }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="service.content.description"></v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="service.content.name">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.note }}</v-list-item-title>
+                              <v-list-item-subtitle>{{ service.content.name }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="service.ecommerce.price_current">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.price }}</v-list-item-title>
+                              <v-list-item-subtitle v-if="!service.ecommerce.price_reduction">
+                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-else>
+                                <span>
+                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
+                                </span>
+                                <span class="text-decoration-line-through mr-2">
+                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_original }} {{ service.ecommerce.unit }}
+                                </span>
+                                <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
+                                  {{ service.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
+                                </v-chip>
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="service.ecommerce.tax"></v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-divider></v-divider>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-list>
+
+                <v-list dense class="no-line" v-if="product._optionals">
+                  <v-subheader>
+                    <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.optionals.toUpperCase() }}
+                  </v-subheader>
+                  <v-expansion-panels flat>
+                    <v-expansion-panel v-for="(optional, o) in product._optionals" :key="o">
+                      <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
+                        {{ optional.content.name }}
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content color="grey lighten-4">
+                        <v-divider></v-divider>
+                        <v-list-item-group v-if="optional.notices">
+                          <v-list-item v-for="(notices, on) in optional.notices" :key="on">
+                            <v-list-item-content>
+                              <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
+                              <v-list-item-subtitle>
+                                <v-icon small>{{ icons.dateRange }}</v-icon>
+                                {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                              <v-btn icon :color="colors.primary">
+                                <v-icon>{{ icons.info }}</v-icon>
+                              </v-btn>
+                            </v-list-item-action>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="optional.content.description">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.description }}</v-list-item-title>
+                              <v-list-item-subtitle>
+                                <v-icon small>{{ icons.dateRange }}</v-icon>
+                                {{ optional.calendar.date_start }} - {{ optional.calendar.date_end }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="optional.content.description"></v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="optional.content.name">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.note }}</v-list-item-title>
+                              <v-list-item-subtitle>{{ optional.content.name }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-list-item-group v-if="optional.ecommerce.price_current">
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>{{ labels.price }}</v-list-item-title>
+                              <v-list-item-subtitle v-if="!optional.ecommerce.price_reduction">
+                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_current }} {{ optional.ecommerce.unit }}
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-else>
+                                <span>
+                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_current }} {{ optional.ecommerce.unit }}
+                                </span>
+                                <span class="text-decoration-line-through mr-2">
+                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_original }} {{ optional.ecommerce.unit }}
+                                </span>
+                                <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
+                                  {{ optional.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
+                                </v-chip>
+                              </v-list-item-subtitle>
+                              <v-list-item-subtitle v-html="optional.ecommerce.tax"></v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                        <v-divider></v-divider>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-list>
+
+                <v-list dense class="no-line" v-if="product._content.note">
+                  <v-subheader>
+                    <v-icon small left>{{ icons.eventNote }}</v-icon> {{ labels.note.toUpperCase() }}
+                  </v-subheader>
+                  <v-list-item-group>
+                    <v-list-item>
                       <v-list-item-content>
-                        <v-list-item-title>{{ attribute.name }}</v-list-item-title>
-                        <v-list-item-subtitle v-for="(data, v) in attribute.values" :key="v">
-                          {{ data.value }}
-                        </v-list-item-subtitle>
+                        <v-list-item-title>{{ labels.note }}</v-list-item-title>
+                        <v-list-item-subtitle>{{ product._content.note }}</v-list-item-subtitle>
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
                 </v-list>
-              </template>
 
-              <v-list dense class="no-line" v-if="product._tags">
-                <v-subheader>
-                  <v-icon small left>{{ icons.addCheck }}</v-icon> {{ labels.features.toUpperCase() }}
-                </v-subheader>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-subtitle>
-                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary" v-for="(tag, t) in product._tags" :key="t">
-                        <v-icon left small>{{ icons.check }}</v-icon> {{ tag.name }}
-                      </v-chip>
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-
-              <v-list dense class="no-line" v-if="product._services">
-                <v-subheader>
-                  <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.services.toUpperCase() }}
-                </v-subheader>
-                <v-expansion-panels flat>
-                  <v-expansion-panel v-for="(service, s) in product._services" :key="s">
-                    <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
-                      {{ service.content.name }}
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content color="grey lighten-4">
-                      <v-divider></v-divider>
-                      <v-list-item-group v-if="service.notices">
-                        <v-list-item v-for="(notices, sn) in service.notices" :key="sn">
-                          <v-list-item-content>
-                            <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
-                            <v-list-item-subtitle>
-                              <v-icon small>{{ icons.dateRange }}</v-icon>
-                              {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
-                            </v-list-item-subtitle>
-                            <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
-                          </v-list-item-content>
-                          <v-list-item-action>
-                            <v-btn icon :color="colors.primary">
-                              <v-icon>{{ icons.info }}</v-icon>
-                            </v-btn>
-                          </v-list-item-action>
-                        </v-list-item>
-                      </v-list-item-group>
-                      <v-list-item-group v-if="service.content.description">
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>{{ labels.description }}</v-list-item-title>
-                            <v-list-item-subtitle>
-                              <v-icon small>{{ icons.dateRange }}</v-icon>
-                              {{ service.calendar.date_start }} - {{ service.calendar.date_end }}
-                            </v-list-item-subtitle>
-                            <v-list-item-subtitle v-html="service.content.description"></v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                      <v-list-item-group v-if="service.content.name">
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>{{ labels.note }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ service.content.name }}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                      <v-list-item-group v-if="service.ecommerce.price_current">
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>{{ labels.price }}</v-list-item-title>
-                            <v-list-item-subtitle v-if="!service.ecommerce.price_reduction">
-                              {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
-                            </v-list-item-subtitle>
-                            <v-list-item-subtitle v-else>
-                              <span>
-                              {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
-                              </span>
-                              <span class="text-decoration-line-through mr-2">
-                              {{ service.ecommerce.currency }} {{ service.ecommerce.price_original }} {{ service.ecommerce.unit }}
-                              </span>
-                              <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
-                                {{ service.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
-                              </v-chip>
-                            </v-list-item-subtitle>
-                            <v-list-item-subtitle>{{ service.ecommerce.tax_included }} {{ service.ecommerce.tax }}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                      <v-divider></v-divider>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
-              </v-list>
-
-              <v-list dense class="no-line" v-if="product._content.note">
-                <v-subheader>
-                  <v-icon small left>{{ icons.eventNote }}</v-icon> {{ labels.note.toUpperCase() }}
-                </v-subheader>
-                <v-list-item-group>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ labels.note }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ product._content.note }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </template>
       </v-card>
       <v-card flat>
         <v-card-actions>
@@ -484,13 +579,14 @@ import * as FORM from '../common/form'
 import { API } from '../common/http'
 import { ICONS } from '../common/icons'
 import { I18N } from '../common/locale'
-import { EntityAttributes } from './models/entity'
+import { Entity, EntityAttributes } from './models/entity'
 import { TEST } from './models/test'
 
 export default {
   created () {
     this.i18n.language = I18N.getIso().substring(0, 2).toLocaleLowerCase()
     this.fetchCalendar()
+    this.fetchFilters()
     this.fetchEntities()
   },
   data () {
@@ -513,6 +609,7 @@ export default {
         timeRange: FORM.CHECKIN_TIME,
         productSelected: FORM.PRODUCT_SELECTED,
         servicesSelected: FORM.SERVICES_SELECTED,
+        optionalsSelected: FORM.OPTIONALS_SELECTED,
         tagSelected: FORM.TAGS_SELECTED,
         priceRange: FORM.RANGE_NUMBER,
         adults: FORM.ADULTS,
@@ -541,6 +638,7 @@ export default {
         notices: I18N.load().common.notices,
         tag: I18N.load().common.tag,
         services: I18N.load().common.services,
+        optionals: I18N.load().common.optionals,
         price: I18N.load().common.price,
         formBookingTitle: I18N.load().form.booking.title,
         formBookingCaption: I18N.load().form.booking.caption,
@@ -708,6 +806,14 @@ export default {
         this.fields.servicesSelected.value = (v || [])
       }
     },
+    _optionalsSelected: {
+      get () {
+        return this.fields.optionalsSelected.value || []
+      },
+      set (v) {
+        this.fields.optionalsSelected.value = (v || [])
+      }
+    },
     _tagSelected: {
       get () {
         return this.fields.tagSelected.value || []
@@ -774,19 +880,18 @@ export default {
             operator: EntityAttributes.HIGHER_OR_EQUAL
           }
         ],
-        dateRange: [
-          {
-            from: dateSelected,
-            to: dateSelected
-          }
-        ],
+        dateRange: {
+          from: dateSelected,
+          to: dateSelected
+        },
         sort: this._sortBy,
         page: this._page,
         per_page: process.env.VUE_APP_API_PER_PAGE,
         name: this._search,
         price: this._priceRange,
-        services: this._servicesSelected.map(v => v.id),
-        tags: this._tagSelected.map(v => v.id)
+        services: this._servicesSelected,
+        optionals: this._optionalsSelected,
+        tags: this._tagSelected
       }
     },
     fetchCalendar () {
@@ -804,10 +909,34 @@ export default {
       t = setTimeout(() => {
         API.filterEntities(data)
           .then((r) => {
-            this._products = r
+            this._products = r.map(e => new Entity(e))
             if (!this._search) {
               this.fields.search.list = this._products.map(v => v._content.name)
             }
+            clearTimeout(t)
+            this._loading = false
+          }).catch((e) => {
+            this.showDialogError(e)
+            clearTimeout(t)
+            this._loading = false
+          })
+      }, 500)
+    },
+    fetchFilters () {
+      const data = this.getFormFilter()
+      let t = null
+      if (this._loading) {
+        return
+      }
+      this._loading = true
+      this.t = true
+      t = setTimeout(() => {
+        API.listEntities(data)
+          .then((r) => {
+            this.fields.search.list = r.products.map(o => { return { id: o.id, text: o.text } })
+            this.fields.servicesSelected.selected = r.services.map(o => { return { id: o.id, text: o.text } })
+            this.fields.optionalsSelected.selected = r.optionals.map(o => { return { id: o.id, text: o.text } })
+            this.fields.tagSelected.selected = r.tags.map(o => { return { id: o.id, text: o.text } })
             clearTimeout(t)
             this._loading = false
           }).catch((e) => {
@@ -898,6 +1027,7 @@ export default {
       this._search = ''
       this._sortBy = ''
       this._servicesSelected = []
+      this._optionalsSelected = []
       this._tagSelected = []
       this._priceRange = [0, 1000]
       this.fields.productSelected.selected = []

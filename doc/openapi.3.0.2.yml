@@ -554,9 +554,8 @@ components:
         attributes:
           $ref: "#/components/schemas/FilterWith"
         dateRange:
-          type: array
-          items:
-            $ref: "#/components/schemas/FilterDate"
+          type: object
+          $ref: "#/components/schemas/FilterDate"
         name:
           type: string
           description: Match name

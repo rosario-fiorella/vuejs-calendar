@@ -25,20 +25,13 @@ export const TEST = {
   },
   timeRange: () => {
     const times = []
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
-      times.push('09:00')
-      times.push('09:30')
-      times.push('10:00')
-      times.push('10:30')
-      times.push('11:00')
-      times.push('11:30')
-      times.push('12:00')
-    } else {
-      const n = faker.datatype.number({ min: 10, max: 20 })
-      for (let i = 0; i < n; ++i) {
-        times.push(faker.date.future().toISOString().split('T')[1].substring(0, 5))
-      }
-    }
+    times.push('09:00')
+    times.push('09:30')
+    times.push('10:00')
+    times.push('10:30')
+    times.push('11:00')
+    times.push('11:30')
+    times.push('12:00')
 
     return {
       range: times,
@@ -266,13 +259,32 @@ export const TEST = {
       note: faker.lorem.lines(1)
     }
   },
+  listEntities: () => {
+    const list = {
+      products: [],
+      services: [],
+      optionals: [],
+      tags: []
+    }
+
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      for (let i = 0; i < faker.datatype.number({ min: 100, max: 200 }); ++i) {
+        list.products.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+        list.services.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+        list.optionals.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+        list.tags.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+      }
+    }
+
+    return list
+  },
   entities: () => {
     const list = []
     if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
       const entityId = 1
       const selected = false
       const entityFactory = new EntityFactory(entityId)
-      const entity = new Entity({
+      const entity = {
         id: entityId,
         selected: selected,
         calendar: entityFactory.createCalendar(),
@@ -294,7 +306,7 @@ export const TEST = {
         resources: entityFactory.createResources(),
         notices: entityFactory.createNotices(),
         services: entityFactory.createServices()
-      })
+      }
 
       list.push(entity)
       return list

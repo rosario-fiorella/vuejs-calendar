@@ -117,6 +117,15 @@ export const SERVICES_SELECTED = {
   required: true
 }
 
+export const OPTIONALS_SELECTED = {
+  label: I18N.load().common.optionals,
+  icon: ICONS.settings,
+  hint: I18N.load().common.autoFilled,
+  selected: [],
+  value: [],
+  required: true
+}
+
 export const TAGS_SELECTED = {
   label: I18N.load().common.tag,
   icon: ICONS.tag,
@@ -182,11 +191,11 @@ export const SORT_BY = {
   value: null,
   list: [
     {
-      text: 'A-Z: ordine crescente',
+      text: I18N.load().common.sortAsc,
       value: 'asc'
     },
     {
-      text: 'Z-A: ordine decrescente',
+      text: I18N.load().common.sortDesc,
       value: 'desc'
     }
   ]

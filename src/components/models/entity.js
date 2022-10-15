@@ -9,6 +9,7 @@ export class Entity {
   _notices = []
   _resources = []
   _services = []
+  _optionals = []
   _tags = []
   _selected = false
   _id = null
@@ -85,6 +86,14 @@ export class Entity {
     this._services = o
   }
 
+  get optionals () {
+    return this._optionals || []
+  }
+
+  set optionals (o) {
+    this._optionals = o
+  }
+
   get tags () {
     return this._tags || []
   }
@@ -112,6 +121,7 @@ export class Entity {
     this.notices = this.noticeMap(entity.notices)
     this.resources = this.resourcesMap(entity.resources)
     this.services = this.servicesMap(entity.services)
+    this.optionals = this.optionalsMap(entity.optionals)
     this.tags = this.tagsMap(entity.tags)
   }
 
@@ -188,8 +198,6 @@ export class Entity {
 
     let taxIncluded = (Number(entity.tax_included) > 0) ? I18N.load().common.yes : I18N.load().common.no
     taxIncluded = `${I18N.load().common.taxIncluded}: ${taxIncluded}`
-    const taxValue = `${I18N.load().common.tax}: ${Number(entity.tax)}%`
-    const unit = I18N.load().unit[entity.unit] || ''
 
     return {
       entity_id: entity.entity_id,
@@ -197,14 +205,11 @@ export class Entity {
       price_original: entity.price_original,
       price_reduction: entity.price_reduction,
       price_current: entity.price_current,
-      tax: taxValue,
+      tax: entity.tax,
       tax_included: taxIncluded,
-      min_spent: Number(entity.min_spent),
-      min_person: Number(entity.min_person),
-      min_time: entity.min_time,
       expired_time: entity.expired_time,
       currency: entity.currency,
-      unit: unit,
+      unit: entity.unit,
       lang: entity.lang
     }
   }
@@ -232,6 +237,22 @@ export class Entity {
   }
 
   servicesMap = (entity) => {
+    if (!entity || (entity.length === 0)) {
+      return []
+    }
+
+    return entity.map(o => {
+      return {
+        calendar: this.calendarMap(o.calendar),
+        content: this.contentMap(o.content),
+        ecommerce: this.ecommerceMap(o.ecommerce),
+        notices: this.noticeMap(o.notices),
+        resources: this.resourcesMap(o.resources)
+      }
+    })
+  }
+
+  optionalsMap = (entity) => {
     if (!entity || (entity.length === 0)) {
       return []
     }

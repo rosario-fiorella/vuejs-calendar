@@ -38,6 +38,17 @@ export const API = {
     const r = await axios.get(s, HTTP.headers)
     return r.data
   },
+  listEntities: async (data) => {
+    const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_LIST}`
+
+    if (process.env.VUE_APP_NODE_ENV !== EnvEnum.PRODUCTION) {
+      const mock = new MockAdapter(axios)
+      mock.onGet(new RegExp(`${endpoint}`)).reply(200, TEST.listEntities())
+    }
+
+    const r = await axios.get(endpoint, HTTP.headers)
+    return r.data
+  },
   tryToBook: async (data) => {
     const endpoint = `${HTTP.baseURL}${process.env.VUE_APP_API_BOOKING}`
 

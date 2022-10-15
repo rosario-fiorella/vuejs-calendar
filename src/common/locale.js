@@ -16,7 +16,7 @@ export const I18N = {
       note: 'Note',
       yes: 'Si',
       no: 'No',
-      notAvaible: 'Nessuna disponibilità',
+      notAvaible: 'Nessuna disponibilità per la data scelta, scegli una nuova data',
       notFound: 'La pagina richiesta non è stata trovata',
       browserNotSupported: 'Questo browser non supporta la persistenza dei dati, si consiglia di provare un altro browser.',
       lastUpdate: 'Ultimi aggiornamenti',
@@ -26,6 +26,7 @@ export const I18N = {
       includedServices: 'Servizi inclusi',
       tag: 'Tag',
       services: 'Servizi',
+      optionals: 'Optional',
       ok: 'Ok',
       add: 'Aggiungi',
       remove: 'Rimuovi',
@@ -66,11 +67,14 @@ export const I18N = {
       timeStart: 'Orario di arrivo',
       timeEnd: 'Orario di partenza',
       dateFrom: 'Dal',
+      dateTo: 'al',
       cart: 'Prenotazioni che hai scelto',
       nAdults: 'Numero adulti',
       nKids: 'Numero bambini',
       nRecord: 'Numero di risultati',
-      productsList: 'Prodotti'
+      productsList: 'Prodotti',
+      sortAsc: 'A-Z: ordine crescente',
+      sortDesc: 'Z-A: ordine decrescente'
     },
     form: {
       booking: {
