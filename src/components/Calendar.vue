@@ -933,10 +933,14 @@ export default {
       t = setTimeout(() => {
         API.listEntities(data)
           .then((r) => {
-            this.fields.search.list = r.products.map(o => { return { id: o.id, text: o.text } })
-            this.fields.servicesSelected.selected = r.services.map(o => { return { id: o.id, text: o.text } })
-            this.fields.optionalsSelected.selected = r.optionals.map(o => { return { id: o.id, text: o.text } })
-            this.fields.tagSelected.selected = r.tags.map(o => { return { id: o.id, text: o.text } })
+            const products = r.filter(o => { return o.entity_type === 'rental' })
+            const services = r.filter(o => { return o.entity_type === 'service' })
+            const optionals = r.filter(o => { return o.entity_type === 'optional' })
+            const features = r.filter(o => { return o.entity_type === 'feature' })
+            this.fields.search.list = products.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.servicesSelected.selected = services.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.optionalsSelected.selected = optionals.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.tagSelected.selected = features.map(o => { return { id: o.entity_id, text: o.entity_title } })
             clearTimeout(t)
             this._loading = false
           }).catch((e) => {

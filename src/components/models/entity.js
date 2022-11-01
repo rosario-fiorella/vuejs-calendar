@@ -143,7 +143,6 @@ export class Entity {
               return {
                 value: o.value,
                 unit: o.unit,
-                type: o.type,
                 currency: o.currency
               }
             })
@@ -158,18 +157,17 @@ export class Entity {
       return {}
     }
 
-    const dateStart = new Date(`${entity.date_start} ${entity.time_start}`)
-    const dateEnd = new Date(`${entity.date_end} ${entity.time_end}`)
+    const dateStart = new Date(entity.datetime_start)
+    const dateEnd = new Date(entity.datetime_end)
 
     return {
       entity_id: entity.entity_id,
       id: entity.id,
-      day: entity.day,
+      status_code: entity.status_code,
       date_start: dateStart.toLocaleDateString(I18N.getIso()),
       date_end: dateEnd.toLocaleDateString(I18N.getIso()),
       time_start: `${dateStart.getHours()}:${dateStart.getMinutes()}`,
-      time_end: `${dateEnd.getHours()}:${dateEnd.getMinutes()}`,
-      status_code: entity.status_code
+      time_end: `${dateEnd.getHours()}:${dateEnd.getMinutes()}`
     }
   }
 
@@ -247,6 +245,7 @@ export class Entity {
         content: this.contentMap(o.content),
         ecommerce: this.ecommerceMap(o.ecommerce),
         notices: this.noticeMap(o.notices),
+        media: this.mediaMap(o.media),
         resources: this.resourcesMap(o.resources)
       }
     })
@@ -263,6 +262,7 @@ export class Entity {
         content: this.contentMap(o.content),
         ecommerce: this.ecommerceMap(o.ecommerce),
         notices: this.noticeMap(o.notices),
+        media: this.mediaMap(o.media),
         resources: this.resourcesMap(o.resources)
       }
     })
@@ -274,7 +274,14 @@ export class Entity {
     }
 
     return entity.map(o => {
-      return this.contentMap(o)
+      return {
+        entity_id: o.entity_id,
+        id: o.id,
+        slug: o.slug,
+        name: o.name,
+        icon: o.icon,
+        lang: entity.lang
+      }
     })
   }
 
@@ -332,5 +339,41 @@ export class EntityAttributes {
     this.field = f
     this.value = Array.isArray(v) ? v : [v]
     this.operator = o
+  }
+}
+
+export class EntityIndex {
+  _id = null
+  _title = null
+  _type = null
+
+  get id () {
+    return this._id
+  }
+ 
+  set id (v) {
+    this._id = v
+  }
+  
+  get title () {
+    return this._title
+  }
+
+  set title (v) {
+    this._title = v
+  }
+
+  get type () {
+    return this._type
+  }
+
+  set type (v) {
+    this._type = v
+  }
+
+  constructor (o) {
+    this.id = o.entity_id
+    this.title = o.entity_title
+    this.type = o.entity_type
   }
 }

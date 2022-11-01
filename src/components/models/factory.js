@@ -67,14 +67,9 @@ export class EntityFactory {
 
   createMedia = (n) => {
     const medias = []
-    let img = 1
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
-      n = 2
-      img = 3
-    } else {
-      n = n > 0 ? n : faker.datatype.number({ min: 2, max: 4 })
-      img = faker.datatype.number({ min: 1, max: 5 })
-    }
+
+    n = n > 0 ? n : faker.datatype.number({ min: 2, max: 4 })
+    const img = faker.datatype.number({ min: 1, max: 5 })
 
     for (let i = 0; i < n; ++i) {
       medias.push({
@@ -92,33 +87,8 @@ export class EntityFactory {
   }
 
   createTags = (n) => {
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
-      return [
-        {
-          id: 1211,
-          entity_id: 1,
-          name: 'viaggi di gruppo',
-          lang: 'it-IT',
-          icon: 'edit'
-        },
-        {
-          id: 1212,
-          entity_id: 1,
-          name: 'tour',
-          lang: 'it-IT',
-          icon: 'edit'
-        },
-        {
-          id: 1213,
-          entity_id: 1,
-          name: 'guida turistica',
-          lang: 'it-IT',
-          icon: 'edit'
-        }
-      ]
-    }
-
     const tags = []
+
     n = n > 0 ? n : faker.datatype.number({ min: 5, max: 15 })
     for (let i = 0; i < n; ++i) {
       tags.push({
@@ -126,6 +96,7 @@ export class EntityFactory {
         entity_id: this.id,
         name: faker.lorem.words(1),
         lang: faker.locale,
+        slug: faker.lorem.words(1),
         icon: 'edit'
       })
     }
@@ -308,6 +279,7 @@ export class EntityFactory {
             unit: 'cad',
             lang: 'it-IT'
           },
+          media: [],
           resources: [],
           notices: [
             {
@@ -336,8 +308,87 @@ export class EntityFactory {
         calendar: this.createCalendar(),
         content: this.createContent(),
         ecommerce: this.createEcommerce(),
-        resources: this.createResources(),
-        notices: this.createNotices()
+        notices: this.createNotices(),
+        media: this.createMedia(),
+        resources: this.createResources()
+      })
+    }
+
+    return list
+  }
+
+  createOptionals = (n) => {
+    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+      const datePast = faker.date.past().toLocaleDateString('it-IT')
+      const dateFuture = faker.date.future().toLocaleDateString('it-IT')
+      const taxIncluded = faker.datatype.boolean() ? 'Si' : 'no'
+      const taxValue = `
+        <div>Tasse incluse: ${taxIncluded}</div>
+        <div>Tassa in percentuale: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })}%</div>
+        <div>Tassa fissa: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+        <div>Tassa ricorrente: ${faker.datatype.float({ min: 1, max: 22, precision: 2 })} €</div>
+        <div>Tassa ricorrente dal giorno: ${datePast}</div>
+        <div>Tassa ricorrente fino al giorno: ${dateFuture}</div>`
+
+      return [
+        {
+          calendar: this.createCalendar(),
+          content: {
+            id: 4444,
+            entity_id: 1,
+            slug: 'sala-pranzo-a-bordo',
+            name: 'Sala pranzo a bordo, ogni tavolo può ospitare fino a 4 coperti',
+            description: '',
+            short_description: 'Pranzo all\'aperto nella nostra sala dedicata fino a 20 coperti.',
+            excerpt: '',
+            note: '',
+            lang: 'it-IT'
+          },
+          ecommerce: {
+            id: 5555,
+            entity_id: 1,
+            price_original: '60.00',
+            price_reduction: '-20%',
+            price_current: '48.00',
+            tax_included: 'Si',
+            tax: taxValue,
+            expired_time: '23:00',
+            currency: '€',
+            unit: 'cad',
+            lang: 'it-IT'
+          },
+          media: [],
+          resources: [],
+          notices: [
+            {
+              calendar: this.createCalendar(),
+              content: {
+                id: 3333,
+                entity_id: 1,
+                slug: 'avviso-min-6-persone',
+                name: 'Avviso: il costo del pranzo a bordo è escluso dal costo del tour',
+                description: 'Goditi la comodità del pranzo in barca, esperienza unica con i nostri cuochi chef.',
+                short_description: '',
+                excerpt: '',
+                note: '',
+                lang: 'it-IT'
+              }
+            }
+          ]
+        }
+      ]
+    }
+
+    n = n > 0 ? n : faker.datatype.number({ min: 1, max: 5 })
+    const list = []
+    for (let i = 0; i < n; ++i) {
+      list.push({
+        calendar: this.createCalendar(),
+        content: this.createContent(),
+        ecommerce: this.createEcommerce(),
+        notices: this.createNotices(),
+        media: this.createMedia(),
+        resources: this.createResources()
       })
     }
 

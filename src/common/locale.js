@@ -1,6 +1,7 @@
 export const I18N = {
   load: (locale = null) => {
     locale = locale || I18N.getIso(locale)
+    locale = locale.length === 2 ? locale + '-' + locale.toUpperCase() : locale
     return I18N[locale] || {}
   },
 

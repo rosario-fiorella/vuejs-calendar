@@ -267,53 +267,19 @@ export const TEST = {
       tags: []
     }
 
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
-      for (let i = 0; i < faker.datatype.number({ min: 100, max: 200 }); ++i) {
-        list.products.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
-        list.services.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
-        list.optionals.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
-        list.tags.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
-      }
+    for (let i = 0; i < faker.datatype.number({ min: 100, max: 200 }); ++i) {
+      list.products.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+      list.services.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+      list.optionals.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
+      list.tags.push({ id: faker.datatype.number({ min: 100, max: 200 }), text: faker.lorem.words(10) })
     }
 
     return list
   },
   entities: () => {
     const list = []
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
-      const entityId = 1
-      const selected = false
-      const entityFactory = new EntityFactory(entityId)
-      const entity = {
-        id: entityId,
-        selected: selected,
-        calendar: entityFactory.createCalendar(),
-        content: {
-          id: 1001,
-          entity_id: entityId,
-          slug: 'tour-in-barca-dal-porto-di-marina-di-pisa',
-          name: 'Tour in battello con pranzo a bordo dal porto di Marina di Pisa',
-          description: '',
-          short_description: 'Trascorri splendide giornate in famiglia, scopri le nostre offerte',
-          excerpt: '',
-          note: 'Disponibile fino a 5 persone',
-          lang: 'it-IT'
-        },
-        ecommerce: entityFactory.createEcommerce(),
-        groups: entityFactory.createAttributes(),
-        media: entityFactory.createMedia(),
-        tags: entityFactory.createTags(),
-        resources: entityFactory.createResources(),
-        notices: entityFactory.createNotices(),
-        services: entityFactory.createServices()
-      }
-
-      list.push(entity)
-      return list
-    }
-
     for (let i = 0; i < faker.datatype.number({ min: 2, max: 5 }); ++i) {
-      const entityId = faker.datatype.number({ min: 10, max: 1000 }) + faker.datatype.number({ min: 10, max: 1000 })
+      const entityId = faker.datatype.number({ min: 1000, max: 10000 })
       const selected = faker.datatype.boolean()
       const entityFactory = new EntityFactory(entityId)
 
@@ -328,7 +294,8 @@ export const TEST = {
         tags: entityFactory.createTags(),
         resources: entityFactory.createResources(),
         notices: entityFactory.createNotices(),
-        services: entityFactory.createServices()
+        services: entityFactory.createServices(),
+        optionals: entityFactory.createOptionals()
       })
 
       list.push(entity)
@@ -338,18 +305,12 @@ export const TEST = {
   },
   booking: (data) => {
     const products = []
-    if (process.env.VUE_APP_NODE_ENV === EnvEnum.DEMO) {
+
+    for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
       products.push({
-        id: 1111,
-        text: 'Tour in barca Lumenia XR-1000.'
+        id: faker.datatype.number({ min: 1, max: 100 }),
+        text: faker.lorem.words(3)
       })
-    } else {
-      for (let i = 0; i < faker.datatype.number({ min: 1, max: 10 }); ++i) {
-        products.push({
-          id: faker.datatype.number({ min: 1, max: 100 }),
-          text: faker.lorem.words(3)
-        })
-      }
     }
 
     return {
