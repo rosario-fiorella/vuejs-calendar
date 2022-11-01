@@ -350,11 +350,11 @@ export class EntityIndex {
   get id () {
     return this._id
   }
- 
+
   set id (v) {
     this._id = v
   }
-  
+
   get title () {
     return this._title
   }

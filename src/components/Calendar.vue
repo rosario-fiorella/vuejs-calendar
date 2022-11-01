@@ -7,6 +7,7 @@
             <v-date-picker
               full-width
               no-title
+              range
               v-model="_date"
               :prev-icon="icons.arrowLeft"
               :next-icon="icons.arrowRight"
@@ -603,7 +604,7 @@ export default {
         landscape: false
       },
       fields: {
-        date: '',
+        date: [],
         dateRange: FORM.CALENDAR_RANGE,
         checkInDate: FORM.CHECKIN_DATE,
         timeRange: FORM.CHECKIN_TIME,
@@ -689,10 +690,10 @@ export default {
     },
     _date: {
       get () {
-        return this.fields.date || this.dateNow()
+        return this.fields.date || []
       },
       set (v) {
-        this.fields.date = (v || this.dateNow())
+        this.fields.date = (v || [])
       }
     },
     _timeRange: {
@@ -849,7 +850,8 @@ export default {
       }
     },
     getFormData () {
-      const dateStart = `${this._date}T${this._timeRange}`
+      const dateStart = `${this._date[0]}T${this._timeRange}`
+      const dateEnd = `${this._date[1]}T${this._timeRange}`
 
       return {
         firstName: this._firstName,
@@ -860,11 +862,12 @@ export default {
         note: this._note,
         entities: this._productSelected,
         date_start: dateStart,
-        date_end: dateStart
+        date_end: dateEnd
       }
     },
     getFormFilter () {
-      const dateSelected = `${this._date}T${this._timeRange}`
+      const dateStart = `${this._date[0]}T${this._timeRange}`
+      const dateEnd = `${this._date[1]}T${this._timeRange}`
 
       return {
         ...this.getLocale(),
@@ -881,8 +884,8 @@ export default {
           }
         ],
         dateRange: {
-          from: dateSelected,
-          to: dateSelected
+          from: dateStart,
+          to: dateEnd
         },
         sort: this._sortBy,
         page: this._page,
@@ -899,6 +902,11 @@ export default {
       this.fields.dateRange = TEST.dateRange()
     },
     fetchEntities () {
+      const dateRange = this._date
+      if (!dateRange[0] || !dateRange[1]) {
+        return
+      }
+
       const data = this.getFormFilter()
       let t = null
       if (this._loading) {
@@ -1020,7 +1028,7 @@ export default {
       return this.$refs.form.resetValidation()
     },
     reset () {
-      this._date = this.dateNow()
+      this._date = []
       this._timeRange = null
       this._firstName = null
       this._lastName = null
