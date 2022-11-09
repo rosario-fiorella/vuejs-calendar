@@ -925,6 +925,8 @@ export default {
     },
     getFormData () {
       return {
+        ...this.getLocale(),
+        timestamp: Date.now(),
         firstName: this._firstName,
         lastName: this._lastName,
         email: this._email,
@@ -1065,26 +1067,10 @@ export default {
       )
     },
     showDialogSuccess (d = null) {
-      let text
-      if (d) {
-        let product = d.entities || []
-        product = product.map(v => v.text).join('<br>')
-        text = `
-          <div><strong>${I18N.load().common.firstName}:</strong> ${d.firstName}</div>
-          <div><strong>${I18N.load().common.lastName}:</strong> ${d.lastName}</div>
-          <div><strong>${I18N.load().common.email}:</strong> ${d.email}</div>
-          <div><strong>${I18N.load().common.nAdults}:</strong> ${d.adults}</div>
-          <div><strong>${I18N.load().common.nKids}:</strong> ${d.kids}</div>
-          <div><strong>${I18N.load().common.note}:</strong> ${d.note}</div>
-          <div><strong>${I18N.load().common.dateStart}:</strong> ${d.date_start}</div>
-          <div><strong>${I18N.load().common.cart}:</strong><div>${product}</div></div>
-        `
-      }
-
       this.dialog = FORM.DIALOG(
         true,
         I18N.load().common.success,
-        text || '',
+        d.text || '',
         I18N.load().common.ok
       )
     },
@@ -1121,7 +1107,7 @@ export default {
           throw I18N.load().validation.error.requiredFields
         }
 
-        const formData = this.getFormData()
+        const data = this.getFormData()
         let t = null
         if (this._loadingOrder) {
           return
@@ -1130,7 +1116,7 @@ export default {
         this._loadingOrder = true
         this.t = true
         t = setTimeout(() => {
-          API.tryToBook(formData)
+          API.tryToBook(data)
             .then((r) => {
               this.showDialogSuccess(r)
               clearTimeout(t)
