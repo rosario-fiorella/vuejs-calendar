@@ -160,6 +160,14 @@ export const CHECKIN_TIME = {
   icon: ICONS.accessTime
 }
 
+export const CHECKOUT_TIME = {
+  value: '',
+  default: '',
+  range: [],
+  label: I18N.load().common.timeEnd,
+  icon: ICONS.accessTime
+}
+
 export const CALENDAR_RANGE = {
   notAvaibleDate: [],
   from: `${((new Date()).getFullYear() - 5)}-01-01`,

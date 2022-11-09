@@ -359,6 +359,10 @@ export class EntityIndex {
     return this._title
   }
 
+  get text () {
+    return this._title
+  }
+
   set title (v) {
     this._title = v
   }

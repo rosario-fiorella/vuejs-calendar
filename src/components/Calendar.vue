@@ -34,11 +34,25 @@
             ></v-text-field>
 
             <v-select
-              v-model="_timeRange"
-              :items="fields.timeRange.range"
-              :rules="fields.timeRange.rules"
-              :label="fields.timeRange.label"
-              :prepend-icon="fields.timeRange.icon"
+              v-model="_timeCheckIn"
+              :items="fields.timeCheckIn.range"
+              :rules="fields.timeCheckIn.rules"
+              :label="fields.timeCheckIn.label"
+              :prepend-icon="fields.timeCheckIn.icon"
+              outlined
+              required
+              dense
+              hide-details
+              v-on:change="fetchEntities()"
+            ></v-select>
+
+            <v-select
+              class="mt-6"
+              v-model="_timeCheckOut"
+              :items="fields.timeCheckOut.range"
+              :rules="fields.timeCheckOut.rules"
+              :label="fields.timeCheckOut.label"
+              :prepend-icon="fields.timeCheckOut.icon"
               outlined
               required
               dense
@@ -246,7 +260,7 @@
             <v-btn text outlined :color="colors.secondary" @click="reset()">
               {{ fields.reset.label }}
             </v-btn>
-            <v-btn text outlined :color="colors.primary" @click="submit()" type="submit">
+            <v-btn text outlined :color="colors.primary" :disabled="_disable" @click="submit()" type="submit">
               {{ fields.submit.label }}
             </v-btn>
           </v-card-actions>
@@ -581,14 +595,11 @@ import { API } from '../common/http'
 import { ICONS } from '../common/icons'
 import { I18N } from '../common/locale'
 import { Entity, EntityAttributes } from './models/entity'
-import { TEST } from './models/test'
 
 export default {
   created () {
     this.i18n.language = I18N.getIso().substring(0, 2).toLocaleLowerCase()
-    this.fetchCalendar()
-    this.fetchFilters()
-    this.fetchEntities()
+    this.fetchAppData()
   },
   data () {
     return {
@@ -599,7 +610,11 @@ export default {
         timezone: ''
       },
       flags: {
-        loading: false,
+        loading: {
+          app: false,
+          entities: false,
+          order: false
+        },
         valid: false,
         landscape: false
       },
@@ -607,7 +622,8 @@ export default {
         date: [],
         dateRange: FORM.CALENDAR_RANGE,
         checkInDate: FORM.CHECKIN_DATE,
-        timeRange: FORM.CHECKIN_TIME,
+        timeCheckIn: FORM.CHECKIN_TIME,
+        timeCheckOut: FORM.CHECKOUT_TIME,
         productSelected: FORM.PRODUCT_SELECTED,
         servicesSelected: FORM.SERVICES_SELECTED,
         optionalsSelected: FORM.OPTIONALS_SELECTED,
@@ -672,6 +688,27 @@ export default {
     }
   },
   computed: {
+    _disable: {
+      get () {
+        if (!this.fields.productSelected.value.length) {
+          return true
+        }
+
+        if (!this._firstName.length) {
+          return true
+        }
+
+        if (!this._lastName.length) {
+          return true
+        }
+
+        if (!this._email.length) {
+          return true
+        }
+
+        return false
+      }
+    },
     _language: {
       get () {
         return this.i18n.language || ''
@@ -680,12 +717,28 @@ export default {
         this.i18n.language = (v || I18N.getIso())
       }
     },
-    _loading: {
+    _loadingApp: {
       get () {
-        return this.flags.loading
+        return this.flags.loading.app
       },
       set (v) {
-        this.flags.loading = (v || false)
+        this.flags.loading.app = v || false
+      }
+    },
+    _loadingEntities: {
+      get () {
+        return this.flags.loading.entities
+      },
+      set (v) {
+        this.flags.loading.entities = v || false
+      }
+    },
+    _loadingOrder: {
+      get () {
+        return this.flags.loading.order
+      },
+      set (v) {
+        this.flags.loading.order = v || false
       }
     },
     _date: {
@@ -696,12 +749,33 @@ export default {
         this.fields.date = (v || [])
       }
     },
-    _timeRange: {
+    _datetimeStart: {
       get () {
-        return this.fields.timeRange.value || this.fields.timeRange.default
+        const dateStart = this._date[0] || this.getDateIsoFormat()
+        return `${dateStart}T${this._timeCheckIn}`
+      }
+    },
+    _datetimeEnd: {
+      get () {
+        const dateStart = this._date[0] || this.getDateIsoFormat()
+        const dateEnd = this._date[1] || dateStart
+        return `${dateEnd}T${this._timeCheckOut}`
+      }
+    },
+    _timeCheckIn: {
+      get () {
+        return this.fields.timeCheckIn.value || this.fields.timeCheckIn.default
       },
       set (v) {
-        this.fields.timeRange.value = (v || this.fields.timeRange.default || '')
+        this.fields.timeCheckIn.value = (v || this.fields.timeCheckIn.default)
+      }
+    },
+    _timeCheckOut: {
+      get () {
+        return this.fields.timeCheckOut.value || this.fields.timeCheckOut.default
+      },
+      set (v) {
+        this.fields.timeCheckOut.value = (v || this.fields.timeCheckOut.default)
       }
     },
     _productCount: {
@@ -850,9 +924,6 @@ export default {
       }
     },
     getFormData () {
-      const dateStart = `${this._date[0]}T${this._timeRange}`
-      const dateEnd = `${this._date[1]}T${this._timeRange}`
-
       return {
         firstName: this._firstName,
         lastName: this._lastName,
@@ -861,14 +932,11 @@ export default {
         kids: this._kids,
         note: this._note,
         entities: this._productSelected,
-        date_start: dateStart,
-        date_end: dateEnd
+        date_start: this._datetimeStart,
+        date_end: this._datetimeEnd
       }
     },
     getFormFilter () {
-      const dateStart = `${this._date[0]}T${this._timeRange}`
-      const dateEnd = `${this._date[1]}T${this._timeRange}`
-
       return {
         ...this.getLocale(),
         attributes: [
@@ -884,8 +952,8 @@ export default {
           }
         ],
         dateRange: {
-          from: dateStart,
-          to: dateEnd
+          from: this._datetimeStart,
+          to: this._datetimeEnd
         },
         sort: this._sortBy,
         page: this._page,
@@ -897,74 +965,73 @@ export default {
         tags: this._tagSelected
       }
     },
-    fetchCalendar () {
-      this.fields.timeRange = TEST.timeRange()
-      this.fields.dateRange = TEST.dateRange()
+    getDateIsoFormat (day = null) {
+      const date = day ? new Date(day) : new Date()
+      return date.toISOString().split('T')[0]
+    },
+    fetchAppData () {
+      let t = null
+      if (this._loadingApp) {
+        return
+      }
+      this._loadingApp = true
+      t = setTimeout(() => {
+        API.fetchAppData()
+          .then((r) => {
+            this.fields.timeCheckIn.range = r.time.checkIn
+            this.fields.timeCheckOut.range = r.time.checkOut
+            this._timeCheckIn = r.time.checkIn[0]
+            this._timeCheckOut = r.time.checkOut[0]
+            this.fields.dateRange.notAvaibleDate = r.calendar.notAvaibleDate
+            this.fields.dateRange.from = r.calendar.from
+            this.fields.dateRange.to = r.calendar.to
+            this.fields.search.list = r.entities.rentals.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.servicesSelected.selected = r.entities.services.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.optionalsSelected.selected = r.entities.optionals.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.fields.tagSelected.selected = r.entities.features.map(o => { return { id: o.entity_id, text: o.entity_title } })
+            this.updateSelected()
+            this.fetchEntities()
+            this._loadingApp = false
+            clearTimeout(t)
+            t = null
+          }).catch((e) => {
+            this.showDialogError(e)
+            this._loadingApp = false
+            clearTimeout(t)
+            t = null
+          })
+      }, 100)
     },
     fetchEntities () {
-      const dateRange = this._date
-      if (!dateRange[0] || !dateRange[1]) {
-        return
-      }
-
-      const data = this.getFormFilter()
       let t = null
-      if (this._loading) {
+      if (this._loadingEntities) {
         return
       }
-      this._loading = true
-      this.t = true
+      this._loadingEntities = true
+      const data = this.getFormFilter()
       t = setTimeout(() => {
         API.filterEntities(data)
           .then((r) => {
             this._products = r.map(e => new Entity(e))
-            if (!this._search) {
-              this.fields.search.list = this._products.map(v => v._content.name)
-            }
+            this.updateSelected()
+            this._loadingEntities = false
             clearTimeout(t)
-            this._loading = false
+            t = null
           }).catch((e) => {
             this.showDialogError(e)
+            this._loadingEntities = false
             clearTimeout(t)
-            this._loading = false
-          })
-      }, 500)
-    },
-    fetchFilters () {
-      const data = this.getFormFilter()
-      let t = null
-      if (this._loading) {
-        return
-      }
-      this._loading = true
-      this.t = true
-      t = setTimeout(() => {
-        API.listEntities(data)
-          .then((r) => {
-            const products = r.filter(o => { return o.entity_type === 'rental' })
-            const services = r.filter(o => { return o.entity_type === 'service' })
-            const optionals = r.filter(o => { return o.entity_type === 'optional' })
-            const features = r.filter(o => { return o.entity_type === 'feature' })
-            this.fields.search.list = products.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            this.fields.servicesSelected.selected = services.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            this.fields.optionalsSelected.selected = optionals.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            this.fields.tagSelected.selected = features.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            clearTimeout(t)
-            this._loading = false
-          }).catch((e) => {
-            this.showDialogError(e)
-            clearTimeout(t)
-            this._loading = false
+            t = null
           })
       }, 500)
     },
     updateSelected () {
-      const ids = this.fields.productSelected.value
+      const ids = this.fields.productSelected.value.map(o => { return o.id })
       for (const i in this._products) {
-        if (ids.includes(this._products[i]._id)) {
-          this._products[i]._selected = true
+        if (ids.includes(this._products[i].id)) {
+          this._products[i].selected = true
         } else {
-          this._products[i]._selected = false
+          this._products[i].selected = false
         }
       }
     },
@@ -1029,7 +1096,8 @@ export default {
     },
     reset () {
       this._date = []
-      this._timeRange = null
+      this._timeCheckIn = this.fields.timeCheckIn.range[0] || null
+      this._timeCheckOut = this.fields.timeCheckOut.range[0] || null
       this._firstName = null
       this._lastName = null
       this._email = null
@@ -1045,7 +1113,6 @@ export default {
       this.fields.productSelected.selected = []
       this.fields.productSelected.value = []
       this.resetValidation()
-      this.fetchCalendar()
       this.fetchEntities()
     },
     submit () {
@@ -1055,27 +1122,23 @@ export default {
         }
 
         const formData = this.getFormData()
-        if (this._productSelected.length === 0) {
-          throw this.labels.productsNotSelected
-        }
-
         let t = null
-        if (this._loading) {
+        if (this._loadingOrder) {
           return
         }
 
-        this._loading = true
+        this._loadingOrder = true
         this.t = true
         t = setTimeout(() => {
           API.tryToBook(formData)
             .then((r) => {
               this.showDialogSuccess(r)
               clearTimeout(t)
-              this._loading = false
+              this._loadingOrder = false
             }).catch((e) => {
               this.showDialogError(e)
               clearTimeout(t)
-              this._loading = false
+              this._loadingOrder = false
             })
         }, 500)
       } catch (e) {

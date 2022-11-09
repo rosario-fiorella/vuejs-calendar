@@ -259,7 +259,7 @@ export const TEST = {
       note: faker.lorem.lines(1)
     }
   },
-  listEntities: () => {
+  fetchEntities: () => {
     const list = {
       products: [],
       services: [],
