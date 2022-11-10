@@ -1,10 +1,9 @@
 import axios from 'axios'
 
 export const HTTP = {
-  baseURL: process.env.VUE_APP_API_BASE_URL,
+  baseURL: process.env.VUE_APP_HOST + '/' + process.env.VUE_APP_API_BASE_URL,
   headers: {
     'content-type': 'application/json',
-    Authorization: 'Bearer 1234567890',
     'X-API-Key': process.env.VUE_APP_API_KEY
   }
 }
