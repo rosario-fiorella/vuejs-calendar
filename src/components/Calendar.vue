@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col md="4" sm="6" offset-md="2" class="v-card--form">
+    <v-col lg="4" offset-lg="2" md="6" class="v-card--form">
       <v-form v-model="flags.valid" ref="form" lazy-validation @submit.prevent="submit()">
         <v-card tile flat>
           <v-card-text>
@@ -280,10 +280,10 @@
         </v-dialog>
       </v-form>
     </v-col>
-    <v-col class="v-card--list" md="4" sm="6" v-if="!_products.length">
+    <v-col class="v-card--list" lg="4" md="6" v-if="!_products.length">
       {{ labels.notAvaible }}
     </v-col>
-    <v-col class="v-card--list" md="4" sm="6" v-if="_products.length">
+    <v-col class="v-card--list" lg="4" md="6" v-if="_products.length">
       <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
         <template v-if="product.id">
           <v-carousel v-if="product._media" height="auto">
