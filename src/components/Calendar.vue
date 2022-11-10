@@ -284,7 +284,7 @@
       {{ labels.notAvaible }}
     </v-col>
     <v-col class="v-card--list" lg="4" md="6" v-if="_products.length">
-      <v-card elevation="4" tile class="mb-4" v-for="(product, i) in _products" :key="i">
+      <v-card elevation="20" tile class="mb-4" v-for="(product, i) in _products" :key="i">
         <template v-if="product.id">
           <v-carousel v-if="product._media" height="auto">
             <v-carousel-item v-for="(media, m) in product._media" :key="m" :src="media.url"></v-carousel-item>
