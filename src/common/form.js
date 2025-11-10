@@ -54,12 +54,12 @@ export const EMAIL = {
   ]
 }
 
-export const ADULTS = {
+export const PEOPLE = {
   min: 1,
   max: 6,
   default: 1,
   icon: ICONS.people,
-  label: I18N.load().common.nAdults,
+  label: I18N.load().common.people,
   value: 1
 }
 

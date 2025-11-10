@@ -74,42 +74,6 @@
               @change="updateSelected()"
             ></v-select>
 
-            <v-text-field
-              class="mt-2"
-              v-model="_adults"
-              :label="fields.adults.label"
-              :prepend-icon="fields.adults.icon"
-              :min="fields.adults.min"
-              :max="fields.adults.max"
-              :value="fields.adults.default"
-              outlined
-              dense
-              required
-              type="number"
-            ></v-text-field>
-
-            <v-text-field
-              v-model="_kids"
-              :label="fields.kids.label"
-              :prepend-icon="fields.kids.icon"
-              :min="fields.kids.min"
-              :max="fields.kids.max"
-              :value="fields.kids.default"
-              outlined
-              dense
-              required
-              type="number"
-            ></v-text-field>
-
-            <v-text-field
-              v-model="_note"
-              :label="fields.note.label"
-              :prepend-icon="fields.note.icon"
-              :max="fields.note.max"
-              :counter="fields.note.max"
-              outlined
-              dense
-            ></v-text-field>
           </v-card-text>
         </v-card>
         <v-card tile flat>
@@ -213,6 +177,30 @@
               :prepend-icon="fields.email.icon"
               outlined
               required
+              dense
+            ></v-text-field>
+
+            <v-text-field
+              class="mt-2"
+              v-model="_people"
+              :label="fields.people.label"
+              :prepend-icon="fields.people.icon"
+              :min="fields.people.min"
+              :max="fields.people.max"
+              :value="fields.people.default"
+              outlined
+              dense
+              required
+              type="number"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="_note"
+              :label="fields.note.label"
+              :prepend-icon="fields.note.icon"
+              :max="fields.note.max"
+              :counter="fields.note.max"
+              outlined
               dense
             ></v-text-field>
 
@@ -447,8 +435,7 @@ export default {
         productSelected: FORM.PRODUCT_SELECTED,
         tagSelected: FORM.TAGS_SELECTED,
         priceRange: FORM.RANGE_NUMBER,
-        adults: FORM.ADULTS,
-        kids: FORM.KIDS,
+        people: FORM.PEOPLE,
         note: FORM.NOTE,
         firstName: FORM.FIRST_NAME,
         lastName: FORM.LAST_NAME,
@@ -624,20 +611,12 @@ export default {
         }
       }
     },
-    _adults: {
+    _people: {
       get () {
-        return this.fields.adults.value || 0
+        return this.fields.people.value || 0
       },
       set (v) {
-        this.fields.adults.value = (v || this.fields.adults.default || 1)
-      }
-    },
-    _kids: {
-      get () {
-        return this.fields.kids.value || 0
-      },
-      set (v) {
-        this.fields.kids.value = (v || this.fields.kids.default || 0)
+        this.fields.people.value = (v || this.fields.people.default || 1)
       }
     },
     _note: {
@@ -729,8 +708,7 @@ export default {
         firstName: this._firstName,
         lastName: this._lastName,
         email: this._email,
-        adults: this._adults,
-        kids: this._kids,
+        people: this._people,
         note: this._note,
         entities: this._productSelected,
         date_start: this._datetimeStart,
@@ -742,13 +720,8 @@ export default {
         ...this.getLocale(),
         attributes: [
           {
-            field: 'adults',
-            value: this._adults,
-            operator: EntityAttributes.HIGHER_OR_EQUAL
-          },
-          {
-            field: 'kids',
-            value: this._kids,
+            field: 'people',
+            value: this._people,
             operator: EntityAttributes.HIGHER_OR_EQUAL
           }
         ],
@@ -882,8 +855,7 @@ export default {
       this._firstName = null
       this._lastName = null
       this._email = null
-      this._adults = null
-      this._kids = null
+      this._people = null
       this._note = null
       this._search = ''
       this._sortBy = ''

@@ -70,7 +70,7 @@ export const I18N = {
       dateFrom: 'Dal',
       dateTo: 'al',
       cart: 'Prenotazioni che hai scelto',
-      nAdults: 'Numero adulti',
+      people: 'Numero di persone (adulti e bambini)',
       nKids: 'Numero bambini',
       nRecord: 'Numero di risultati',
       productsList: 'Prodotti',
