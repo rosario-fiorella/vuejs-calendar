@@ -75,7 +75,9 @@ export const I18N = {
       nRecord: 'Numero di risultati',
       productsList: 'Prodotti',
       sortAsc: 'A-Z: ordine crescente',
-      sortDesc: 'Z-A: ordine decrescente'
+      sortDesc: 'Z-A: ordine decrescente',
+      sortPriceAsc: '1-9: Prezzo crescente',
+      sortPriceDesc: '9-1: Prezzo decrescente'
     },
     form: {
       booking: {

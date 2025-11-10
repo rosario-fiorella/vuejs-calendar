@@ -163,11 +163,19 @@ export const SORT_BY = {
   list: [
     {
       text: I18N.load().common.sortAsc,
-      value: 'asc'
+      value: 'title_asc'
     },
     {
       text: I18N.load().common.sortDesc,
-      value: 'desc'
+      value: 'title_desc'
+    },
+    {
+      text: I18N.load().common.sortPriceAsc,
+      value: 'price_asc'
+    },
+    {
+      text: I18N.load().common.sortPriceDesc,
+      value: 'price_desc'
     }
   ]
 }

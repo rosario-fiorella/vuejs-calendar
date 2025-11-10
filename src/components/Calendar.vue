@@ -120,7 +120,6 @@
               v-model="fields.priceRange.range"
               :max="fields.priceRange.max"
               :min="fields.priceRange.min"
-              hide-details
               class="align-center"
               @change="fetchEntities()"
             >
@@ -142,6 +141,7 @@
                 ></v-text-field>
               </template>
             </v-range-slider>
+
           </v-card-text>
         </v-card>
         <v-card tile flat>
