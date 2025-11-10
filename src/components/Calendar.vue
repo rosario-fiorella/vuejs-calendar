@@ -139,34 +139,6 @@
             ></v-select>
 
             <v-select
-              v-model="fields.servicesSelected.value"
-              :items="fields.servicesSelected.selected"
-              item-value="id"
-              item-text="text"
-              :label="fields.servicesSelected.label"
-              :prepend-icon="fields.servicesSelected.icon"
-              :hint="fields.servicesSelected.hint"
-              chips
-              multiple
-              dense
-              @change="fetchEntities()"
-            ></v-select>
-
-            <v-select
-              v-model="fields.optionalsSelected.value"
-              :items="fields.optionalsSelected.selected"
-              item-value="id"
-              item-text="text"
-              :label="fields.optionalsSelected.label"
-              :prepend-icon="fields.optionalsSelected.icon"
-              :hint="fields.optionalsSelected.hint"
-              chips
-              multiple
-              dense
-              @change="fetchEntities()"
-            ></v-select>
-
-            <v-select
               v-model="fields.tagSelected.value"
               :items="fields.tagSelected.selected"
               item-value="id"
@@ -379,158 +351,6 @@
                   </v-list-item>
                 </v-list>
 
-                <v-list dense class="no-line" v-if="product._services.length">
-                  <v-subheader>
-                    <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.services.toUpperCase() }}
-                  </v-subheader>
-                  <v-expansion-panels flat>
-                    <v-expansion-panel v-for="(service, s) in product._services" :key="s">
-                      <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
-                        {{ service.content.name }}
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content color="grey lighten-4">
-                        <v-divider></v-divider>
-                        <v-list-item-group v-if="service.notices">
-                          <v-list-item v-for="(notices, sn) in service.notices" :key="sn">
-                            <v-list-item-content>
-                              <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
-                              <v-list-item-subtitle>
-                                <v-icon small>{{ icons.dateRange }}</v-icon>
-                                {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                              <v-btn icon :color="colors.primary">
-                                <v-icon>{{ icons.info }}</v-icon>
-                              </v-btn>
-                            </v-list-item-action>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="service.content.description">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.description }}</v-list-item-title>
-                              <v-list-item-subtitle>
-                                <v-icon small>{{ icons.dateRange }}</v-icon>
-                                {{ service.calendar.date_start }} - {{ service.calendar.date_end }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="service.content.description"></v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="service.content.name">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.note }}</v-list-item-title>
-                              <v-list-item-subtitle>{{ service.content.name }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="service.ecommerce.price_current">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.price }}</v-list-item-title>
-                              <v-list-item-subtitle v-if="!service.ecommerce.price_reduction">
-                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-else>
-                                <span>
-                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_current }} {{ service.ecommerce.unit }}
-                                </span>
-                                <span class="text-decoration-line-through mr-2">
-                                {{ service.ecommerce.currency }} {{ service.ecommerce.price_original }} {{ service.ecommerce.unit }}
-                                </span>
-                                <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
-                                  {{ service.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
-                                </v-chip>
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="service.ecommerce.tax"></v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-divider></v-divider>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
-                </v-list>
-
-                <v-list dense class="no-line" v-if="product._optionals">
-                  <v-subheader>
-                    <v-icon left small>{{ icons.settings }}</v-icon> {{ labels.optionals.toUpperCase() }}
-                  </v-subheader>
-                  <v-expansion-panels flat>
-                    <v-expansion-panel v-for="(optional, o) in product._optionals" :key="o">
-                      <v-expansion-panel-header class="px-4 py-1 panel-header-1 text-subtitle-2">
-                        {{ optional.content.name }}
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content color="grey lighten-4">
-                        <v-divider></v-divider>
-                        <v-list-item-group v-if="optional.notices">
-                          <v-list-item v-for="(notices, on) in optional.notices" :key="on">
-                            <v-list-item-content>
-                              <v-list-item-title>{{ notices.content.name }}</v-list-item-title>
-                              <v-list-item-subtitle>
-                                <v-icon small>{{ icons.dateRange }}</v-icon>
-                                {{ notices.calendar.date_start }} - {{ notices.calendar.date_start }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="notices.content.description"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                              <v-btn icon :color="colors.primary">
-                                <v-icon>{{ icons.info }}</v-icon>
-                              </v-btn>
-                            </v-list-item-action>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="optional.content.description">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.description }}</v-list-item-title>
-                              <v-list-item-subtitle>
-                                <v-icon small>{{ icons.dateRange }}</v-icon>
-                                {{ optional.calendar.date_start }} - {{ optional.calendar.date_end }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="optional.content.description"></v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="optional.content.name">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.note }}</v-list-item-title>
-                              <v-list-item-subtitle>{{ optional.content.name }}</v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-list-item-group v-if="optional.ecommerce.price_current">
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>{{ labels.price }}</v-list-item-title>
-                              <v-list-item-subtitle v-if="!optional.ecommerce.price_reduction">
-                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_current }} {{ optional.ecommerce.unit }}
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-else>
-                                <span>
-                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_current }} {{ optional.ecommerce.unit }}
-                                </span>
-                                <span class="text-decoration-line-through mr-2">
-                                {{ optional.ecommerce.currency }} {{ optional.ecommerce.price_original }} {{ optional.ecommerce.unit }}
-                                </span>
-                                <v-chip small outlined class="font-weight-bold" :text-color="colors.primary">
-                                  {{ optional.ecommerce.price_reduction }} <v-icon small>{{ icons.discount }}</v-icon>
-                                </v-chip>
-                              </v-list-item-subtitle>
-                              <v-list-item-subtitle v-html="optional.ecommerce.tax"></v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                        <v-divider></v-divider>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
-                </v-list>
-
                 <v-list dense class="no-line" v-if="product._content.note">
                   <v-subheader>
                     <v-icon small left>{{ icons.eventNote }}</v-icon> {{ labels.note.toUpperCase() }}
@@ -625,8 +445,6 @@ export default {
         timeCheckIn: FORM.CHECKIN_TIME,
         timeCheckOut: FORM.CHECKOUT_TIME,
         productSelected: FORM.PRODUCT_SELECTED,
-        servicesSelected: FORM.SERVICES_SELECTED,
-        optionalsSelected: FORM.OPTIONALS_SELECTED,
         tagSelected: FORM.TAGS_SELECTED,
         priceRange: FORM.RANGE_NUMBER,
         adults: FORM.ADULTS,
@@ -649,13 +467,10 @@ export default {
         signin: I18N.load().common.signin,
         productsNotSelected: I18N.load().validation.error.productsNotSelected,
         features: I18N.load().common.features,
-        includedServices: I18N.load().common.includedServices,
         dateFrom: I18N.load().common.dateFrom,
         dateTo: I18N.load().common.dateTo,
         notices: I18N.load().common.notices,
         tag: I18N.load().common.tag,
-        services: I18N.load().common.services,
-        optionals: I18N.load().common.optionals,
         price: I18N.load().common.price,
         formBookingTitle: I18N.load().form.booking.title,
         formBookingCaption: I18N.load().form.booking.caption,
@@ -873,22 +688,6 @@ export default {
         this.fields.sortBy.value = (v || '')
       }
     },
-    _servicesSelected: {
-      get () {
-        return this.fields.servicesSelected.value || []
-      },
-      set (v) {
-        this.fields.servicesSelected.value = (v || [])
-      }
-    },
-    _optionalsSelected: {
-      get () {
-        return this.fields.optionalsSelected.value || []
-      },
-      set (v) {
-        this.fields.optionalsSelected.value = (v || [])
-      }
-    },
     _tagSelected: {
       get () {
         return this.fields.tagSelected.value || []
@@ -962,8 +761,6 @@ export default {
         per_page: process.env.VUE_APP_API_PER_PAGE,
         name: this._search,
         price: this._priceRange,
-        services: this._servicesSelected,
-        optionals: this._optionalsSelected,
         tags: this._tagSelected
       }
     },
@@ -988,8 +785,6 @@ export default {
             this.fields.dateRange.from = r.calendar.from
             this.fields.dateRange.to = r.calendar.to
             this.fields.search.list = r.entities.rentals.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            this.fields.servicesSelected.selected = r.entities.services.map(o => { return { id: o.entity_id, text: o.entity_title } })
-            this.fields.optionalsSelected.selected = r.entities.optionals.map(o => { return { id: o.entity_id, text: o.entity_title } })
             this.fields.tagSelected.selected = r.entities.features.map(o => { return { id: o.entity_id, text: o.entity_title } })
             this.updateSelected()
             this.fetchEntities()
@@ -1092,8 +887,6 @@ export default {
       this._note = null
       this._search = ''
       this._sortBy = ''
-      this._servicesSelected = []
-      this._optionalsSelected = []
       this._tagSelected = []
       this._priceRange = [0, 1000]
       this.fields.productSelected.selected = []

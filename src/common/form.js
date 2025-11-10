@@ -41,25 +41,6 @@ export const LAST_NAME = {
   ]
 }
 
-export const GUEST_TYPE = {
-  maxlength: 30,
-  label: I18N.load().common.guestType,
-  icon: ICONS.person,
-  required: true,
-  value: I18N.load().common.family,
-  default: I18N.load().common.family,
-  items: [
-    I18N.load().common.family,
-    I18N.load().common.couple,
-    I18N.load().common.friends
-  ],
-  rules: [
-    v => !!v || I18N.load().validation.required,
-    v => v.length <= 30 || I18N.load().validation.maxlength(30),
-    v => REGEX.pattern.username(v) || I18N.load().validation.badChar
-  ]
-}
-
 export const EMAIL = {
   maxlength: 30,
   label: I18N.load().common.email,
@@ -106,24 +87,6 @@ export const RANGE_NUMBER = {
   range: [0, 1000],
   label: I18N.load().common.cart,
   icon: ICONS.euro
-}
-
-export const SERVICES_SELECTED = {
-  label: I18N.load().common.services,
-  icon: ICONS.settings,
-  hint: I18N.load().common.autoFilled,
-  selected: [],
-  value: [],
-  required: true
-}
-
-export const OPTIONALS_SELECTED = {
-  label: I18N.load().common.optionals,
-  icon: ICONS.settings,
-  hint: I18N.load().common.autoFilled,
-  selected: [],
-  value: [],
-  required: true
 }
 
 export const TAGS_SELECTED = {

@@ -23,7 +23,7 @@
 </style>
 
 <script>
-import './assets/load.css'
+import './assets/fonts.css'
 import { I18N } from './common/locale.js'
 
 export default {

@@ -8,8 +8,6 @@ export class Entity {
   _media = []
   _notices = []
   _resources = []
-  _services = []
-  _optionals = []
   _tags = []
   _selected = false
   _id = null
@@ -76,22 +74,6 @@ export class Entity {
 
   set resources (o) {
     this._resources = o
-  }
-
-  get services () {
-    return this._services || []
-  }
-
-  set services (o) {
-    this._services = o
-  }
-
-  get optionals () {
-    return this._optionals || []
-  }
-
-  set optionals (o) {
-    this._optionals = o
   }
 
   get tags () {
