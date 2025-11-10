@@ -69,7 +69,6 @@
               :prepend-icon="fields.productSelected.icon"
               :hint="fields.productSelected.hint"
               chips
-              multiple
               required
               @change="updateSelected()"
             ></v-select>
