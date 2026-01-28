@@ -3,8 +3,6 @@ import vue from '@vitejs/plugin-vue2'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(({ mode }) => {
-  // Carica le variabili d'ambiente in base al mode (development/production)
-  // Il terzo parametro '' carica tutte le variabili, non solo quelle VITE_
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
@@ -28,10 +26,18 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          // Usa la variabile dal file .env, oppure fallback a localhost
           target: env.VITE_API_URL || 'http://localhost:8080',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': ['vue', 'vue-router', 'vuex', 'vuetify'],
+          }
         }
       }
     }
