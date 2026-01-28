@@ -730,7 +730,7 @@ export default {
         },
         sort: this._sortBy,
         page: this._page,
-        per_page: process.env.VUE_APP_API_PER_PAGE,
+        per_page: 1,
         name: this._search,
         price: this._priceRange,
         tags: this._tagSelected

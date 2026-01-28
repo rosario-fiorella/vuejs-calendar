@@ -182,7 +182,7 @@ export const SORT_BY = {
 
 export const CHECKBOX_PRIVACY = [
   {
-    href: process.env.VUE_APP_LINK_PRIVACY_TERM,
+    href: '',
     label: I18N.load().common.terms,
     text: '',
     checkbox: false,

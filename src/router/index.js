@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Calendar from '@/components/Calendar'
+import Calendar from '@/components/Calendar.vue'
 
 Vue.use(Router)
 

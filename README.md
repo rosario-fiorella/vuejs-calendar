@@ -45,7 +45,6 @@ The default settings use a simulated api response template, if you want to use a
 
 ## Icons
 - https://pictogrammers.github.io/@mdi/font/5.4.55/
-- https://jossef.github.io/material-design-icons-iconfont/
 
 ## Post build
 - https://cli.vuejs.org/guide/deployment.html
