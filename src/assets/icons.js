@@ -71,5 +71,6 @@ export const ICONS = {
   alpha: mdiSortAlphabeticalVariant,
   upward: mdiArrowUp,
   downward: mdiArrowDown,
-  boat: mdiFerry
+  boat: mdiFerry,
+  tag: mdiTag
 }

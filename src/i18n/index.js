@@ -15,11 +15,12 @@ const messages = {
     },
     rentals: {
       sort_label: "Sort results by",
+      price_range_label: "Price Range",
       no_results: "No rentals available for the selected period.",
     },
     filters: {
       title: "Filters & Sorting",
-      subtitle: "Customize how you view available vehicles",
+      subtitle: "Customize how you view available",
     },
     errors: {
       locked: "Request in progress, please wait...",

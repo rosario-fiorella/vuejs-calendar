@@ -17,6 +17,9 @@
           <v-card-subtitle>{{ $t('filters.subtitle') }}</v-card-subtitle>
           <v-card-text>
             <RentalSortSelector />
+            <PriceRangeSelector />
+            <v-divider class="my-4"></v-divider>
+            <DynamicTagFilters />
           </v-card-text>
         </v-card>
 
@@ -43,12 +46,16 @@
 import DatePickerRange from '@/components/calendar/DatePickerRange.vue'
 import TimePickerRange from '@/components/calendar/TimePickerRange.vue'
 import RentalSortSelector from '@/components/calendar/RentalSortSelector.vue'
+import PriceRangeSelector from '@/components/calendar/PriceRangeSelector.vue'
+import DynamicTagFilters from '@/components/calendar/DynamicTagFilters.vue'
 
 export default {
   components: {
     DatePickerRange,
     TimePickerRange,
-    RentalSortSelector
+    RentalSortSelector,
+    PriceRangeSelector,
+    DynamicTagFilters
   },
   computed: {
     rentals() {

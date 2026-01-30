@@ -18,17 +18,59 @@ export default new Vuex.Store({
       minDate: new Date().toISOString().split('T')[0],
       maxDate: '2027-12-31',
       disabledDates: [],
+
+      minPrice: 0,
+      maxPrice: 2000,
+
       sortByOptions: [
-        { value: 'price_asc', text: 'Price (asc)' }
+        { value: 'price_asc', text: 'Price (Low to High)' },
+        { value: 'price_desc', text: 'Price (High to Low)' },
+        { value: 'name_asc', text: 'Name (A-Z)' }
       ],
-      defaultSort: 'date_asc'
+
+      tagGroups: [
+        {
+          id: 'rent_type',
+          label: 'Rental Category',
+          icon: 'mdi-car-key',
+          items: [
+            { id: 101, text: 'Daily Rental' },
+            { id: 102, text: 'Long Term' },
+            { id: 103, text: 'Leasing' }
+          ]
+        },
+        {
+          id: 'product_type',
+          label: 'Vehicle Type',
+          icon: 'mdi-car-side',
+          items: [
+            { id: 201, text: 'Electric' },
+            { id: 202, text: 'Hybrid' },
+            { id: 203, text: 'Luxury Sedan' },
+            { id: 204, text: 'SUV' }
+          ]
+        },
+        {
+          id: 'features',
+          label: 'Product Features',
+          icon: 'mdi-shield-check',
+          items: [
+            { id: 301, text: 'Full Insurance' },
+            { id: 302, text: 'GPS Included' },
+            { id: 303, text: 'Child Seat' },
+            { id: 304, text: 'Additional Driver' }
+          ]
+        }
+      ]
     },
+    selectedFilters: {},
     rentalForm: {
       startTime: '08:00',
       endTime: '18:00'
     },
     filters: {
-      sortBy: 'price_asc'
+      sortBy: 'price_asc',
+      priceRange: [0, 1000],
     },
   },
 
@@ -53,14 +95,16 @@ export default new Vuex.Store({
     },
     SET_SORT_FILTER(state, value) {
       state.filters.sortBy = value;
+    },
+    SET_PRICE_RANGE(state, range) {
+      state.filters.priceRange = range;
+    },
+    SET_DYNAMIC_TAGS(state, { groupId, tags }) {
+      Vue.set(state.selectedFilters, groupId, tags);
     }
   },
 
   actions: {
-    /**
-     * Carica i noleggi con supporto Zulu UTC per PHP
-     * @param {Object} payload - { from: "ISO_ZULU", to: "ISO_ZULU" }
-     */
     async initApp({ commit }, payload = {}) {
       commit('SET_APP_READY', true);
 
