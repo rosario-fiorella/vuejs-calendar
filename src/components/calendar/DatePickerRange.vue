@@ -48,13 +48,10 @@ export default {
     },
 
     formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) {
-        return null;
-      }
-      const [y, m, d] = dateStr.split('-');
-      const [hh, mm] = timeStr.split(':');
-      const date = new Date(y, m - 1, d, hh, mm, 0);
-      return date.toISOString();
+      if (!dateStr || !timeStr) return null;
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const [hh, mm] = timeStr.split(':').map(Number);
+      return new Date(Date.UTC(y, m - 1, d, hh, mm, 0)).toISOString();
     },
 
     isDateAllowed(date) {
@@ -65,11 +62,14 @@ export default {
       if (dates.length !== 2) {
         return;
       }
+      const sortedDates = [...dates].sort();
+      const [start, end] = sortedDates;
+      this.dateRange = sortedDates;
 
-      const [start, end] = [...dates].sort();
       const { startTime, endTime } = this.$store.state.rentalForm;
 
       if (this.hasDisabledDatesInRange(start, end)) {
+        alert(this.$t('errors.disabled_date_in_range', 'Selected range contains unavailable dates'));
         this.dateRange = [];
         return;
       }
@@ -85,13 +85,10 @@ export default {
     },
 
     hasDisabledDatesInRange(start, end) {
-      const s = new Date(start);
-      const e = new Date(end);
       const disabledRaw = this.$store.state.businessConfig?.disabledDates || [];
-
       return disabledRaw.some(d => {
-        const target = new Date(d.split('T')[0]);
-        return target >= s && target <= e;
+        const target = d.split('T')[0];
+        return target >= start && target <= end;
       });
     }
   }

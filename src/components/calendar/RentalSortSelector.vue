@@ -28,14 +28,14 @@ export default {
   },
   methods: {
     async handleSortChange(newSortValue) {
-      const currentFilters = this.$store.state.filters;
-
       try {
         await this.$store.dispatch('initApp', {
-          sort: newSortValue
+          sort: newSortValue,
+          priceRange: this.$store.state.filters.priceRange,
+          tags: this.$store.state.selectedFilters
         });
       } catch (error) {
-        alert(error.message);
+        console.error("[Sort Change Error]:", error.message);
       }
     }
   }

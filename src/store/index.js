@@ -61,17 +61,104 @@ export default new Vuex.Store({
             { id: 304, text: 'Additional Driver' }
           ]
         }
+      ],
+
+      legalChecks: [
+        { id: 'privacy', label: 'I accept the <a href="/privacy" target="_blank">Privacy Policy</a>', required: true },
+        { id: 'terms', label: 'I accept the <a href="/terms" target="_blank">Terms of Service</a>', required: true },
+        { id: 'marketing', label: 'Subscribe to newsletter', required: false }
+      ],
+
+      rentals: [
+        {
+          id: 101,
+          _selected: false,
+          _content: {
+            name: "Tesla Model 3 Performance",
+            short_description: "Electric sedan with Ludicrous mode and full autopilot.",
+            note: "Minimum age: 25 years. Driving license required for at least 3 years."
+          },
+          _media: [
+            { url: "https://picsum.photos/id/237/200/300" },
+            { url: "https://picsum.photos/id/237/200/300" }
+          ],
+          _ecommerce: {
+            currency: "€",
+            price_current: 85.00,
+            price_original: 120.00,
+            price_reduction: "29%",
+            unit: "/day",
+            tax: "VAT <strong>included</strong>"
+          },
+          _notices: [
+            {
+              content: { name: "Insurance Policy", description: "Kasko coverage with 500€ deductible." },
+              calendar: { date_start: "2026-01-01", date_end: "2026-12-31" }
+            }
+          ],
+          _attributes: [
+            {
+              name: "Technical Specs",
+              attributes: [
+                { name: "Range", values: [{ value: "547 km" }] },
+                { name: "Top Speed", values: [{ value: "261 km/h" }] }
+              ]
+            }
+          ],
+          _tags: [
+            { name: "Electric" },
+            { name: "Autopilot" },
+            { name: "Premium Audio" }
+          ]
+        },
+        {
+          id: 102,
+          _selected: true,
+          _content: {
+            name: "BMW M4 Competition",
+            short_description: "High-performance coupe for ultimate driving pleasure.",
+            note: "Requires a 2.000€ security deposit on credit card."
+          },
+          _media: [
+            { url: "https://picsum.photos/id/237/200/300" }
+          ],
+          _ecommerce: {
+            currency: "€",
+            price_current: 150.00,
+            price_original: 150.00,
+            price_reduction: null,
+            unit: "/day",
+            tax: "VAT <strong>included</strong>"
+          },
+          _notices: [],
+          _attributes: [
+            {
+              name: "Performance",
+              attributes: [
+                { name: "Engine", values: [{ value: "3.0L Straight-Six" }] },
+                { name: "Power", values: [{ value: "510 HP" }] }
+              ]
+            }
+          ],
+          _tags: [
+            { name: "Sport" },
+            { name: "Petrol" },
+            { name: "Automatic" }
+          ]
+        }
       ]
     },
     selectedFilters: {},
     rentalForm: {
       startTime: '08:00',
-      endTime: '18:00'
+      endTime: '18:00',
+      email: ''
     },
     filters: {
       sortBy: 'price_asc',
       priceRange: [0, 1000],
     },
+    consents: {}
   },
 
   mutations: {
@@ -101,10 +188,37 @@ export default new Vuex.Store({
     },
     SET_DYNAMIC_TAGS(state, { groupId, tags }) {
       Vue.set(state.selectedFilters, groupId, tags);
+    },
+    SET_RENTAL_FORM_FIELD(state, { key, val }) {
+      state.rentalForm[key] = val;
+    },
+    SET_PRODUCT_SELECTION(state, productId) {
+      state.businessConfig.rentals.forEach(rental => {
+        rental._selected = (rental.id === productId);
+      });
+    },
+    SET_CONSENT(state, { id, val }) {
+      Vue.set(state.consents, id, val);
+    },
+    RESET_FORM(state) {
+      state.rentalForm.email = '';
+      state.consents = {};
+      state.selectedDates = [];
+      state.businessConfig.rentals.forEach(r => r._selected = false);
+    }
+  },
+
+  getters: {
+    selectedProduct: state => {
+      return state.businessConfig.rentals.find(r => r._selected) || null;
     }
   },
 
   actions: {
+    toggleProductSelection({ commit }, productId) {
+      commit('SET_PRODUCT_SELECTION', productId);
+    },
+
     async initApp({ commit }, payload = {}) {
       commit('SET_APP_READY', true);
 

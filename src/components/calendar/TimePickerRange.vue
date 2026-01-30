@@ -98,10 +98,18 @@ export default {
       this.syncAvailability();
     },
 
+    formatToZulu(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const [hh, mm] = timeStr.split(':').map(Number);
+      return new Date(Date.UTC(y, m - 1, d, hh, mm, 0)).toISOString();
+    },
+
     async syncAvailability() {
       const dates = this.$store.state.selectedDates;
       if (dates && dates.length === 2 && this.startTime && this.endTime) {
-        const [dStart, dEnd] = [...dates].sort();
+        const sortedDates = [...dates].sort();
+        const [dStart, dEnd] = sortedDates;
 
         try {
           await this.$store.dispatch('initApp', {
@@ -112,16 +120,6 @@ export default {
           console.error("[TimePicker Sync Error]", e.message);
         }
       }
-    },
-
-    formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) {
-        return null;
-      }
-      const [y, m, d] = dateStr.split('-');
-      const [hh, mm] = timeStr.split(':');
-      const date = new Date(y, m - 1, d, hh, mm, 0);
-      return date.toISOString();
     }
   }
 }

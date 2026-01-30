@@ -15,12 +15,12 @@
       track-color="grey lighten-2" @change="syncWithApi">
       <template v-slot:prepend>
         <v-text-field :value="range[0]" type="number" dense outlined hide-details class="price-input"
-          @change="$set(range, 0, Number($event))"></v-text-field>
+          @change="updateRange(0, $event)"></v-text-field>
       </template>
 
       <template v-slot:append>
         <v-text-field :value="range[1]" type="number" dense outlined hide-details class="price-input"
-          @change="$set(range, 1, Number($event))"></v-text-field>
+          @change="updateRange(1, $event)"></v-text-field>
       </template>
     </v-range-slider>
   </div>
@@ -41,11 +41,22 @@ export default {
     }
   },
   methods: {
+    updateRange(index, value) {
+      const newRange = [...this.range];
+      newRange[index] = Number(value);
+      this.range = newRange;
+      this.syncWithApi();
+    },
+
     async syncWithApi() {
-      await this.$store.dispatch('initApp', {
-        minPrice: this.range[0],
-        maxPrice: this.range[1]
-      });
+      try {
+        await this.$store.dispatch('initApp', {
+          minPrice: this.range[0],
+          maxPrice: this.range[1]
+        });
+      } catch (error) {
+        console.error("[PriceRange Sync Error]", error.message);
+      }
     }
   }
 }
@@ -56,9 +67,10 @@ export default {
   width: 80px;
 }
 
-.price-input>>>input {
+.price-input :deep(input) {
   font-size: 0.875rem;
   text-align: center;
+  padding: 0;
 }
 
 .price-range-container {
