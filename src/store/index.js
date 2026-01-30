@@ -17,12 +17,19 @@ export default new Vuex.Store({
       step: 15,
       minDate: new Date().toISOString().split('T')[0],
       maxDate: '2027-12-31',
-      disabledDates: []
+      disabledDates: [],
+      sortByOptions: [
+        { value: 'price_asc', text: 'Price (asc)' }
+      ],
+      defaultSort: 'date_asc'
     },
     rentalForm: {
       startTime: '08:00',
       endTime: '18:00'
-    }
+    },
+    filters: {
+      sortBy: 'price_asc'
+    },
   },
 
   mutations: {
@@ -43,6 +50,9 @@ export default new Vuex.Store({
     },
     SET_SELECTED_DATES(state, dates) {
       state.selectedDates = dates
+    },
+    SET_SORT_FILTER(state, value) {
+      state.filters.sortBy = value;
     }
   },
 
