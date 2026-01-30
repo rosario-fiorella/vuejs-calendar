@@ -1,39 +1,49 @@
 <template>
-  <v-app>
-    <v-main app>
-      <v-container fill-height>
-        <transition>
-          <keep-alive>
-            <router-view></router-view>
-          </keep-alive>
-        </transition>
-      </v-container>
-    </v-main>
+  <v-app v-cloak>
+    <v-fade-transition mode="out-in">
+      <div v-if="!appReady" class="splash-screen">
+        <v-progress-circular indeterminate :color="primaryColor" :size="size" />
+      </div>
+      <v-main v-else>
+        <router-view />
+      </v-main>
+    </v-fade-transition>
   </v-app>
 </template>
 
-<style scoped>
-  #app >>> header.v-toolbar {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-  #app >>> .v-bottom-sheet.v-dialog.v-dialog--active {
-    overflow: auto;
-  }
-</style>
-
 <script>
-import { I18N } from './common/locale.js'
-
 export default {
   name: 'App',
-  created () {
-    if (typeof (Storage) === 'undefined') {
-      alert(I18N.load().common.browserNotSupported)
+  computed: {
+    appReady() {
+      return this.$store.state.appReady
+    },
+    primaryColor() {
+      return this.$vuetify.theme.themes.light.primary
     }
   },
-  data () {
-    return {}
+  created() {
+    this.$store.dispatch('initApp')
+  },
+  data() {
+    return {
+      size: 64
+    }
   }
 }
 </script>
+
+<style scoped>
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  z-index: 9999;
+}
+</style>
