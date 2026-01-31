@@ -41,7 +41,7 @@ export default new Vuex.Store({
         },
         {
           id: 'product_type',
-          label: 'Vehicle Type',
+          label: 'product Type',
           icon: 'mdi-car-side',
           items: [
             { id: 201, text: 'Electric' },
@@ -79,8 +79,8 @@ export default new Vuex.Store({
             note: "Minimum age: 25 years. Driving license required for at least 3 years."
           },
           _media: [
-            { url: "https://picsum.photos/id/237/200/300" },
-            { url: "https://picsum.photos/id/237/200/300" }
+            { url: "https://picsum.photos/seed/picsum/300/100" },
+            { url: "https://picsum.photos/seed/picsum/300/100" }
           ],
           _ecommerce: {
             currency: "€",
@@ -120,7 +120,7 @@ export default new Vuex.Store({
             note: "Requires a 2.000€ security deposit on credit card."
           },
           _media: [
-            { url: "https://picsum.photos/id/237/200/300" }
+            { url: "https://picsum.photos/seed/picsum/300/100" }
           ],
           _ecommerce: {
             currency: "€",

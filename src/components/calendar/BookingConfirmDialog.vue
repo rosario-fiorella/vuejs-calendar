@@ -8,14 +8,14 @@
       <v-card-text class="pa-4">
         <v-list two-line>
 
-          <v-list-item v-if="payload.selected_vehicle">
+          <v-list-item v-if="payload.selected_product">
             <v-list-item-icon>
               <v-icon color="primary">mdi-car-side</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('booking.vehicle', 'Vehicle') }}</v-list-item-title>
+              <v-list-item-title>{{ $t('booking.product', 'product') }}</v-list-item-title>
               <v-list-item-subtitle class="font-weight-bold primary--text">
-                {{ payload.selected_vehicle.name }} ({{ payload.selected_vehicle.price }} €)
+                {{ payload.selected_product.name }} ({{ payload.selected_product.price }} €)
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

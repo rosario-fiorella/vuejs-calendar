@@ -10,7 +10,7 @@ export default {
   name: 'RentalSortSelector',
   data: () => ({
     icons: {
-      sort: ICONS.sort
+      sort: ICONS.alpha
     }
   }),
   computed: {

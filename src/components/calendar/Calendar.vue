@@ -1,34 +1,63 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <!-- Search and Filters Column -->
+
       <v-col cols="12" md="5" class="v-card--form">
         <v-form ref="bookingForm" v-model="formValid" lazy-validation @submit.prevent="handleSubmit">
-          <DatePickerRange />
-          <TimePickerRange />
-          <RentalSortSelector />
-          <PriceRangeSelector />
-          <DynamicTagFilters />
-          <BookingSummary />
-          <LegalConsents />
 
-          <!-- Shared Action Buttons -->
-          <BookingActions :form-valid="formValid" @reset="resetAll" />
+          <v-card tile flat elevation="24" class="mb-6">
+            <v-card-title>{{ $t('booking.period.title') }}</v-card-title>
+            <v-card-subtitle>{{ $t('booking.period.subtitle') }}</v-card-subtitle>
+            <v-card-text>
+              <DatePickerRange />
+              <TimePickerRange />
+            </v-card-text>
+          </v-card>
+
+          <v-card tile flat elevation="24" class="mb-6">
+            <v-card-title>{{ $t('booking.filters.title') }}</v-card-title>
+            <v-card-subtitle>{{ $t('booking.filters.subtitle') }}</v-card-subtitle>
+            <v-card-text>
+              <div class="my-4">
+                <PriceRangeSelector />
+              </div>
+              <div class="my-4">
+                <DynamicTagFilters />
+              </div>
+              <div class="my-4">
+                <RentalSortSelector />
+              </div>
+            </v-card-text>
+          </v-card>
+
+          <v-card tile flat elevation="24" class="mb-6">
+            <v-card-title>{{ $t('booking.summary.title') }}</v-card-title>
+            <v-card-subtitle>{{ $t('booking.summary.subtitle') }}</v-card-subtitle>
+            <v-card-text>
+              <BookingSummary />
+            </v-card-text>
+          </v-card>
+
+          <v-card tile flat elevation="24" class="mb-6">
+            <v-card-title>{{ $t('booking.legal.title') }}</v-card-title>
+            <v-card-subtitle>{{ $t('booking.legal.subtitle') }}</v-card-subtitle>
+            <v-card-text>
+              <LegalConsents />
+              <BookingActions :form-valid="formValid" @reset="resetAll" />
+            </v-card-text>
+          </v-card>
+
         </v-form>
       </v-col>
 
-      <!-- Results Column -->
       <v-col cols="12" md="7" class="v-card--list">
         <template v-if="rentals && rentals.length">
           <RentalCard v-for="item in rentals" :key="item.id" :product="item" />
         </template>
-        <v-alert v-else type="info" outlined class="mt-4">
-          {{ $t('rentals.no_results') }}
-        </v-alert>
+        <v-alert v-else type="info" outlined class="mt-4">{{ $t('rentals.no_results') }}</v-alert>
       </v-col>
     </v-row>
 
-    <!-- Externalized Confirmation Dialog -->
     <BookingConfirmDialog v-model="showConfirmDialog" :payload="lastPayload" @confirm="onFinalConfirm" />
   </v-container>
 </template>
@@ -85,7 +114,6 @@ export default {
 
   methods: {
     resetAll() {
-      console.log("Resetting form...");
       if (this.$refs.bookingForm) {
         this.$refs.bookingForm.reset();
       }
@@ -106,7 +134,7 @@ export default {
       if (!isValid) return;
 
       if (!selectedProduct) {
-        alert(this.$t('errors.no_vehicle_selected', 'Please select a vehicle before submitting.'));
+        alert(this.$t('errors.no_product_selected', 'Please select a product before submitting.'));
         return;
       }
 
@@ -117,7 +145,7 @@ export default {
         datetime_start: this.formatToZulu(startDate, startTime),
         datetime_end: this.formatToZulu(endDate, endTime),
         customer_email: email,
-        selected_vehicle: {
+        selected_product: {
           id: selectedProduct.id,
           name: selectedProduct._content.name,
           price: selectedProduct._ecommerce.price_current
@@ -138,15 +166,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.v-card--form {
-  position: sticky;
-  top: 24px;
-  align-self: flex-start;
-}
-
-.v-card--list {
-  min-height: 400px;
-}
-</style>

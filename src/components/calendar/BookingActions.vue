@@ -5,19 +5,26 @@
     </v-btn>
 
     <v-btn color="primary" type="submit" :disabled="!formValid" elevation="2">
-      <v-icon left>mdi-check</v-icon>
+      <v-icon v-text="accept"></v-icon>
       {{ $t('common.submit') }}
     </v-btn>
   </div>
 </template>
 
 <script>
+import { ICONS } from '@/assets/icons'
+
 export default {
   name: 'BookingActions',
   props: {
     formValid: {
       type: Boolean,
       default: false
+    }
+  },
+  data() {
+    return {
+      accept: ICONS.accept
     }
   }
 }
