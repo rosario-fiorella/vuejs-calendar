@@ -62,7 +62,7 @@
         <v-btn color="grey darken-1" text @click="$emit('input', false)">
           {{ $t('common.cancel', 'Cancel') }}
         </v-btn>
-        <v-btn color="primary" depressed @click="$emit('confirm')">
+        <v-btn :color="bgColorSubmit" depressed @click="$emit('confirm')">
           {{ $t('common.confirm_final', 'Confirm Booking') }}
         </v-btn>
       </v-card-actions>
@@ -78,6 +78,10 @@ export default {
     payload: {
       type: Object,
       default: null
+    },
+    bgColorSubmit: {
+      type: String,
+      default: 'primary'
     }
   },
   computed: {

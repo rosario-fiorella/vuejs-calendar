@@ -1,6 +1,6 @@
 <template>
   <v-date-picker v-model="dateRange" full-width range :prev-icon="icons.arrowLeft" :next-icon="icons.arrowRight"
-    :max="toLocal(limitTo)" :min="toLocal(limitFrom)" :allowed-dates="isDateAllowed"
+    :max="toLocal(limitTo)" :min="toLocal(limitFrom)" :allowed-dates="isDateAllowed" :color="bgColor"
     @input="handleSelection"></v-date-picker>
 </template>
 
@@ -9,6 +9,13 @@ import { ICONS } from '@/assets/icons'
 
 export default {
   name: 'DatePickerRange',
+
+  props: {
+    bgColor: {
+      type: String,
+      default: 'primary'
+    }
+  },
 
   data: () => ({
     icons: {

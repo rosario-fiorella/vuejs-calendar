@@ -2,10 +2,10 @@
   <v-container>
     <v-row justify="center">
 
-      <v-col cols="12" md="5" class="v-card--form">
+      <v-col lg="4" md="6" class="v-card--form">
         <v-form ref="bookingForm" v-model="formValid" lazy-validation @submit.prevent="handleSubmit">
 
-          <v-card tile flat elevation="24" class="mb-6">
+          <v-card tile flat>
             <v-card-title>{{ $t('booking.period.title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.period.subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -14,23 +14,23 @@
             </v-card-text>
           </v-card>
 
-          <v-card tile flat elevation="24" class="mb-6">
+          <v-card tile flat>
             <v-card-title>{{ $t('booking.filters.title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.filters.subtitle') }}</v-card-subtitle>
             <v-card-text>
-              <div class="my-4">
+              <div class="mb-4">
                 <PriceRangeSelector />
               </div>
-              <div class="my-4">
-                <DynamicTagFilters />
+              <div class="mb-4">
+                <DynamicTagFilters label-color="secondary--text" bg-color="#FFF8E1" chip-color="white" />
               </div>
-              <div class="my-4">
+              <div class="mb-4">
                 <RentalSortSelector />
               </div>
             </v-card-text>
           </v-card>
 
-          <v-card tile flat elevation="24" class="mb-6">
+          <v-card tile flat>
             <v-card-title>{{ $t('booking.summary.title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.summary.subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -38,7 +38,7 @@
             </v-card-text>
           </v-card>
 
-          <v-card tile flat elevation="24" class="mb-6">
+          <v-card tile flat>
             <v-card-title>{{ $t('booking.legal.title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.legal.subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -50,7 +50,7 @@
         </v-form>
       </v-col>
 
-      <v-col cols="12" md="7" class="v-card--list">
+      <v-col lg="5" md="6" class="v-card--list">
         <template v-if="rentals && rentals.length">
           <RentalCard v-for="item in rentals" :key="item.id" :product="item" />
         </template>

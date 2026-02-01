@@ -1,6 +1,5 @@
 <template>
-  <!-- Rimosso elevation=20 (troppo alto per V2), aggiunto controllo di sicurezza -->
-  <v-card elevation="2" tile class="mb-6 rental-card" v-if="product">
+  <v-card tile elevation="6" class="mb-6 rental-card" v-if="product">
 
     <!-- Immagini -->
     <v-carousel v-if="product._media && product._media.length" height="250" hide-delimiter-background
