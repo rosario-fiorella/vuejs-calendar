@@ -16,54 +16,51 @@ const messages = {
       confirm_final: "Confirm Booking"
     },
     calendar: {
-      selection_title: "Rental Period",
-      selection_subtitle: "Select dates and times to check real-time availability",
+      selection_title: "Stay Period",
+      selection_subtitle: "Select dates to check availability for your stay",
     },
     rental: {
-      start_time: "Pick-up Time",
-      end_time: "Drop-off Time",
+      start_time: "Check-in Time",
+      end_time: "Check-out Time",
     },
     rentals: {
-      list_title: "Available products",
-      available_count: "products found",
+      list_title: "Available Accommodations",
+      available_count: "properties found",
       sort_label: "Sort results by",
-      no_results: "No rentals available for the selected period.",
+      no_results: "No accommodations available for the selected period.",
       dynamic_filters_title: "Additional Options",
       price_range_label: "Budget",
-      features: "Features",
-      notices: "Important Notices"
+      features: "Amenities",
+      notices: "Important Information",
+      tax_included: "Taxes included",
+      taxes: "Taxes & Fees"
     },
     filters: {
       title: "Filters & Sorting",
-      subtitle: "Customize how you view available products",
+      subtitle: "Customize how you view available properties",
     },
     booking: {
       period: {
-        title: "Dates & Times",
-        subtitle: "Tell us when you want to pick up and return the product"
-      },
-      filters: {
-        title: "Preferences",
-        subtitle: "Narrow down your search by price and features"
+        title: "Stay Dates",
+        subtitle: "Tell us when you want to arrive and leave"
       },
       summary: {
         title: "Reservation Summary",
-        subtitle: "Check your booking details and provide contact info"
+        subtitle: "Check your stay details and provide contact info"
       },
       legal: {
         title: "Terms & Conditions",
-        subtitle: "Agreement to our service terms and privacy policy"
+        subtitle: "Agreement to our rental terms and privacy policy"
       },
       summary_title: "Booking Summary",
       period_label: "Selected Period",
       email_label: "Your Email Address",
-      selected_product: "Selected Product",
-      no_period_selected: "Please select dates and times",
+      selected_product: "Selected Accommodation",
+      no_period_selected: "Please select arrival and departure dates",
       legal_notice: "Legal Agreements",
       confirm_title: "Booking Recap",
-      selected_product: "Selected product",
-      please_select: "Please select a product from the list",
-      product: "product",
+      please_select: "Please select an accommodation from the list",
+      product: "Accommodation",
       email: "Email",
       applied_filters: "Applied Filters",
       success_message: "Booking request sent successfully!"
@@ -74,10 +71,13 @@ const messages = {
       locked: "Request in progress, please wait...",
       server: "Server communication error",
       network: "Network connection unavailable",
-      invalid_time_range: "Drop-off time must be after pick-up time",
+      invalid_time_range: "Check-out must be after Check-in",
       parsing: "Data processing error",
       required_field: "This field is required",
-      no_product_selected: "Please select a product before submitting."
+      no_product_selected: "Please select an accommodation before submitting.",
+      disabled_date_in_range: "Selected range contains unavailable dates",
+      select_full_range: "Please select both start and end dates",
+      check_form_and_selection: "Please complete the form and select a product"
     },
     success: {
       data_loaded: "Availability updated",

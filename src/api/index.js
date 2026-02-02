@@ -2,7 +2,6 @@ import i18n from '@/i18n'
 
 const CONFIG = Object.freeze({
   BASE_URL: import.meta.env.VITE_API_URL || '',
-  API_KEY: import.meta.env.VITE_API_KEY || '',
   HEADERS: {
     'Content-Type': 'application/json',
     'X-API-Key': import.meta.env.VITE_API_KEY || '',
@@ -38,21 +37,25 @@ export const API = {
       });
 
       if (!response.ok) {
-        throw response;
+        const errorDetail = await response.json().catch(() => ({}));
+        console.error(`[SERVER_ERROR][${response.status}]:`, {
+          url: response.url,
+          detail: errorDetail
+        });
+
+        return _createResponse(false, 'errors.server', null, response.status);
       }
 
       const json = await response.json();
-      return _createResponse(true, 'success.data_loaded', json);
-
+      const responseData = json.data || json;
+      return _createResponse(true, 'success.data_loaded', responseData);
     } catch (error) {
-      if (error instanceof Response) {
-        const detail = await error.json().catch(() => ({}));
-        console.error(`[SERVER_ERROR][${error.status}]:`, { url: error.url, details: detail, filters });
-      } else {
-        console.error(`[FATAL_EXCEPTION][${LOCK_KEY}]:`, { message: error.message, stack: error.stack });
-      }
+      console.error(`[FATAL_EXCEPTION][${LOCK_KEY}]:`, {
+        message: error.message,
+        stack: error.stack
+      });
 
-      return _createResponse(false, 'errors.server', null, 500);
+      return _createResponse(false, 'errors.network', null, 500);
 
     } finally {
       _activeLocks.delete(LOCK_KEY);

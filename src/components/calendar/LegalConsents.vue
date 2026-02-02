@@ -1,17 +1,16 @@
 <template>
   <div v-if="hasLegalChecks" class="legal-consents-container">
-    <v-checkbox v-for="check in legalChecks" :key="check.id" :input-value="consents[check.id]" :rules="getRules(check)"
-      :label="check.label" dense @change="updateConsent(check.id, $event)">
-
+    <v-checkbox v-for="check in legalChecks" :key="check.id" :input-value="!!consents[check.id]" :rules="getRules(check)" dense
+      @change="updateConsent(check.id, $event)">
       <template v-slot:label>
-        <span v-html="check.label" />
+        <span class="text-caption" v-html="check.label" />
       </template>
     </v-checkbox>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
   name: 'LegalConsents',
@@ -35,8 +34,19 @@ export default {
     },
 
     updateConsent(id, val) {
-      this.$store.commit('SET_CONSENT', { id, val });
+      this.$store.commit('SET_CONSENT', { id, val: !!val });
     }
   }
 }
 </script>
+
+<style scoped>
+.legal-consents-container {
+  margin-top: 10px;
+}
+
+:deep(a) {
+  text-decoration: none;
+  font-weight: bold;
+}
+</style>

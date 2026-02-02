@@ -1,96 +1,126 @@
 <template>
-  <v-card tile elevation="6" class="mb-6 rental-card" v-if="product">
+  <div>
+    <v-card elevation="20" tile class="mb-4" v-for="(product) in products" :key="product.slug"
+      :style="product._selected ? `border: 2px solid ${colors.primary}` : ''">
+      <template v-if="product.slug">
+        <v-carousel v-if="product.media && product.media.images && product.media.images.length" height="300"
+          :next-icon="icons.arrowRight" :prev-icon="icons.arrowLeft" hide-delimiter-background show-arrows-on-hover>
+          <v-carousel-item v-for="(image, m) in product.media.images" :key="m" :src="image.url"></v-carousel-item>
+        </v-carousel>
 
-    <!-- Immagini -->
-    <v-carousel v-if="product._media && product._media.length" height="250" hide-delimiter-background
-      show-arrows-on-hover>
-      <v-carousel-item v-for="(media, m) in product._media" :key="m" :src="media.url"></v-carousel-item>
-    </v-carousel>
+        <v-card-title>{{ product.content.name }}</v-card-title>
+        <v-card-subtitle>{{ product.content.description || product.content.excerpt }}</v-card-subtitle>
 
-    <!-- Titolo e Descrizione con fallback -->
-    <v-card-title class="text-h6 font-weight-bold">
-      {{ product._content ? product._content.name : 'No Name' }}
-    </v-card-title>
-    <v-card-subtitle>
-      {{ product._content ? product._content.short_description : '' }}
-    </v-card-subtitle>
+        <v-list dense class="no-line">
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title class="text-h5 primary--text font-weight-black price-text">
+                {{ currency }} {{ product.price.price.toFixed(2) }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-for="(tax, t) in product.price.tax" :key="t" class="text-caption">
+                {{ tax.title }}: {{ tax.value }} {{ tax.currency }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
 
-    <v-list dense flat>
-      <v-list-item>
-        <v-list-item-content v-if="product._ecommerce">
-          <!-- Pricing -->
-          <v-list-item-title class="text-h5 primary--text font-weight-black">
-            {{ currency }} {{ product._ecommerce.price_current }}
-            <small>{{ product._ecommerce.unit }}</small>
-          </v-list-item-title>
+            <v-list-item-action>
+              <v-btn fab small :color="product._selected ? colors.secondary : colors.primary"
+                @click.stop="addOrRemoveProduct(product)">
+                <v-icon color="white">
+                  {{ product._selected ? icons.removeItem : icons.addCart }}
+                </v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
 
-          <!-- Discount -->
-          <v-list-item-subtitle v-if="product._ecommerce.price_reduction">
-            <span class="text-decoration-line-through mr-2 grey--text">
-              {{ currency }} {{ product._ecommerce.price_original }}
-            </span>
-            <v-chip small color="primary" label class="white--text">
-              -{{ product._ecommerce.price_reduction }}
-            </v-chip>
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-expansion-panels flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header :expand-icon="icons.arrowDown">
+              <span class="text-caption font-weight-bold">{{ labels.view_details }}</span>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-divider></v-divider>
 
-        <v-list-item-action>
-          <v-btn fab small :color="product._selected ? 'secondary' : 'primary'" @click="toggleSelection">
-            <v-icon color="white">
-              {{ product._selected ? (ICONS.removeItem || 'mdi-minus') : (ICONS.addCart || 'mdi-plus') }}
-            </v-icon>
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
-    </v-list>
+              <v-list dense class="no-line"
+                v-if="product.terms && product.terms.features && product.terms.features.length">
+                <v-subheader>
+                  <v-icon small left>{{ icons.addCheck }}</v-icon>
+                  {{ labels.features.toUpperCase() }}
+                </v-subheader>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-subtitle>
+                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary"
+                        v-for="(feat, f) in product.terms.features" :key="f">
+                        <v-icon left small>{{ icons.done }}</v-icon> {{ feat.name }}
+                      </v-chip>
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
 
-    <!-- Espansione Dettagli -->
-    <v-expansion-panels flat>
-      <v-expansion-panel>
-        <v-expansion-panel-header>
-          <span class="text-caption font-weight-bold">{{ $t('common.view_details') }}</span>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <!-- Contenuto dettagli (Notice, Attributes, etc.) -->
-          <div v-if="product._tags" class="d-flex flex-wrap pa-2">
-            <v-chip v-for="(tag, t) in product._tags" :key="t" class="ma-1" small outlined color="primary">
-              {{ tag.name }}
-            </v-chip>
-          </div>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-  </v-card>
+              <v-list dense class="no-line" v-if="product.content && product.content.note">
+                <v-subheader>
+                  <v-icon small left>{{ icons.eventNote }}</v-icon>
+                  NOTE
+                </v-subheader>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-subtitle>{{ product.content.note }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </template>
+    </v-card>
+  </div>
 </template>
 
 <script>
-// Verifica che questo percorso sia corretto nel tuo progetto Vite
 import { ICONS } from '@/assets/icons'
 
 export default {
-  name: 'RentalCard',
+  name: 'RentalCardList',
   props: {
-    product: {
+    products: {
+      type: Array,
+      default: () => []
+    },
+    colors: {
       type: Object,
-      required: true,
-      default: () => ({}) // Default per evitare errori di undefined
+      default: () => ({ primary: '#4CAF50', secondary: '#388E3C' })
     }
   },
   data: () => ({
-    ICONS: ICONS || {} // Fallback se le icone non caricano
+    icons: ICONS
   }),
   computed: {
-    currency() {
-      return this.product?._ecommerce?.currency || '€'
-    }
+    labels() {
+      return {
+        features: this.$t('rentals.features'),
+        view_details: this.$t('common.view_details')
+      }
+    },
+    currency() { return '€' }
   },
   methods: {
-    toggleSelection() {
-      if (this.product && this.product.id) {
-        this.$store.dispatch('toggleProductSelection', this.product.id)
-      }
+    addOrRemoveProduct(product) {
+      this.$store.dispatch('toggleProductSelection', product.slug)
     }
   }
 }
 </script>
+
+<style scoped>
+.price-text {
+  line-height: 1.4 !important;
+  padding-top: 4px;
+  overflow: visible !important;
+}
+
+.no-line .v-list-item__content {
+  overflow: visible !important;
+}
+</style>

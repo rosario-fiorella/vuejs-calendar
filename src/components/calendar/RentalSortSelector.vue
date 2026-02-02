@@ -1,5 +1,5 @@
 <template>
-  <v-select v-model="sortValue" :items="sortOptions" :prepend-icon="icons.sort" :label="$t('rentals.sort_label')"
+  <v-select v-model="sortValue" :items="sortOptions" :prepend-inner-icon="icons.sort" :label="$t('rentals.sort_label')"
     item-value="value" item-text="text" outlined dense hide-details @change="handleSortChange"></v-select>
 </template>
 
@@ -10,12 +10,12 @@ export default {
   name: 'RentalSortSelector',
   data: () => ({
     icons: {
-      sort: ICONS.alpha
+      sort: ICONS.alpha || 'mdi-sort-variant'
     }
   }),
   computed: {
     sortOptions() {
-      return this.$store.state.businessConfig.sortByOptions;
+      return this.$store.state.businessConfig?.sortByOptions || [];
     },
     sortValue: {
       get() {
@@ -31,8 +31,9 @@ export default {
       try {
         await this.$store.dispatch('initApp', {
           sort: newSortValue,
-          priceRange: this.$store.state.filters.priceRange,
-          tags: this.$store.state.selectedFilters
+          price_range: this.$store.state.filters.priceRange,
+          tags: this.$store.state.selectedFilters,
+          dates: this.$store.state.selectedDates
         });
       } catch (error) {
         console.error("[Sort Change Error]:", error.message);

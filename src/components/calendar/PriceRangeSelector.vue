@@ -1,49 +1,56 @@
 <template>
-  <v-range-slider v-model="internalRange" :max="maxLimit" :min="minLimit" @change="syncWithApi" hide-details
-    class="align-center">
-    <template #prepend>
-      <v-text-field :value="range[0]" type="number" dense outlined hide-details @change="updateRange(0, $event)" />
-    </template>
-
-    <template #append>
-      <v-text-field :value="range[1]" type="number" dense outlined hide-details @change="updateRange(1, $event)" />
-    </template>
-  </v-range-slider>
+  <div class="price-range-selector mt-2">
+    <v-range-slider v-model="internalRange" :max="maxLimit" :min="minLimit" :step="10" hide-details class="align-center"
+      @change="syncWithApi">
+      <template #prepend>
+        <v-text-field :value="internalRange[0]" type="number" dense outlined hide-details style="width: 80px"
+          @change="updateRange(0, $event)" />
+      </template>
+      <template #append>
+        <v-text-field :value="internalRange[1]" type="number" dense outlined hide-details style="width: 80px"
+          @change="updateRange(1, $event)" />
+      </template>
+    </v-range-slider>
+    <div class="text-caption grey--text text-center mt-1">
+      {{ $t('rentals.price_range_label') }}: {{ internalRange[0] }}€ - {{ internalRange[1] }}€
+    </div>
+  </div>
 </template>
 
 <script>
-import { ICONS } from '@/assets/icons'
 import { mapState } from 'vuex'
 
 export default {
   name: 'PriceRangeSelector',
 
-  data: () => ({ ICONS }),
-
   computed: {
     ...mapState({
       minLimit: state => state.businessConfig?.minPrice ?? 0,
-      maxLimit: state => state.businessConfig?.maxPrice ?? 1000,
+      maxLimit: state => state.businessConfig?.maxPrice ?? 2000,
     }),
 
     internalRange: {
       get() {
-        return this.$store.state.filters.priceRange || [this.minLimit, this.maxLimit]
+        return this.$store.state.filters.priceRange || [this.minLimit, this.maxLimit];
       },
       set(val) {
-        this.$store.commit('SET_PRICE_RANGE', val)
+        this.$store.commit('SET_PRICE_RANGE', val);
       }
-    },
-
-    range() {
-      return this.internalRange
     }
   },
 
   methods: {
     updateRange(index, value) {
-      const newRange = [...this.range];
-      newRange[index] = Number(value);
+      let numValue = Number(value);
+      const newRange = [...this.internalRange];
+
+      if (index === 0) {
+        numValue = Math.max(this.minLimit, Math.min(numValue, newRange[1]));
+      } else {
+        numValue = Math.min(this.maxLimit, Math.max(numValue, newRange[0]));
+      }
+
+      newRange[index] = numValue;
       this.internalRange = newRange;
       this.syncWithApi();
     },
@@ -51,8 +58,9 @@ export default {
     async syncWithApi() {
       try {
         await this.$store.dispatch('initApp', {
-          minPrice: this.range[0],
-          maxPrice: this.range[1]
+          price_min: this.internalRange[0],
+          price_max: this.internalRange[1],
+          dates: this.$store.state.selectedDates
         });
       } catch (error) {
         console.error("[PriceRange Sync Error]", error);
@@ -61,3 +69,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

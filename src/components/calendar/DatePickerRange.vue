@@ -42,15 +42,13 @@ export default {
     },
     disabledDatesSet() {
       const dates = this.$store.state.businessConfig?.disabledDates || [];
-      return new Set(dates.map(d => d.split('T')[0]));
+      return new Set(dates.map(d => (typeof d === 'string' ? d.split('T')[0] : d)));
     }
   },
 
   methods: {
     toLocal(zuluStr) {
-      if (!zuluStr) {
-        return null;
-      }
+      if (!zuluStr) return null;
       return zuluStr.split('T')[0];
     },
 
@@ -66,21 +64,20 @@ export default {
     },
 
     async handleSelection(dates) {
-      if (dates.length !== 2) {
-        return;
-      }
-      const sortedDates = [...dates].sort();
-      const [start, end] = sortedDates;
-      this.dateRange = sortedDates;
+      if (dates.length !== 2) return;
 
-      const { startTime, endTime } = this.$store.state.rentalForm;
+      const sortedDates = [...dates].sort((a, b) => new Date(a) - new Date(b));
+      const [start, end] = sortedDates;
 
       if (this.hasDisabledDatesInRange(start, end)) {
-        alert(this.$t('errors.disabled_date_in_range', 'Selected range contains unavailable dates'));
+        alert(this.$t('errors.disabled_date_in_range'));
         this.dateRange = [];
         return;
       }
 
+      this.dateRange = sortedDates;
+
+      const { startTime, endTime } = this.$store.state.rentalForm;
       try {
         await this.$store.dispatch('initApp', {
           from: this.formatToZulu(start, startTime),

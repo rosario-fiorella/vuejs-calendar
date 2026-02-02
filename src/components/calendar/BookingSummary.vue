@@ -54,7 +54,7 @@ export default {
     },
 
     selectedProductName() {
-      return this.selectedProduct?._content?.name || '';
+      return this.selectedProduct?.content?.name || '';
     },
 
     productHint() {
@@ -67,7 +67,7 @@ export default {
         return this.$t('booking.no_period_selected');
       }
 
-      const [start, end] = [...dates].sort();
+      const [start, end] = [...dates].sort((a, b) => new Date(a) - new Date(b));
       return `${start} ${this.startTime} — ${end} ${this.endTime}`;
     },
 

@@ -1,11 +1,10 @@
 <template>
   <div class="d-flex align-center justify-space-between mt-6">
-    <v-btn text @click="$emit('reset')">
+    <v-btn text @click="$emit('reset')" color="grey darken-1">
       {{ $t('common.reset') }}
     </v-btn>
-
-    <v-btn color="primary" type="submit" :disabled="!formValid" elevation="2">
-      <v-icon v-text="accept"></v-icon>
+    <v-btn color="primary" type="submit" :disabled="!isReadyToBook" elevation="2" class="px-6">
+      <v-icon left>{{ acceptIcon }}</v-icon>
       {{ $t('common.submit') }}
     </v-btn>
   </div>
@@ -22,9 +21,14 @@ export default {
       default: false
     }
   },
-  data() {
-    return {
-      accept: ICONS.accept
+  computed: {
+    isReadyToBook() {
+      const isProductSelected = !!this.$store.getters.selectedProduct;
+      return this.formValid && isProductSelected;
+    },
+
+    acceptIcon() {
+      return ICONS.accept || 'mdi-check';
     }
   }
 }
