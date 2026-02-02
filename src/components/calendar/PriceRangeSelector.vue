@@ -1,7 +1,7 @@
 <template>
   <div class="price-range-selector mt-2">
-    <v-range-slider v-model="internalRange" :max="maxLimit" :min="minLimit" :step="10" hide-details class="align-center"
-      @change="syncWithApi">
+    <v-range-slider v-model="internalRange" :max="maxLimit" :min="minLimit" :step="10" hide-details
+      class="align-center">
       <template #prepend>
         <v-text-field :value="internalRange[0]" type="number" dense outlined hide-details style="width: 80px"
           @change="updateRange(0, $event)" />
@@ -12,7 +12,8 @@
       </template>
     </v-range-slider>
     <div class="text-caption grey--text text-center mt-1">
-      {{ $t('rentals.price_range_label') }}: {{ internalRange[0] }}€ - {{ internalRange[1] }}€
+      {{ $t('rentals.price_range_label') }}:
+      {{ $n(internalRange[0], 'currency') }} - {{ $n(internalRange[1], 'currency') }}
     </div>
   </div>
 </template>
@@ -52,19 +53,6 @@ export default {
 
       newRange[index] = numValue;
       this.internalRange = newRange;
-      this.syncWithApi();
-    },
-
-    async syncWithApi() {
-      try {
-        await this.$store.dispatch('initApp', {
-          price_min: this.internalRange[0],
-          price_max: this.internalRange[1],
-          dates: this.$store.state.selectedDates
-        });
-      } catch (error) {
-        console.error("[PriceRange Sync Error]", error);
-      }
     }
   }
 }

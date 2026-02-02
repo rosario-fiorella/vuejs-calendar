@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-card elevation="20" tile class="mb-4" v-for="(product) in products" :key="product.slug"
-      :style="product._selected ? `border: 2px solid ${colors.primary}` : ''">
+    <v-card elevation="4" tile class="mb-4 rental-card-item" v-for="(product) in products" :key="product.slug"
+      :class="{ 'selected-border': product._selected }">
       <template v-if="product.slug">
         <v-carousel v-if="product.media && product.media.images && product.media.images.length" height="300"
           :next-icon="icons.arrowRight" :prev-icon="icons.arrowLeft" hide-delimiter-background show-arrows-on-hover>
@@ -15,16 +15,16 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title class="text-h5 primary--text font-weight-black price-text">
-                {{ currency }} {{ product.price.price.toFixed(2) }}
+                {{ $n(product.price.price, 'currency') }}
               </v-list-item-title>
+
               <v-list-item-subtitle v-for="(tax, t) in product.price.tax" :key="t" class="text-caption">
-                {{ tax.title }}: {{ tax.value }} {{ tax.currency }}
+                {{ $t(tax.title) }}: {{ $n(parseFloat(tax.value), 'currency') }}
               </v-list-item-subtitle>
             </v-list-item-content>
 
             <v-list-item-action>
-              <v-btn fab small :color="product._selected ? colors.secondary : colors.primary"
-                @click.stop="addOrRemoveProduct(product)">
+              <v-btn fab small color="primary" @click.stop="addOrRemoveProduct(product)">
                 <v-icon color="white">
                   {{ product._selected ? icons.removeItem : icons.addCart }}
                 </v-icon>
@@ -36,7 +36,7 @@
         <v-expansion-panels flat>
           <v-expansion-panel>
             <v-expansion-panel-header :expand-icon="icons.arrowDown">
-              <span class="text-caption font-weight-bold">{{ labels.view_details }}</span>
+              <span class="text-caption font-weight-bold">{{ $t('common.view_details') }}</span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-divider></v-divider>
@@ -45,12 +45,12 @@
                 v-if="product.terms && product.terms.features && product.terms.features.length">
                 <v-subheader>
                   <v-icon small left>{{ icons.addCheck }}</v-icon>
-                  {{ labels.features.toUpperCase() }}
+                  {{ $t('rentals.features').toUpperCase() }}
                 </v-subheader>
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-subtitle>
-                      <v-chip class="mt-1 mr-1" small outlined :color="colors.primary"
+                      <v-chip class="mt-1 mr-1" small outlined color="primary"
                         v-for="(feat, f) in product.terms.features" :key="f">
                         <v-icon left small>{{ icons.done }}</v-icon> {{ feat.name }}
                       </v-chip>
@@ -62,7 +62,7 @@
               <v-list dense class="no-line" v-if="product.content && product.content.note">
                 <v-subheader>
                   <v-icon small left>{{ icons.eventNote }}</v-icon>
-                  NOTE
+                  {{ $t('rentals.notices').toUpperCase() }}
                 </v-subheader>
                 <v-list-item>
                   <v-list-item-content>
@@ -87,24 +87,11 @@ export default {
     products: {
       type: Array,
       default: () => []
-    },
-    colors: {
-      type: Object,
-      default: () => ({ primary: '#4CAF50', secondary: '#388E3C' })
     }
   },
   data: () => ({
     icons: ICONS
   }),
-  computed: {
-    labels() {
-      return {
-        features: this.$t('rentals.features'),
-        view_details: this.$t('common.view_details')
-      }
-    },
-    currency() { return '€' }
-  },
   methods: {
     addOrRemoveProduct(product) {
       this.$store.dispatch('toggleProductSelection', product.slug)
@@ -122,5 +109,13 @@ export default {
 
 .no-line .v-list-item__content {
   overflow: visible !important;
+}
+
+.selected-border {
+  border: 2px solid var(--v-primary-base) !important;
+}
+
+.rental-card-item {
+  transition: border 0.2s ease;
 }
 </style>

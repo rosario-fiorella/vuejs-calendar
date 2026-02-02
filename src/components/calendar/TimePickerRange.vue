@@ -7,8 +7,9 @@
           <v-text-field v-model="startTime" :label="$t('rental.start_time')" :prepend-inner-icon="ICONS.accessTime"
             readonly outlined dense v-bind="attrs" v-on="on"></v-text-field>
         </template>
-        <v-time-picker v-if="menuStart" v-model="startTime" full-width format="24hr" :min="apiMinTime" :max="apiMaxTime"
-          :allowed-minutes="allowedSteps" @input="saveStartTime"></v-time-picker>
+        <v-time-picker v-if="menuStart" v-model="startTime" full-width format="24hr" :locale="$i18n.locale"
+          :min="apiMinTime" :max="apiMaxTime" :allowed-minutes="allowedSteps"
+          @input="menuStart = false"></v-time-picker>
       </v-menu>
     </v-col>
 
@@ -19,8 +20,9 @@
           <v-text-field v-model="endTime" :label="$t('rental.end_time')" :prepend-inner-icon="ICONS.accessTime" readonly
             outlined dense :error-messages="timeError" v-bind="attrs" v-on="on"></v-text-field>
         </template>
-        <v-time-picker v-if="menuEnd" v-model="endTime" full-width format="24hr" :min="dynamicMinEndTime"
-          :max="apiMaxTime" :allowed-minutes="allowedSteps" @input="saveEndTime"></v-time-picker>
+        <v-time-picker v-if="menuEnd" v-model="endTime" full-width format="24hr" :locale="$i18n.locale"
+          :min="dynamicMinEndTime" :max="apiMaxTime" :allowed-minutes="allowedSteps"
+          @input="menuEnd = false"></v-time-picker>
       </v-menu>
     </v-col>
   </v-row>
@@ -68,41 +70,6 @@ export default {
         return this.$t('errors.invalid_time_range');
       }
       return '';
-    }
-  },
-  methods: {
-    saveStartTime() {
-      this.menuStart = false;
-      this.syncAvailability();
-    },
-
-    saveEndTime() {
-      this.menuEnd = false;
-      this.syncAvailability();
-    },
-
-    formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) return null;
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const [hh, mm] = timeStr.split(':').map(Number);
-      return new Date(Date.UTC(y, m - 1, d, hh, mm, 0)).toISOString();
-    },
-
-    async syncAvailability() {
-      const dates = this.$store.state.selectedDates;
-      if (dates && dates.length === 2 && this.startTime && this.endTime) {
-        const sortedDates = [...dates].sort();
-        const [dStart, dEnd] = sortedDates;
-
-        try {
-          await this.$store.dispatch('initApp', {
-            from: this.formatToZulu(dStart, this.startTime),
-            to: this.formatToZulu(dEnd, this.endTime)
-          });
-        } catch (e) {
-          console.error("[TimePicker Sync Error]", e.message);
-        }
-      }
     }
   }
 }

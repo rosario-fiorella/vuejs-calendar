@@ -1,7 +1,14 @@
 <template>
-  <v-date-picker v-model="dateRange" full-width range :prev-icon="icons.arrowLeft" :next-icon="icons.arrowRight"
-    :max="toLocal(limitTo)" :min="toLocal(limitFrom)" :allowed-dates="isDateAllowed" :color="bgColor"
-    @input="handleSelection"></v-date-picker>
+  <v-card flat color="transparent">
+    <v-sheet color="primary" class="pa-4" dark tile rounded>
+      <div class="text-overline mb-1" style="line-height: 1.2">{{ $t('calendar.selection_subtitle') }}</div>
+      <div class="text-h6">{{ formattedRangeTitle }}</div>
+    </v-sheet>
+
+    <v-date-picker v-model="dateRange" full-width range no-title :locale="$i18n.locale" :prev-icon="icons.arrowLeft"
+      :next-icon="icons.arrowRight" :max="toLocal(limitTo)" :min="toLocal(limitFrom)" :allowed-dates="isDateAllowed"
+      :color="bgColor" @input="handleSelection"></v-date-picker>
+  </v-card>
 </template>
 
 <script>
@@ -34,6 +41,19 @@ export default {
       }
     },
 
+    formattedRangeTitle() {
+      if (!this.dateRange || this.dateRange.length === 0) {
+        return this.$t('calendar.selection_title');
+      }
+
+      const sorted = [...this.dateRange].sort();
+      if (sorted.length === 1) {
+        return this.formatReadableDate(sorted[0]);
+      }
+
+      return `${this.formatReadableDate(sorted[0])} — ${this.formatReadableDate(sorted[1])}`;
+    },
+
     limitTo() {
       return this.$store.state.businessConfig?.maxDate
     },
@@ -47,23 +67,22 @@ export default {
   },
 
   methods: {
+    formatReadableDate(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-');
+      return `${d}/${m}`;
+    },
+
     toLocal(zuluStr) {
       if (!zuluStr) return null;
       return zuluStr.split('T')[0];
-    },
-
-    formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) return null;
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const [hh, mm] = timeStr.split(':').map(Number);
-      return new Date(Date.UTC(y, m - 1, d, hh, mm, 0)).toISOString();
     },
 
     isDateAllowed(date) {
       return !this.disabledDatesSet.has(date);
     },
 
-    async handleSelection(dates) {
+    handleSelection(dates) {
       if (dates.length !== 2) return;
 
       const sortedDates = [...dates].sort((a, b) => new Date(a) - new Date(b));
@@ -76,16 +95,6 @@ export default {
       }
 
       this.dateRange = sortedDates;
-
-      const { startTime, endTime } = this.$store.state.rentalForm;
-      try {
-        await this.$store.dispatch('initApp', {
-          from: this.formatToZulu(start, startTime),
-          to: this.formatToZulu(end, endTime)
-        });
-      } catch (error) {
-        console.error("[DatePicker Sync Error]:", error.message);
-      }
     },
 
     hasDisabledDatesInRange(start, end) {

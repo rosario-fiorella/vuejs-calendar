@@ -21,41 +21,27 @@ export default new Vuex.Store({
       minPrice: 0,
       maxPrice: 2000,
       sortByOptions: [
-        { value: 'price_asc', text: 'Price (Low to High)' },
-        { value: 'price_desc', text: 'Price (High to Low)' },
-        { value: 'name_asc', text: 'Name (A-Z)' }
+        { value: 'price_asc', text: 'rentals.sort_price_asc' },
+        { value: 'price_desc', text: 'rentals.sort_price_desc' },
+        { value: 'name_asc', text: 'rentals.sort_name_asc' }
       ],
       tagGroups: [
         {
           id: 'rent_type',
-          label: 'Rental Category',
+          label: 'rentals.tag_rent_type_label',
           icon: 'mdi-car-key',
           items: [
-            { id: 101, text: 'Daily Rental' },
-            { id: 102, text: 'Long Term' },
-            { id: 103, text: 'Leasing' }
+            { id: 101, text: 'rentals.tag_daily' },
+            { id: 102, text: 'rentals.tag_long_term' }
           ]
         },
         {
           id: 'product_type',
-          label: 'Product Type',
+          label: 'rentals.tag_product_type_label',
           icon: 'mdi-car-side',
           items: [
-            { id: 201, text: 'Electric' },
-            { id: 202, text: 'Hybrid' },
-            { id: 203, text: 'Luxury Sedan' },
-            { id: 204, text: 'SUV' }
-          ]
-        },
-        {
-          id: 'features',
-          label: 'Product Features',
-          icon: 'mdi-shield-check',
-          items: [
-            { id: 301, text: 'Full Insurance' },
-            { id: 302, text: 'GPS Included' },
-            { id: 303, text: 'Child Seat' },
-            { id: 304, text: 'Additional Driver' }
+            { id: 201, text: 'rentals.tag_electric' },
+            { id: 202, text: 'rentals.tag_hybrid' }
           ]
         }
       ],
@@ -94,8 +80,8 @@ export default new Vuex.Store({
             product_types: [{ slug: "monolocale", name: "Monolocale" }]
           },
           media: {
-            images: [{ url: "https://picsum.photos/200/300?grayscale" }],
-            thumbnail: { url: "https://picsum.photos/200/300?grayscale" }
+            images: [{ url: "http://localhost:5173/uploads/rental-1.jpg" }],
+            thumbnail: { url: "http://localhost:5173/uploads/rental-2.jpg" }
           }
         }
       ]
@@ -108,7 +94,7 @@ export default new Vuex.Store({
     },
     filters: {
       sortBy: 'price_asc',
-      priceRange: [0, 1000],
+      priceRange: [0, 2000],
     },
     consents: {}
   },
@@ -124,7 +110,11 @@ export default new Vuex.Store({
       state.lastUpdate = new Date().toISOString()
     },
     SET_RENTALS(state, data) {
-      state.rentals = data.map(item => ({ ...item, _selected: false }))
+      const currentSelectedSlug = state.businessConfig.rentals.find(r => r._selected)?.slug;
+      state.businessConfig.rentals = data.map(item => ({
+        ...item,
+        _selected: item.slug === currentSelectedSlug
+      }));
     },
     SET_RENTAL_TIME(state, { key, val }) {
       state.rentalForm[key] = val
@@ -141,17 +131,11 @@ export default new Vuex.Store({
     SET_DYNAMIC_TAGS(state, { groupId, tags }) {
       Vue.set(state.selectedFilters, groupId, tags)
     },
-    SET_RENTAL_FORM_FIELD(state, { key, val }) {
-      state.rentalForm[key] = val
-    },
     SET_PRODUCT_SELECTION(state, slugRicevuto) {
-      state.businessConfig.rentals = state.businessConfig.rentals.map(item => {
-        const isTarget = item.slug === slugRicevuto
-        return {
-          ...item,
-          _selected: isTarget ? !item._selected : false
-        }
-      })
+      state.businessConfig.rentals = state.businessConfig.rentals.map(item => ({
+        ...item,
+        _selected: item.slug === slugRicevuto ? !item._selected : false
+      }))
     },
     SET_CONSENT(state, { id, val }) {
       Vue.set(state.consents, id, val)
@@ -175,19 +159,16 @@ export default new Vuex.Store({
     toggleProductSelection({ commit }, productSlug) {
       commit('SET_PRODUCT_SELECTION', productSlug)
     },
-
     async initApp({ commit }, payload = {}) {
       try {
         const response = await API.fetchRentals(payload);
         if (response.success) {
           commit('SET_RENTALS', response.data);
           commit('SET_LAST_UPDATE');
-          commit('SET_BOOT_ERROR', null);
         } else if (response.status !== 429) {
           throw new Error(response.message);
         }
       } catch (error) {
-        console.error(`[Store Action initApp]: ${error.message}`);
         commit('SET_BOOT_ERROR', error.message);
       } finally {
         commit('SET_APP_READY', true);

@@ -15,7 +15,7 @@
             <v-list-item-content>
               <v-list-item-title class="text-caption">{{ $t('booking.product') }}</v-list-item-title>
               <v-list-item-subtitle class="font-weight-bold primary--text text-body-1">
-                {{ payload.selected_product.name }} — {{ payload.selected_product.price.toFixed(2) }} €
+                {{ payload.selected_product.name }} — {{ $n(payload.selected_product.price, 'currency') }}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -28,7 +28,7 @@
               <v-list-item-title class="text-caption">{{ $t('booking.period_label') }}</v-list-item-title>
               <v-list-item-subtitle class="text-body-2">
                 <strong>{{ formatDate(payload.datetime_start) }}</strong>
-                <v-icon x-small>mdi-arrow-right</v-icon>
+                <v-icon x-small class="mx-1">mdi-arrow-right</v-icon>
                 <strong>{{ formatDate(payload.datetime_end) }}</strong>
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -51,7 +51,7 @@
           </div>
           <v-chip-group column>
             <v-chip v-for="(tagName, index) in allTagNames" :key="index" x-small color="primary" outlined>
-              {{ tagName }}
+              {{ $t(tagName) }}
             </v-chip>
           </v-chip-group>
         </div>
@@ -88,6 +88,9 @@ export default {
       default: 'primary'
     }
   },
+  data: () => ({
+    ICONS
+  }),
   computed: {
     hasTags() {
       return this.allTagNames.length > 0;
@@ -97,26 +100,26 @@ export default {
 
       const tagGroups = this.$store.state.businessConfig.tagGroups || [];
       const selectedMap = this.payload.tags;
-      let names = [];
+      let keys = [];
 
       Object.keys(selectedMap).forEach(groupId => {
         const group = tagGroups.find(g => g.id === groupId);
         if (group && Array.isArray(selectedMap[groupId])) {
           selectedMap[groupId].forEach(tagId => {
             const item = group.items.find(i => i.id === tagId);
-            if (item) names.push(item.text);
+            if (item) keys.push(item.text);
           });
         }
       });
 
-      return names;
+      return keys;
     }
   },
   methods: {
     formatDate(isoStr) {
       if (!isoStr) return '';
       const d = new Date(isoStr);
-      return d.toLocaleString([], {
+      return d.toLocaleString(this.$i18n.locale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',

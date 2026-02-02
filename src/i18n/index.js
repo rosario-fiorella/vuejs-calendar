@@ -5,83 +5,60 @@ Vue.use(VueI18n)
 
 const messages = {
   en: {
-    common: {
-      others: "others",
-      reset: "Reset Filters",
-      submit: "Book Now",
-      ok: "Confirm",
-      cancel: "Cancel",
-      close: "Close",
-      view_details: "View Details",
-      confirm_final: "Confirm Booking"
-    },
-    calendar: {
-      selection_title: "Stay Period",
-      selection_subtitle: "Select dates to check availability for your stay",
-    },
-    rental: {
-      start_time: "Check-in Time",
-      end_time: "Check-out Time",
-    },
-    rentals: {
-      list_title: "Available Accommodations",
-      available_count: "properties found",
-      sort_label: "Sort results by",
-      no_results: "No accommodations available for the selected period.",
-      dynamic_filters_title: "Additional Options",
-      price_range_label: "Budget",
-      features: "Amenities",
-      notices: "Important Information",
-      tax_included: "Taxes included",
-      taxes: "Taxes & Fees"
-    },
-    filters: {
-      title: "Filters & Sorting",
-      subtitle: "Customize how you view available properties",
-    },
     booking: {
-      period: {
-        title: "Stay Dates",
-        subtitle: "Tell us when you want to arrive and leave"
-      },
-      summary: {
-        title: "Reservation Summary",
-        subtitle: "Check your stay details and provide contact info"
-      },
-      legal: {
-        title: "Terms & Conditions",
-        subtitle: "Agreement to our rental terms and privacy policy"
-      },
-      summary_title: "Booking Summary",
-      period_label: "Selected Period",
-      email_label: "Your Email Address",
-      selected_product: "Selected Accommodation",
-      no_period_selected: "Please select arrival and departure dates",
-      legal_notice: "Legal Agreements",
+      applied_filters: "Applied Filters",
       confirm_title: "Booking Recap",
+      email_label: "Your Email Address",
+      legal_subtitle: "Agreement to our rental terms and privacy policy",
+      legal_title: "Terms & Conditions",
+      no_period_selected: "Please select arrival and departure dates",
+      period_label: "Selected Period",
+      period_subtitle: "Tell us when you want to arrive and leave",
+      period_title: "Stay Dates",
       please_select: "Please select an accommodation from the list",
       product: "Accommodation",
-      email: "Email",
-      applied_filters: "Applied Filters",
-      success_message: "Booking request sent successfully!"
+      selected_product: "Selected Accommodation",
+      success_message: "Booking request sent successfully!",
+      summary_subtitle: "Check your stay details and provide contact info",
+      summary_title: "Booking Summary"
+    },
+    calendar: {
+      selection_subtitle: "Select dates to check availability",
+      selection_title: "Stay Period"
+    },
+    common: {
+      cancel: "Cancel",
+      confirm_final: "Confirm Booking",
+      reset: "Reset Filters",
+      submit: "Book Now",
+      view_details: "View Details"
     },
     errors: {
-      email_required: "Email is required to proceed",
-      email_invalid: "Please enter a valid email address",
-      locked: "Request in progress, please wait...",
-      server: "Server communication error",
-      network: "Network connection unavailable",
-      invalid_time_range: "Check-out must be after Check-in",
-      parsing: "Data processing error",
-      required_field: "This field is required",
-      no_product_selected: "Please select an accommodation before submitting.",
       disabled_date_in_range: "Selected range contains unavailable dates",
-      select_full_range: "Please select both start and end dates",
-      check_form_and_selection: "Please complete the form and select a product"
+      email_invalid: "Please enter a valid email address",
+      email_required: "Email is required to proceed",
+      invalid_time_range: "Check-out must be after Check-in",
+      no_product_selected: "Please select an accommodation before submitting",
+      required_field: "This field is required",
+      select_full_range: "Please select both start and end dates"
     },
-    success: {
-      data_loaded: "Availability updated",
-      saved: "Booking confirmed"
+    filters: {
+      subtitle: "Customize how you view available properties",
+      title: "Filters & Sorting"
+    },
+    rental: {
+      end_time: "Check-out Time",
+      start_time: "Check-in Time"
+    },
+    rentals: {
+      features: "Amenities",
+      no_results: "No accommodations available for the selected period",
+      notices: "Important Information",
+      price_range_label: "Budget",
+      sort_label: "Sort results by",
+      tag_electric: "Electric",
+      tag_hybrid: "Hybrid",
+      tag_product_type: "Product Type"
     }
   }
 };
@@ -89,5 +66,14 @@ const messages = {
 export default new VueI18n({
   locale: 'en',
   fallbackLocale: 'en',
-  messages
+  messages,
+  numberFormats: {
+    'en': {
+      currency: {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2
+      }
+    }
+  }
 })

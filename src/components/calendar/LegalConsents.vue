@@ -1,9 +1,9 @@
 <template>
   <div v-if="hasLegalChecks" class="legal-consents-container">
-    <v-checkbox v-for="check in legalChecks" :key="check.id" :input-value="!!consents[check.id]" :rules="getRules(check)" dense
-      @change="updateConsent(check.id, $event)">
+    <v-checkbox v-for="check in legalChecks" :key="check.id" :input-value="!!consents[check.id]"
+      :rules="getRules(check)" dense @change="updateConsent(check.id, $event)">
       <template v-slot:label>
-        <span class="text-caption" v-html="check.label" />
+        <span class="text-caption" v-html="$t(check.label)" />
       </template>
     </v-checkbox>
   </div>
@@ -48,5 +48,10 @@ export default {
 :deep(a) {
   text-decoration: none;
   font-weight: bold;
+  color: var(--v-anchor-base);
+}
+
+:deep(a:hover) {
+  text-decoration: underline;
 }
 </style>

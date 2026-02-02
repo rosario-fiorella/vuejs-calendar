@@ -22,7 +22,7 @@ export default {
   props: {
     bgDisabled: {
       type: String,
-      default: '#FAFAFA'
+      default: 'grey lighten-4'
     },
     bgColor: {
       type: String,
@@ -31,7 +31,7 @@ export default {
   },
 
   data: () => ({
-    ICONS: ICONS || {}
+    ICONS
   }),
 
   computed: {
@@ -67,7 +67,7 @@ export default {
         return this.$t('booking.no_period_selected');
       }
 
-      const [start, end] = [...dates].sort((a, b) => new Date(a) - new Date(b));
+      const [start, end] = [...dates].sort();
       return `${start} ${this.startTime} — ${end} ${this.endTime}`;
     },
 

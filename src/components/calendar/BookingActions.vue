@@ -3,8 +3,9 @@
     <v-btn text @click="$emit('reset')" color="grey darken-1">
       {{ $t('common.reset') }}
     </v-btn>
-    <v-btn color="primary" type="submit" :disabled="!isReadyToBook" elevation="2" class="px-6">
-      <v-icon left>{{ acceptIcon }}</v-icon>
+    <v-btn color="primary" type="submit" :disabled="!isReadyToBook" elevation="2" class="px-6"
+      @click.prevent="handleSubmit">
+      <v-icon left>{{ ICONS.check }}</v-icon>
       {{ $t('common.submit') }}
     </v-btn>
   </div>
@@ -21,14 +22,18 @@ export default {
       default: false
     }
   },
+  data: () => ({
+    ICONS
+  }),
   computed: {
     isReadyToBook() {
       const isProductSelected = !!this.$store.getters.selectedProduct;
       return this.formValid && isProductSelected;
-    },
-
-    acceptIcon() {
-      return ICONS.accept || 'mdi-check';
+    }
+  },
+  methods: {
+    handleSubmit() {
+      this.$emit('submit');
     }
   }
 }
