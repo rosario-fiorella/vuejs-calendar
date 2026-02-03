@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="max-width: 1280px;">
     <v-row justify="center">
       <v-col lg="4" md="6" class="v-card--form">
         <v-form ref="bookingForm" v-model="formValid" lazy-validation @submit.prevent="handleSubmit">
