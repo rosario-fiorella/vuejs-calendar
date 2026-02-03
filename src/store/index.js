@@ -194,10 +194,10 @@ export default new Vuex.Store({
     SET_DYNAMIC_TAGS(state, { groupId, tags }) {
       Vue.set(state.selectedFilters, groupId, tags)
     },
-    SET_PRODUCT_SELECTION(state, slugRicevuto) {
+    SET_PRODUCT_SELECTION(state, slug) {
       state.businessConfig.rentals = state.businessConfig.rentals.map(item => ({
         ...item,
-        _selected: item.slug === slugRicevuto ? !item._selected : false
+        _selected: item.slug === slug ? !item._selected : false
       }))
     },
     SET_RENTAL_FORM_FIELD(state, { key, val }) {
