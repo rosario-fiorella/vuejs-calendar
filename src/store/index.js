@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { API } from '@/api'
+import i18n from '@/i18n'
 
 Vue.use(Vuex)
 
@@ -28,7 +29,7 @@ export default new Vuex.Store({
       tagGroups: [
         {
           id: 'rent_type',
-          label: 'rentals.tag_rent_type_label',
+          label: 'rentals.tag_product_type',
           icon: 'mdi-car-key',
           items: [
             { id: 101, text: 'rentals.tag_daily' },
@@ -37,7 +38,7 @@ export default new Vuex.Store({
         },
         {
           id: 'product_type',
-          label: 'rentals.tag_product_type_label',
+          label: 'rentals.tag_product_type',
           icon: 'mdi-car-side',
           items: [
             { id: 201, text: 'rentals.tag_electric' },
@@ -84,6 +85,59 @@ export default new Vuex.Store({
             thumbnail: { url: "http://localhost:5173/uploads/rental-2.jpg" }
           }
         }
+      ],
+      currencies: [
+        {
+          "key": "AUD",
+          "label": "Australian Dollar",
+          "symbol": "A$"
+        },
+        {
+          "key": "CAD",
+          "label": "Canadian Dollar",
+          "symbol": "CA$"
+        },
+        {
+          "key": "CHF",
+          "label": "Swiss Franc",
+          "symbol": "CHF"
+        },
+        {
+          "key": "CNY",
+          "label": "Chinese Yuan",
+          "symbol": "\u00a5"
+        },
+        {
+          "key": "EUR",
+          "label": "Euro",
+          "symbol": "\u20ac"
+        },
+        {
+          "key": "GBP",
+          "label": "British Pound",
+          "symbol": "\u00a3"
+        },
+        {
+          "key": "INR",
+          "label": "Indian Rupee",
+          "symbol": "\u20b9"
+        },
+        {
+          "key": "JPY",
+          "label": "Japanese Yen",
+          "symbol": "\u00a5"
+        },
+        {
+          "key": "USD",
+          "label": "US Dollar",
+          "symbol": "$"
+        }
+      ],
+      languages: [
+        { code: 'it-IT', label: 'Italiano', flag: 'it' },
+        { code: 'en-US', label: 'English', flag: 'gb' },
+        { code: 'fr-FR', label: 'Français', flag: 'fr' },
+        { code: 'de-DE', label: 'Deutsch', flag: 'de' }
       ]
     },
     selectedFilters: {},
@@ -92,6 +146,8 @@ export default new Vuex.Store({
       endTime: '18:00',
       email: ''
     },
+    selectedLocale: 'en',
+    selectedCurrency: 'EUR',
     filters: {
       sortBy: 'price_asc',
       priceRange: [0, 2000],
@@ -108,6 +164,13 @@ export default new Vuex.Store({
     },
     SET_LAST_UPDATE(state) {
       state.lastUpdate = new Date().toISOString()
+    },
+    SET_CURRENCY(state, currencyKey) {
+      state.selectedCurrency = currencyKey
+    },
+    SET_LOCALE(state, localeCode) {
+      state.selectedLocale = localeCode;
+      i18n.locale = localeCode;
     },
     SET_RENTALS(state, data) {
       const currentSelectedSlug = state.businessConfig.rentals.find(r => r._selected)?.slug;

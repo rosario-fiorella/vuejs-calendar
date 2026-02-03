@@ -31,7 +31,9 @@ const messages = {
       confirm_final: "Confirm Booking",
       reset: "Reset Filters",
       submit: "Book Now",
-      view_details: "View Details"
+      view_details: "View Details",
+      currency: "Valuta",
+      language: "Lingua"
     },
     errors: {
       disabled_date_in_range: "Selected range contains unavailable dates",
@@ -63,7 +65,7 @@ const messages = {
   }
 };
 
-export default new VueI18n({
+const i18nInstance = new VueI18n({
   locale: 'en',
   fallbackLocale: 'en',
   messages,
@@ -77,3 +79,5 @@ export default new VueI18n({
     }
   }
 })
+
+export default i18nInstance

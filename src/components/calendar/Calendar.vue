@@ -1,10 +1,10 @@
 <template>
-  <v-container style="max-width: 1180px;">
+  <v-container>
     <v-row justify="center">
       <v-col lg="4" md="6" class="v-card--form">
         <v-form ref="bookingForm" v-model="formValid" lazy-validation @submit.prevent="handleSubmit">
 
-          <v-card tile flat>
+          <v-card tile flat class="mb-4">
             <v-card-title>{{ $t('booking.period_title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.period_subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -13,7 +13,7 @@
             </v-card-text>
           </v-card>
 
-          <v-card tile flat>
+          <v-card tile flat class="mb-4">
             <v-card-title>{{ $t('filters.title') }}</v-card-title>
             <v-card-subtitle>{{ $t('filters.subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -29,7 +29,7 @@
             </v-card-text>
           </v-card>
 
-          <v-card tile flat>
+          <v-card tile flat class="mb-4">
             <v-card-title>{{ $t('booking.summary_title') }}</v-card-title>
             <v-card-subtitle>{{ $t('booking.summary_subtitle') }}</v-card-subtitle>
             <v-card-text>
@@ -45,17 +45,22 @@
               <BookingActions :form-valid="formValid" @reset="resetAll" @submit="handleSubmit" />
             </v-card-text>
           </v-card>
-
         </v-form>
       </v-col>
 
       <v-col lg="5" md="6" class="v-card--list" style="position: relative;">
-        <v-progress-linear v-if="isSearching" indeterminate color="primary" absolute top></v-progress-linear>
+        <div class="d-flex justify-end align-center mb-4">
+          <LanguageSelector class="mr-2" @change="onLocaleChange" />
+          <CurrencySelector @change="handleCurrencyChange" />
+        </div>
+
+        <v-progress-linear v-if="isSearching" indeterminate color="primary" absolute top />
 
         <template v-if="allProducts && allProducts.length">
           <RentalCardList :products="allProducts" />
         </template>
-        <v-alert v-else type="info" outlined class="mt-4">
+
+        <v-alert v-else-if="!isSearching" type="info" outlined class="mt-4">
           {{ $t('rentals.no_results') }}
         </v-alert>
       </v-col>
@@ -67,6 +72,9 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
+
+import LanguageSelector from '@/components/calendar/LanguageSelector.vue'
+import CurrencySelector from '@/components/calendar/CurrencySelector.vue'
 import DatePickerRange from '@/components/calendar/DatePickerRange.vue'
 import TimePickerRange from '@/components/calendar/TimePickerRange.vue'
 import RentalSortSelector from '@/components/calendar/RentalSortSelector.vue'
@@ -81,22 +89,44 @@ import BookingConfirmDialog from '@/components/calendar/BookingConfirmDialog.vue
 export default {
   name: 'CalendarView',
   components: {
-    DatePickerRange, TimePickerRange, RentalSortSelector,
-    PriceRangeSelector, DynamicTagFilters, BookingSummary,
-    LegalConsents, BookingActions, RentalCardList, BookingConfirmDialog
+    LanguageSelector,
+    CurrencySelector,
+    DatePickerRange,
+    TimePickerRange,
+    RentalSortSelector,
+    PriceRangeSelector,
+    DynamicTagFilters,
+    BookingSummary,
+    LegalConsents,
+    BookingActions,
+    RentalCardList,
+    BookingConfirmDialog
+  },
+  beforeDestroy() {
+    if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
   },
   data: () => ({
     formValid: false,
     showConfirmDialog: false,
     lastPayload: null,
     isSearching: false,
-    apiDebounceTimer: null
+    apiDebounceTimer: null,
   }),
   computed: {
-    ...mapState(['consents', 'selectedDates', 'rentalForm', 'filters', 'selectedFilters']),
+    ...mapState([
+      'consents',
+      'selectedDates',
+      'rentalForm',
+      'filters',
+      'selectedFilters',
+      'selectedCurrency',
+      'selectedLocale'
+    ]),
     ...mapGetters(['allProducts', 'selectedProduct']),
   },
   watch: {
+    selectedLocale: { handler() { this.triggerSearch() } },
+    selectedCurrency: { handler() { this.triggerSearch() } },
     selectedDates: { handler() { this.triggerSearch() } },
     selectedFilters: { deep: true, handler() { this.triggerSearch() } },
     'filters.priceRange': { handler() { this.triggerSearch() } },
@@ -105,6 +135,13 @@ export default {
     'rentalForm.endTime': { handler() { this.triggerSearch() } }
   },
   methods: {
+    handleCurrencyChange() {
+      this.triggerSearch();
+    },
+    onLocaleChange(newLocale) {
+      console.log("Locale aggiornato:", newLocale);
+      this.triggerSearch();
+    },
     triggerSearch() {
       if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
 
@@ -114,13 +151,16 @@ export default {
         this.isSearching = true;
         try {
           const [startDate, endDate] = [...this.selectedDates].sort();
+
           await this.$store.dispatch('initApp', {
             from: this.formatToZulu(startDate, this.rentalForm.startTime),
             to: this.formatToZulu(endDate, this.rentalForm.endTime),
             price_min: this.filters.priceRange[0],
             price_max: this.filters.priceRange[1],
             sort: this.filters.sortBy,
-            tags: this.selectedFilters
+            tags: this.selectedFilters,
+            currency: this.selectedCurrency,
+            lang: this.selectedLocale
           });
         } catch (e) {
           console.error("Search Error:", e);
@@ -130,16 +170,16 @@ export default {
       }, 400);
     },
 
-    resetAll() {
-      if (this.$refs.bookingForm) this.$refs.bookingForm.resetValidation();
-      this.$store.commit('RESET_FORM');
-    },
-
     formatToZulu(dateStr, timeStr) {
       if (!dateStr || !timeStr) return null;
       const [y, m, d] = dateStr.split('-').map(Number);
       const [hh, mm] = timeStr.split(':').map(Number);
       return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
+    },
+
+    resetAll() {
+      if (this.$refs.bookingForm) this.$refs.bookingForm.resetValidation();
+      this.$store.commit('RESET_FORM');
     },
 
     handleSubmit() {
@@ -172,8 +212,10 @@ export default {
         selected_product: {
           slug: selected.slug,
           name: selected.content.name,
-          price: selected.price.price
+          price: selected.price.price,
+          currency: this.selectedCurrency
         },
+        lang: this.selectedLocale,
         tags: { ...this.selectedFilters },
         legal_consents: { ...this.consents },
         submitted_at: new Date().toISOString()
@@ -190,3 +232,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-card--list {
+  min-height: 400px;
+}
+</style>
