@@ -75,6 +75,11 @@ const i18nInstance = new VueI18n({
         style: 'currency',
         currency: 'EUR',
         minimumFractionDigits: 2
+      },
+      decimal: {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }
     }
   }

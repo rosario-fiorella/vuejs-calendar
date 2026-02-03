@@ -21,7 +21,7 @@
                 <PriceRangeSelector />
               </div>
               <div class="mb-4">
-                <DynamicTagFilters label-color="secondary--text" bg-color="transparent" />
+                <DynamicTagFilters label-color="secondary--text" bg-color="transparent" chip-color="blue lighten-5" />
               </div>
               <div class="mb-4">
                 <RentalSortSelector />
@@ -146,7 +146,9 @@ export default {
       if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
 
       this.apiDebounceTimer = setTimeout(async () => {
-        if (!this.selectedDates || this.selectedDates.length < 2) return;
+        if (!this.selectedDates || this.selectedDates.length < 2) {
+          return;
+        }
 
         this.isSearching = true;
         try {
@@ -171,7 +173,9 @@ export default {
     },
 
     formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) return null;
+      if (!dateStr || !timeStr) {
+        return null;
+      }
       const [y, m, d] = dateStr.split('-').map(Number);
       const [hh, mm] = timeStr.split(':').map(Number);
       return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
@@ -202,7 +206,9 @@ export default {
         return;
       }
 
-      if (!isFormValid) return;
+      if (!isFormValid) {
+        return;
+      }
 
       const [startDate, endDate] = [...this.selectedDates].sort();
       this.lastPayload = {

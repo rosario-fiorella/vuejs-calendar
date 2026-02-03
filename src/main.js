@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import i18n from './i18n'
+import 'flag-icons/css/flag-icons.min.css'
 
 Vue.config.productionTip = false
 

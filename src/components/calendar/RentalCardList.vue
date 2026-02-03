@@ -15,7 +15,7 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title class="text-h5 primary--text font-weight-black price-text">
-                {{ $n(product.price.price, 'currency') }}
+                {{ product.price.price_currency }}{{ $n(product.price.price, 'decimal') }}
               </v-list-item-title>
 
               <v-list-item-subtitle v-for="(tax, t) in product.price.tax" :key="t" class="text-caption">

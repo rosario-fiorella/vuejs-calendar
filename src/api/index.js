@@ -10,7 +10,6 @@ const CONFIG = Object.freeze({
 });
 
 const _activeLocks = new Set();
-
 const _createResponse = (success, messageKey, data = null, status = 200) => ({
   success,
   message: i18n.t(messageKey),
@@ -22,7 +21,6 @@ const _createResponse = (success, messageKey, data = null, status = 200) => ({
 export const API = {
   async fetchRentals(filters = {}) {
     const LOCK_KEY = 'fetch_rentals';
-
     if (_activeLocks.has(LOCK_KEY)) {
       return _createResponse(false, 'errors.locked', null, 429);
     }
@@ -37,12 +35,8 @@ export const API = {
       });
 
       if (!response.ok) {
-        const errorDetail = await response.json().catch(() => ({}));
-        console.error(`[SERVER_ERROR][${response.status}]:`, {
-          url: response.url,
-          detail: errorDetail
-        });
-
+        const error = await response.json().catch(() => ({}));
+        console.error(error);
         return _createResponse(false, 'errors.server', null, response.status);
       }
 
@@ -50,13 +44,8 @@ export const API = {
       const responseData = json.data || json;
       return _createResponse(true, 'success.data_loaded', responseData);
     } catch (error) {
-      console.error(`[FATAL_EXCEPTION][${LOCK_KEY}]:`, {
-        message: error.message,
-        stack: error.stack
-      });
-
+      console.error(error);
       return _createResponse(false, 'errors.network', null, 500);
-
     } finally {
       _activeLocks.delete(LOCK_KEY);
     }

@@ -1,20 +1,22 @@
 <template>
   <div>
-    <v-sheet class="pa-2 mb-2 custom-card-border" :color="bgColor" v-for="group in tagGroups" :key="group.id">
-      <div class="font-weight-bold text-body-2 mb-1" :class="labelColor">
-        <v-icon small left :color="labelColor">
-          {{ resolveIcon(group.id) }}
-        </v-icon>
-        {{ $t(group.label) }}
-      </div>
+    <v-sheet class="mb-2" :color="bgColor" v-for="group in tagGroups" :key="group.id">
+      <div class="custom-card-border px-2 pt-2">
+        <div class="font-weight-bold text-body-2" :class="labelColor">
+          <v-icon small left :color="labelColor">
+            {{ resolveIcon(group.id) }}
+          </v-icon>
+          {{ $t(group.label) }}
+        </div>
 
-      <v-chip-group :value="selectedFilters[group.id] || []" multiple :active-class="activeClass"
-        @change="val => handleTagChange(group.id, val)">
-        <v-chip v-for="item in group.items" :key="item.id" :value="item.id" filter small label :color="chipColor"
-          :text-color="chipTextColor">
-          {{ $t(item.text) }}
-        </v-chip>
-      </v-chip-group>
+        <v-chip-group :value="selectedFilters[group.id] || []" multiple :active-class="activeClass"
+          @change="val => handleTagChange(group.id, val)">
+          <v-chip v-for="item in group.items" :key="item.id" :value="item.id" filter small label :color="chipColor"
+            :text-color="chipTextColor">
+            {{ $t(item.text) }}
+          </v-chip>
+        </v-chip-group>
+      </div>
     </v-sheet>
   </div>
 </template>
@@ -42,8 +44,8 @@ export default {
   },
 
   methods: {
-    resolveIcon(groupId) {
-      return ICONS[groupId] || 'mdi-tag-outline';
+    resolveIcon(iconNameFromApi) {
+      return ICONS[iconNameFromApi] || ICONS.tag;
     },
 
     handleTagChange(groupId, selectedTags) {

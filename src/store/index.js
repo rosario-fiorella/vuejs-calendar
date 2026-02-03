@@ -65,7 +65,7 @@ export default new Vuex.Store({
           },
           price: {
             price: 85.00,
-            price_currency: "EUR",
+            price_currency: "€",
             tax_included: true,
             tax: [
               { slug: "tassa-di-soggiorno", title: "tassa di soggiorno", value: "2.00", currency: "EUR" },
@@ -199,6 +199,13 @@ export default new Vuex.Store({
         ...item,
         _selected: item.slug === slugRicevuto ? !item._selected : false
       }))
+    },
+    SET_RENTAL_FORM_FIELD(state, { key, val }) {
+      if (Object.prototype.hasOwnProperty.call(state.rentalForm, key)) {
+        state.rentalForm[key] = val;
+      } else {
+        Vue.set(state.rentalForm, key, val);
+      }
     },
     SET_CONSENT(state, { id, val }) {
       Vue.set(state.consents, id, val)

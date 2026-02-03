@@ -1,5 +1,5 @@
 <template>
-  <div class="price-range-selector mt-2">
+  <div v-if="currency && internalRange" class="price-range-selector mt-2" :key="currency">
     <v-range-slider v-model="internalRange" :max="maxLimit" :min="minLimit" :step="10" hide-details
       class="align-center">
       <template #prepend>
@@ -11,9 +11,9 @@
           @change="updateRange(1, $event)" />
       </template>
     </v-range-slider>
+
     <div class="text-caption grey--text text-center mt-1">
-      {{ $t('rentals.price_range_label') }}:
-      {{ $n(internalRange[0], 'currency') }} - {{ $n(internalRange[1], 'currency') }}
+      {{ $t('rentals.price_range_label') }}: {{ currency }} {{ internalRange[0] }} - {{ currency }} {{ internalRange[1] }}
     </div>
   </div>
 </template>
@@ -26,13 +26,15 @@ export default {
 
   computed: {
     ...mapState({
+      currency: state => state.selectedCurrency || null,
       minLimit: state => state.businessConfig?.minPrice ?? 0,
       maxLimit: state => state.businessConfig?.maxPrice ?? 2000,
     }),
 
     internalRange: {
       get() {
-        return this.$store.state.filters.priceRange || [this.minLimit, this.maxLimit];
+        const range = this.$store.state.filters.priceRange;
+        return range && range.length === 2 ? range : [this.minLimit, this.maxLimit];
       },
       set(val) {
         this.$store.commit('SET_PRICE_RANGE', val);
@@ -57,11 +59,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-</style>
