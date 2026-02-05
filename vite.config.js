@@ -19,9 +19,13 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        'vue': 'vue/dist/vue.esm.js'
       },
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
+    },
+    optimizeDeps: {
+      include: ['vuetify/lib/util/colors', 'vuetify/lib/framework']
     },
     server: {
       proxy: {

@@ -32,8 +32,8 @@ const messages = {
       reset: "Reset Filters",
       submit: "Book Now",
       view_details: "View Details",
-      currency: "Valuta",
-      language: "Lingua"
+      currency: "Currency",
+      language: "Language"
     },
     errors: {
       disabled_date_in_range: "Selected range contains unavailable dates",
@@ -62,6 +62,65 @@ const messages = {
       tag_hybrid: "Hybrid",
       tag_product_type: "Product Type"
     }
+  },
+  it: {
+    booking: {
+      applied_filters: "Filtri Applicati",
+      confirm_title: "Riepilogo Prenotazione",
+      email_label: "Tuo Indirizzo Email",
+      legal_subtitle: "Accettazione dei termini di noleggio e privacy",
+      legal_title: "Termini e Condizioni",
+      no_period_selected: "Seleziona le date di arrivo e partenza",
+      period_label: "Periodo Selezionato",
+      period_subtitle: "Dicci quando vuoi arrivare e partire",
+      period_title: "Date del Soggiorno",
+      please_select: "Seleziona un alloggio dalla lista",
+      product: "Alloggio",
+      selected_product: "Alloggio Selezionato",
+      success_message: "Richiesta di prenotazione inviata con successo!",
+      summary_subtitle: "Controlla i dettagli del soggiorno e fornisci i contatti",
+      summary_title: "Riepilogo Prenotazione"
+    },
+    calendar: {
+      selection_subtitle: "Seleziona le date per verificare la disponibilità",
+      selection_title: "Periodo di Soggiorno"
+    },
+    common: {
+      cancel: "Annulla",
+      confirm_final: "Conferma Prenotazione",
+      reset: "Reset Filtri",
+      submit: "Prenota Ora",
+      view_details: "Vedi Dettagli",
+      currency: "Valuta",
+      language: "Lingua"
+    },
+    errors: {
+      disabled_date_in_range: "Il periodo selezionato contiene date non disponibili",
+      email_invalid: "Inserisci un indirizzo email valido",
+      email_required: "L'email è obbligatoria per procedere",
+      invalid_time_range: "Il check-out deve essere dopo il check-in",
+      no_product_selected: "Seleziona un alloggio prima di inviare",
+      required_field: "Campo obbligatorio",
+      select_full_range: "Seleziona sia la data d'inizio che quella di fine"
+    },
+    filters: {
+      subtitle: "Personalizza la visualizzazione delle proprietà",
+      title: "Filtri e Ordinamento"
+    },
+    rental: {
+      end_time: "Orario Check-out",
+      start_time: "Orario Check-in"
+    },
+    rentals: {
+      features: "Servizi",
+      no_results: "Nessun alloggio disponibile per il periodo selezionato",
+      notices: "Informazioni Importanti",
+      price_range_label: "Budget",
+      sort_label: "Ordina i risultati per",
+      tag_electric: "Elettrico",
+      tag_hybrid: "Ibrido",
+      tag_product_type: "Tipo Prodotto"
+    }
   }
 };
 
@@ -71,16 +130,10 @@ const i18nInstance = new VueI18n({
   messages,
   numberFormats: {
     'en': {
-      currency: {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 2
-      },
-      decimal: {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
+      currency: { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }
+    },
+    'it': {
+      currency: { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }
     }
   }
 })

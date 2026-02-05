@@ -13,7 +13,8 @@
     </v-range-slider>
 
     <div class="text-caption grey--text text-center mt-1">
-      {{ $t('rentals.price_range_label') }}: {{ currency }} {{ internalRange[0] }} - {{ currency }} {{ internalRange[1] }}
+      {{ $t('rentals.price_range_label') }}: {{ currency }} {{ internalRange[0] }} - {{ currency }} {{ internalRange[1]
+      }}
     </div>
   </div>
 </template>
@@ -26,18 +27,17 @@ export default {
 
   computed: {
     ...mapState({
-      currency: state => state.selectedCurrency || null,
-      minLimit: state => state.businessConfig?.minPrice ?? 0,
-      maxLimit: state => state.businessConfig?.maxPrice ?? 2000,
+      currency: state => state.query.currency,
+      minLimit: state => state.config.limits.minPrice,
+      maxLimit: state => state.config.limits.maxPrice,
     }),
 
     internalRange: {
       get() {
-        const range = this.$store.state.filters.priceRange;
-        return range && range.length === 2 ? range : [this.minLimit, this.maxLimit];
+        return this.$store.state.query.priceRange;
       },
       set(val) {
-        this.$store.commit('SET_PRICE_RANGE', val);
+        this.$store.commit('SET_QUERY_PRICE_RANGE', val);
       }
     }
   },

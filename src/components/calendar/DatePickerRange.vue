@@ -34,10 +34,10 @@ export default {
   computed: {
     dateRange: {
       get() {
-        return this.$store.state.selectedDates || []
+        return this.$store.state.query.dates || []
       },
       set(val) {
-        this.$store.commit('SET_SELECTED_DATES', val)
+        this.$store.commit('SET_QUERY_DATES', val)
       }
     },
 
@@ -55,13 +55,13 @@ export default {
     },
 
     limitTo() {
-      return this.$store.state.businessConfig?.maxDate
+      return this.$store.state.config.limits.maxDate
     },
     limitFrom() {
-      return this.$store.state.businessConfig?.minDate
+      return this.$store.state.config.limits.minDate
     },
     disabledDatesSet() {
-      const dates = this.$store.state.businessConfig?.disabledDates || [];
+      const dates = this.$store.state.config.limits.disabledDates || [];
       return new Set(dates.map(d => (typeof d === 'string' ? d.split('T')[0] : d)));
     }
   },
@@ -98,7 +98,7 @@ export default {
     },
 
     hasDisabledDatesInRange(start, end) {
-      const disabledRaw = this.$store.state.businessConfig?.disabledDates || [];
+      const disabledRaw = this.$store.state.config.limits.disabledDates || [];
       return disabledRaw.some(d => {
         const target = d.split('T')[0];
         return target >= start && target <= end;

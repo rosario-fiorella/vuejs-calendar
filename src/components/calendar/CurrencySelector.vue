@@ -23,11 +23,11 @@ export default {
   name: 'CurrencySelector',
   computed: {
     availableCurrencies() {
-      return this.$store.state.businessConfig.currencies || [];
+      return this.$store.state.config.currencies || [];
     },
     currency: {
       get() {
-        return this.$store.state.selectedCurrency;
+        return this.$store.state.query.currency;
       },
       set(val) {
         this.$store.commit('SET_CURRENCY', val);

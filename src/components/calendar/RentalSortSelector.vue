@@ -17,7 +17,7 @@ export default {
 
   computed: {
     translatedSortOptions() {
-      const options = this.$store.state.businessConfig?.sortByOptions || [];
+      const options = this.$store.state.config.options?.sortByOptions || this.$store.state.config.sortByOptions || [];
       return options.map(opt => ({
         ...opt,
         text: this.$t(opt.text)
@@ -26,10 +26,10 @@ export default {
 
     sortValue: {
       get() {
-        return this.$store.state.filters.sortBy;
+        return this.$store.state.query.sortBy;
       },
       set(value) {
-        this.$store.commit('SET_SORT_FILTER', value);
+        this.$store.commit('SET_QUERY_SORT', value);
       }
     }
   }

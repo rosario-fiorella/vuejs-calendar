@@ -13,21 +13,15 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import { ICONS } from '@/assets/icons';
 
 export default {
   name: 'BookingSummary',
 
   props: {
-    bgDisabled: {
-      type: String,
-      default: 'grey lighten-4'
-    },
-    bgColor: {
-      type: String,
-      default: 'white'
-    }
+    bgDisabled: { type: String, default: 'grey lighten-4' },
+    bgColor: { type: String, default: 'white' }
   },
 
   data: () => ({
@@ -36,39 +30,44 @@ export default {
 
   computed: {
     ...mapState({
-      rentalEmail: state => state.rentalForm.email,
-      selectedDates: state => state.selectedDates,
-      startTime: state => state.rentalForm.startTime,
-      endTime: state => state.rentalForm.endTime,
+      rentalEmail: state => state.userForm.email,
+      selectedSlot: state => state.catalog.selectedSlot,
+      catalogAnagraphic: state => state.config.catalog
     }),
 
-    ...mapGetters(['selectedProduct']),
-
     email: {
-      get() {
-        return this.rentalEmail
-      },
-      set(val) {
-        this.$store.commit('SET_RENTAL_FORM_FIELD', { key: 'email', val })
-      }
+      get() { return this.rentalEmail },
+      set(value) { this.$store.commit('SET_USER_FIELD', { field: 'email', value }) }
     },
 
     selectedProductName() {
-      return this.selectedProduct?.content?.name || '';
+      if (!this.selectedSlot || !this.catalogAnagraphic) return '';
+      const entity = this.catalogAnagraphic[this.selectedSlot.slug];
+      return entity ? entity.content.name : '';
     },
 
     productHint() {
-      return !this.selectedProductName ? this.$t('booking.please_select') : '';
+      return !this.selectedSlot ? this.$t('booking.please_select') : '';
     },
 
     formattedPeriod() {
-      const dates = this.selectedDates;
-      if (!dates || dates.length < 2) {
+      if (!this.selectedSlot || !this.selectedSlot.date || !this.selectedSlot.slot) {
         return this.$t('booking.no_period_selected');
       }
 
-      const [start, end] = [...dates].sort();
-      return `${start} ${this.startTime} — ${end} ${this.endTime}`;
+      const { date, slot } = this.selectedSlot;
+
+      const [y, m, d] = date.split('-').map(Number);
+      const displayDate = new Date(y, m - 1, d).toLocaleDateString(this.$i18n.locale, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const start = slot.time_start ? slot.time_start.substring(0, 5) : '--:--';
+      const end = slot.time_end ? slot.time_end.substring(0, 5) : '--:--';
+
+      return `${displayDate} | ${start} - ${end}`;
     },
 
     emailRules() {

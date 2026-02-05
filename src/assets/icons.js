@@ -33,7 +33,10 @@ import {
   mdiArrowDown,
   mdiFerry,
   mdiHomeCity,
-  mdiKeyChain
+  mdiKeyChain,
+  mdiFilePdfBox,      // Aggiunta
+  mdiDownload,        // Aggiunta
+  mdiHelpCircleOutline // Aggiunta
 } from '@mdi/js'
 
 export const ICONS = {
@@ -66,6 +69,7 @@ export const ICONS = {
   star: mdiStar,
   info: mdiInformationOutline,
   settings: mdiCog,
+  help: mdiHelpCircleOutline, // Mappata
 
   note: mdiNote,
   description: mdiFileDocumentOutline,
@@ -80,5 +84,12 @@ export const ICONS = {
   addCheck: mdiPlaylistCheck,
   property: mdiHomeCity,
   key: mdiKeyChain,
-  boat: mdiFerry
+  boat: mdiFerry,
+
+  pdf: mdiFilePdfBox,
+  download: mdiDownload,
+
+  features: mdiTag,
+  types_rental: mdiKeyChain,
+  product_types: mdiHomeCity
 }

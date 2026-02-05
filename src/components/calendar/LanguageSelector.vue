@@ -27,11 +27,11 @@ export default {
   name: 'LanguageSelector',
   computed: {
     availableLanguages() {
-      return this.$store.state.businessConfig.languages || [];
+      return this.$store.state.config.languages || [];
     },
     locale: {
       get() {
-        return this.$store.state.selectedLocale;
+        return this.$store.state.query.locale;
       },
       set(val) {
         this.$store.commit('SET_LOCALE', val);
@@ -42,12 +42,13 @@ export default {
   methods: {
     getCountryCode(code) {
       if (!code) return 'un';
-      let c = code.includes('-') ? code.split('-')[1].toLowerCase() : code.toLowerCase();
+      let c = code.includes('_') ? code.split('_')[1].toLowerCase() : code.toLowerCase();
+      if (c.includes('-')) c = c.split('-')[1].toLowerCase();
       return c === 'en' ? 'gb' : c;
     },
     formatDisplayCode(code) {
       if (!code) return '';
-      return code.split('-')[0].toUpperCase();
+      return code.split(/[-_]/)[0].toUpperCase();
     }
   }
 }

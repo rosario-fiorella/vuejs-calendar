@@ -16,10 +16,12 @@ export default {
   name: 'LegalConsents',
 
   computed: {
-    ...mapState(['consents']),
+    ...mapState({
+      consents: state => state.userForm.consents
+    }),
 
     legalChecks() {
-      return this.$store.state.businessConfig?.legalChecks || [];
+      return this.$store.state.config.legalChecks || [];
     },
 
     hasLegalChecks() {

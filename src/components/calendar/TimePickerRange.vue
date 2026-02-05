@@ -39,24 +39,24 @@ export default {
     ICONS
   }),
   computed: {
-    apiMinTime() { return this.$store.state.businessConfig.minTime },
-    apiMaxTime() { return this.$store.state.businessConfig.maxTime },
-    apiStep() { return this.$store.state.businessConfig.step || 15 },
+    apiMinTime() { return this.$store.state.config.limits.minTime },
+    apiMaxTime() { return this.$store.state.config.limits.maxTime },
+    apiStep() { return this.$store.state.config.limits.step || 15 },
     allowedSteps() { return (m) => m % this.apiStep === 0 },
 
     startTime: {
-      get() { return this.$store.state.rentalForm.startTime },
-      set(val) {
-        this.$store.commit('SET_RENTAL_TIME', { key: 'startTime', val });
-        if (this.endTime && val >= this.endTime) {
-          this.$store.commit('SET_RENTAL_TIME', { key: 'endTime', val: '' });
+      get() { return this.$store.state.query.startTime },
+      set(value) {
+        this.$store.commit('SET_QUERY_TIME', { key: 'startTime', value });
+        if (this.endTime && value >= this.endTime) {
+          this.$store.commit('SET_QUERY_TIME', { key: 'endTime', value: '' });
         }
       }
     },
     endTime: {
-      get() { return this.$store.state.rentalForm.endTime },
-      set(val) {
-        this.$store.commit('SET_RENTAL_TIME', { key: 'endTime', val });
+      get() { return this.$store.state.query.endTime },
+      set(value) {
+        this.$store.commit('SET_QUERY_TIME', { key: 'endTime', value });
       }
     },
 

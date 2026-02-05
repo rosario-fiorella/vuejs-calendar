@@ -98,7 +98,7 @@ export default {
     allTagNames() {
       if (!this.payload || !this.payload.tags) return [];
 
-      const tagGroups = this.$store.state.businessConfig.tagGroups || [];
+      const tagGroups = this.$store.state.config.tagGroups || [];
       const selectedMap = this.payload.tags;
       let keys = [];
 

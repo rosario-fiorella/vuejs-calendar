@@ -38,8 +38,8 @@ export default {
 
   computed: {
     ...mapState({
-      tagGroups: state => state.businessConfig?.tagGroups || [],
-      selectedFilters: state => state.selectedFilters || {}
+      tagGroups: state => state.config.tagGroups,
+      selectedFilters: state => state.query.selectedTags
     })
   },
 
@@ -48,9 +48,8 @@ export default {
       return ICONS[iconNameFromApi] || ICONS.tag;
     },
 
-    handleTagChange(groupId, selectedTags) {
-      const tags = selectedTags || [];
-      this.$store.commit('SET_DYNAMIC_TAGS', { groupId, tags });
+    handleTagChange(groupId, tags) {
+      this.$store.commit('SET_TAG_SELECTION', { groupId, tags: tags || [] });
     }
   }
 }

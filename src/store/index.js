@@ -6,226 +6,213 @@ import { Entity } from '@/models/Entity'
 
 Vue.use(Vuex)
 
+const formatToZulu = (dateInput, timeStr) => {
+  if (!dateInput || !timeStr) return null;
+  let y, m, d;
+  if (typeof dateInput === 'string') {
+    [y, m, d] = dateInput.split('-').map(Number);
+  } else {
+    y = dateInput.getFullYear();
+    m = dateInput.getMonth() + 1;
+    d = dateInput.getDate();
+  }
+  const [hh, mm] = timeStr.split(':').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
+};
+
 export default new Vuex.Store({
   state: {
-    businessConfig: {
-      minTime: '',
-      maxTime: '',
-      step: 0,
-      minDate: '',
-      maxDate: '',
-      disabledDates: [],
-      minPrice: 0,
-      maxPrice: 0,
-      sortByOptions: [],
-      tagGroups: [],
-      legalChecks: [],
-      currencies: [],
-      languages: [],
-      rentals: [
-        {
-          slug: "monolocale",
-          type: "rent",
-          _selected: false,
-          content: {
-            slug: "monolocale",
-            name: "Monolocale",
-            description: "Accogliente monolocale in centro città",
-            excerpt: "Ideale per coppie",
-            note: "Check-in disponibile dalle 14:00"
-          },
-          price: {
-            price: 85.00,
-            price_currency: "€",
-            tax_included: true,
-            tax: [
-              { slug: "tassa-di-soggiorno", title: "tassa di soggiorno", value: "2.00", currency: "EUR" },
-              { slug: "iva-22", title: "iva 22%", value: "22.00", currency: "EUR" }
-            ]
-          },
-          terms: {
-            features: [
-              { slug: "1-bagno", name: "1 bagno" },
-              { slug: "aria-condizionata", name: "Aria condizionata" }
-            ],
-            rental_types: [{ slug: "affitto-breve", name: "Affitto breve" }],
-            product_types: [{ slug: "monolocale", name: "Monolocale" }]
-          },
-          media: {
-            images: [{ url: "http://localhost:5173/uploads/rental-1.jpg" }],
-            thumbnail: { url: "http://localhost:5173/uploads/rental-2.jpg" }
-          }
-        }
-      ]
-    },
     appReady: false,
     bootError: null,
     lastUpdate: null,
-    selectedDates: [],
-    page: 0,
-    per_page: 0,
-
-    selectedFilters: {},
-    rentalForm: {
+    config: {
+      limits: {
+        minPrice: 0,
+        maxPrice: 0,
+        minDate: '',
+        maxDate: '',
+        minTime: '00:00',
+        maxTime: '23:59',
+        step: 30,
+        disabledDates: [],
+      },
+      catalog: {},
+      tagGroups: [],
+      sortByOptions: [],
+      currencies: [],
+      languages: [],
+      legalChecks: []
+    },
+    query: {
+      dates: [],
       startTime: '08:00',
       endTime: '18:00',
-      email: ''
-    },
-    selectedLocale: 'it_IT',
-    selectedCurrency: 'EUR',
-    filters: {
-      sortBy: 'asc',
       priceRange: [0, 0],
+      selectedTags: {},
+      sortBy: 'asc',
+      currency: 'EUR',
+      locale: 'it_IT',
+      page: 1,
+      per_page: 12
     },
-    consents: {}
+    catalog: {
+      availability: {},
+      selectedSlot: null
+    },
+    userForm: {
+      email: '',
+      consents: {}
+    }
   },
 
   mutations: {
     SET_APP_READY(state, status) {
-      state.appReady = status
+      state.appReady = status;
     },
     SET_BOOT_ERROR(state, error) {
-      state.bootError = error
+      state.bootError = error;
     },
     SET_LAST_UPDATE(state) {
-      state.lastUpdate = new Date().toISOString()
+      state.lastUpdate = new Date().toISOString();
     },
-    SET_CURRENCY(state, currencyKey) {
-      state.selectedCurrency = currencyKey
-    },
-    SET_LOCALE(state, localeCode) {
-      state.selectedLocale = localeCode;
-      i18n.locale = localeCode;
-    },
-    SET_RENTALS(state, data) {
-      // update businessConfig
-      if (data.min_time) {
-        state.businessConfig.minTime = data.min_time;
-      }
-      if (data.max_time) {
-        state.businessConfig.maxTime = data.max_time;
-      }
-      if (data.step_minutes) {
-        state.businessConfig.step = data.step_minutes;
-      }
-      if (data.min_date) {
-        state.businessConfig.minDate = data.min_date;
-      }
-      if (data.max_date) {
-        state.businessConfig.maxDate = data.max_date;
-      }
-      if (data.disabled_dates) {
-        state.businessConfig.disabledDates = data.disabled_dates;
-      }
-      if (data.min_price) {
-        state.businessConfig.minPrice = data.min_price;
-      }
-      if (data.max_price) {
-        state.businessConfig.maxPrice = data.max_price;
-      }
-      if (data.sort_by_options) {
-        state.businessConfig.sortByOptions = data.sort_by_options;
-      }
-      if (data.tag_groups) {
-        state.businessConfig.tagGroups = data.tag_groups;
-      }
-      if (data.legal_checks) {
-        state.businessConfig.legalChecks = data.legal_checks;
-      }
-      if (data.currencies) {
-        state.businessConfig.currencies = data.currencies;
-      }
-      if (data.languages) {
-        state.businessConfig.languages = data.languages.map(lang => ({
-          ...lang,
-          code: lang.code.replace('_', '-')
-        }));
-      }
+    SET_RENTALS_DATA(state, data) {
+      if (data.min_time) state.config.limits.minTime = data.min_time;
+      if (data.max_time) state.config.limits.maxTime = data.max_time;
+      if (data.step_minutes) state.config.limits.step = data.step_minutes;
+      if (data.min_date) state.config.limits.minDate = data.min_date;
+      if (data.max_date) state.config.limits.maxDate = data.max_date;
+      if (data.disabled_dates) state.config.limits.disabledDates = data.disabled_dates;
+      if (data.min_price !== undefined) state.config.limits.minPrice = data.min_price;
+      if (data.max_price !== undefined) state.config.limits.maxPrice = data.max_price;
+      if (data.tag_groups) state.config.tagGroups = data.tag_groups;
+      if (data.sort_by_options) state.config.sortByOptions = data.sort_by_options;
+      if (data.currencies) state.config.currencies = data.currencies;
+      if (data.languages) state.config.languages = data.languages;
+      if (data.legal_checks) state.config.legalChecks = data.legal_checks;
 
-      // update filters
-      if (state.filters.priceRange[0] === 0 && state.filters.priceRange[1] === 0) {
-        state.filters.priceRange = [data.min_price, data.max_price];
-      }
-
-      if (data.tag_groups) {
-        data.tag_groups.forEach(group => {
-          if (!Object.prototype.hasOwnProperty.call(state.selectedFilters, group.slug)) {
-            Vue.set(state.selectedFilters, group.slug, []);
-          }
-        });
+      if (state.query.priceRange[0] === 0 && state.query.priceRange[1] === 0 && data.max_price) {
+        state.query.priceRange = [data.min_price || 0, data.max_price];
       }
 
       if (data.catalog) {
-        const currentSelectedSlug = state.businessConfig.rentals.find(r => r._selected)?.slug;
-        state.businessConfig.rentals = Object.keys(data.catalog).map(slug => {
-          const entity = new Entity(slug, data.catalog[slug]);
-          entity._selected = (slug === currentSelectedSlug);
-          return entity;
+        const mappedCatalog = {};
+        Object.keys(data.catalog).forEach(slug => {
+          mappedCatalog[slug] = new Entity(slug, data.catalog[slug]);
         });
+        state.config.catalog = mappedCatalog;
+      }
+
+      if (data.tag_groups) {
+        const newTags = { ...state.query.selectedTags };
+        data.tag_groups.forEach(group => {
+          if (!Object.prototype.hasOwnProperty.call(newTags, group.id)) {
+            newTags[group.id] = [];
+          }
+        });
+        state.query.selectedTags = newTags;
+      }
+
+      if (data.availability) {
+        state.catalog.availability = data.availability;
       }
     },
-    SET_RENTAL_TIME(state, { key, val }) {
-      state.rentalForm[key] = val
+    SET_SELECTED_SLOT(state, slotPayload) {
+      state.catalog.selectedSlot = slotPayload ? { ...slotPayload } : null;
     },
-    SET_SELECTED_DATES(state, dates) {
-      state.selectedDates = dates
+    SET_QUERY_DATES(state, dates) {
+      state.query.dates = dates;
     },
-    SET_SORT_FILTER(state, value) {
-      state.filters.sortBy = value
+    SET_QUERY_PRICE_RANGE(state, range) {
+      state.query.priceRange = range;
     },
-    SET_PRICE_RANGE(state, range) {
-      state.filters.priceRange = range
+    SET_QUERY_SORT(state, sortValue) {
+      state.query.sortBy = sortValue;
     },
-    SET_DYNAMIC_TAGS(state, { groupId, tags }) {
-      Vue.set(state.selectedFilters, groupId, tags)
+    SET_QUERY_TIME(state, { key, value }) {
+      state.query[key] = value;
     },
-    SET_PRODUCT_SELECTION(state, slug) {
-      state.businessConfig.rentals = state.businessConfig.rentals.map(item => ({
-        ...item,
-        _selected: item.slug === slug ? !item._selected : false
-      }))
+    SET_TAG_SELECTION(state, { groupId, tags }) {
+      state.query.selectedTags = {
+        ...state.query.selectedTags,
+        [groupId]: tags
+      };
     },
-    SET_RENTAL_FORM_FIELD(state, { key, val }) {
-      if (Object.prototype.hasOwnProperty.call(state.rentalForm, key)) {
-        state.rentalForm[key] = val;
-      } else {
-        Vue.set(state.rentalForm, key, val);
-      }
+    SET_LOCALE(state, locale) {
+      state.query.locale = locale;
+      i18n.locale = locale;
+    },
+    SET_CURRENCY(state, currency) {
+      state.query.currency = currency;
+    },
+    SET_USER_FIELD(state, { field, value }) {
+      state.userForm[field] = value;
     },
     SET_CONSENT(state, { id, val }) {
-      Vue.set(state.consents, id, val)
+      state.userForm.consents = {
+        ...state.userForm.consents,
+        [id]: val
+      };
     },
-    RESET_FORM(state) {
-      state.rentalForm.email = ''
-      state.consents = {}
-      state.selectedDates = []
-      state.businessConfig.rentals.forEach(r => {
-        r._selected = false
-      })
+    RESET_FILTERS(state) {
+      state.query.priceRange = [state.config.limits.minPrice, state.config.limits.maxPrice];
+      state.query.sortBy = 'asc';
+      state.query.dates = [];
+      const resetTags = {};
+      Object.keys(state.query.selectedTags).forEach(key => {
+        resetTags[key] = [];
+      });
+      state.query.selectedTags = resetTags;
+      state.userForm.email = '';
+      state.userForm.consents = {};
+      state.catalog.selectedSlot = null;
     }
   },
 
   getters: {
-    selectedProduct: state => state.businessConfig.rentals.find(r => r._selected) || null,
-    allProducts: state => state.businessConfig.rentals
+    apiPayload: (state) => {
+      const [startDate, endDate] = state.query.dates.length === 2
+        ? [...state.query.dates].sort((a, b) => new Date(a) - new Date(b))
+        : [null, null];
+
+      const flatTags = Object.values(state.query.selectedTags)
+        .flat()
+        .filter(tag => tag)
+        .join(',');
+
+      return {
+        language: state.query.locale,
+        currency: state.query.currency,
+        price_min: state.query.priceRange[0],
+        price_max: state.query.priceRange[1],
+        sort: state.query.sortBy,
+        tags: flatTags,
+        page: state.query.page,
+        per_page: state.query.per_page,
+        utc_datetime_start: formatToZulu(startDate, state.query.startTime),
+        utc_datetime_end: formatToZulu(endDate, state.query.endTime)
+      };
+    },
+    allProducts: state => state.catalog.availability,
+    selectedProduct: state => state.catalog.selectedSlot
   },
 
   actions: {
-    toggleProductSelection({ commit }, productSlug) {
-      commit('SET_PRODUCT_SELECTION', productSlug)
-    },
-    async initApp({ commit }, payload = {}) {
+    async initApp({ commit, getters }, externalPayload = {}) {
       try {
+        const payload = { ...getters.apiPayload, ...externalPayload };
         const response = await API.fetchRentals(payload);
-        if (response.data) {
-          commit('SET_RENTALS', response.data);
+
+        if (response.success) {
+          commit('SET_RENTALS_DATA', response.data);
           commit('SET_LAST_UPDATE');
+          commit('SET_APP_READY', true);
+          commit('SET_BOOT_ERROR', null);
+        } else {
+          commit('SET_BOOT_ERROR', response.message);
         }
       } catch (error) {
         commit('SET_BOOT_ERROR', error.message);
-      } finally {
-        commit('SET_APP_READY', true);
       }
     }
   }
-})
+});

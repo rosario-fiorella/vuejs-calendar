@@ -9,6 +9,7 @@
             <v-card-subtitle>{{ $t('booking.period_subtitle') }}</v-card-subtitle>
             <v-card-text>
               <DatePickerRange />
+              <v-divider class="my-4"></v-divider>
               <TimePickerRange />
             </v-card-text>
           </v-card>
@@ -56,7 +57,7 @@
 
         <v-progress-linear v-if="isSearching" indeterminate color="primary" absolute top />
 
-        <template v-if="allProducts && allProducts.length">
+        <template v-if="allProducts && Object.keys(allProducts).length > 0">
           <RentalCardList :products="allProducts" />
         </template>
 
@@ -102,9 +103,6 @@ export default {
     RentalCardList,
     BookingConfirmDialog
   },
-  beforeDestroy() {
-    if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
-  },
   data: () => ({
     formValid: false,
     showConfirmDialog: false,
@@ -112,63 +110,42 @@ export default {
     isSearching: false,
     apiDebounceTimer: null,
   }),
+  beforeDestroy() {
+    if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
+  },
   computed: {
-    ...mapState([
-      'consents',
-      'selectedDates',
-      'rentalForm',
-      'filters',
-      'selectedFilters',
-      'selectedCurrency',
-      'selectedLocale'
-    ]),
-    ...mapGetters(['allProducts', 'selectedProduct']),
+    ...mapState({
+      query: state => state.query,
+      userForm: state => state.userForm
+    }),
+    ...mapGetters(['allProducts', 'selectedProduct', 'apiPayload']),
   },
   watch: {
-    selectedLocale: { handler() { this.triggerSearch() } },
-    selectedCurrency: { handler() { this.triggerSearch() } },
-    selectedDates: { handler() { this.triggerSearch() } },
-    selectedFilters: { deep: true, handler() { this.triggerSearch() } },
-    'filters.priceRange': { handler() { this.triggerSearch() } },
-    'filters.sortBy': { handler() { this.triggerSearch() } },
-    'rentalForm.startTime': { handler() { this.triggerSearch() } },
-    'rentalForm.endTime': { handler() { this.triggerSearch() } }
+    query: {
+      deep: true,
+      handler() {
+        this.triggerSearch();
+      }
+    }
   },
   methods: {
     handleCurrencyChange() {
       this.triggerSearch();
     },
-    onLocaleChange(newLocale) {
+    onLocaleChange() {
       this.triggerSearch();
     },
     triggerSearch() {
       if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
 
       this.apiDebounceTimer = setTimeout(async () => {
-        if (!this.selectedDates || this.selectedDates.length < 2) {
+        if (!this.query.dates || this.query.dates.length < 2) {
           return;
         }
 
         this.isSearching = true;
         try {
-          const [startDate, endDate] = [...this.selectedDates].sort();
-          const flatTags = Object.values(this.selectedFilters).flat().join(',');
-
-          const playload = {
-            currency: this.selectedCurrency,
-            language: this.selectedLocale,
-            utc_datetime_start: this.formatToZulu(startDate, this.rentalForm.startTime),
-            utc_datetime_end: this.formatToZulu(endDate, this.rentalForm.endTime),
-            fetch_config: 0,
-            page: this.page,
-            per_page: this.per_page,
-            price_min: this.filters.priceRange[0],
-            price_max: this.filters.priceRange[1],
-            tags: flatTags,
-            sort: this.filters.sortBy
-          }
-
-          await this.$store.dispatch('initApp', playload);
+          await this.$store.dispatch('initApp', { fetch_config: 0 });
         } catch (e) {
           console.error("Search Error:", e);
         } finally {
@@ -178,9 +155,7 @@ export default {
     },
 
     formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) {
-        return null;
-      }
+      if (!dateStr || !timeStr) return null;
       const [y, m, d] = dateStr.split('-').map(Number);
       const [hh, mm] = timeStr.split(':').map(Number);
       return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
@@ -188,47 +163,39 @@ export default {
 
     resetAll() {
       if (this.$refs.bookingForm) this.$refs.bookingForm.resetValidation();
-      this.$store.commit('RESET_FORM');
+      this.$store.commit('RESET_FILTERS');
     },
 
     handleSubmit() {
-      const isFormValid = this.$refs.bookingForm.validate();
+      const isFormValid = this.$refs.bookingForm ? this.$refs.bookingForm.validate() : false;
 
-      if (!this.selectedDates || this.selectedDates.length < 2) {
-        alert(this.$t('errors.select_full_range'));
+      if (!this.query.dates || this.query.dates.length < 2) {
         return;
       }
 
-      const { startTime, endTime, email } = this.rentalForm;
-      if (startTime && endTime && endTime <= startTime) {
-        alert(this.$t('errors.invalid_time_range'));
+      if (this.query.startTime && this.query.endTime && this.query.endTime <= this.query.startTime) {
         return;
       }
 
       const selected = this.selectedProduct;
-      if (!selected) {
-        alert(this.$t('errors.no_product_selected'));
+      if (!selected || !isFormValid) {
         return;
       }
 
-      if (!isFormValid) {
-        return;
-      }
-
-      const [startDate, endDate] = [...this.selectedDates].sort();
+      const [startDate, endDate] = [...this.query.dates].sort();
       this.lastPayload = {
-        datetime_start: this.formatToZulu(startDate, startTime),
-        datetime_end: this.formatToZulu(endDate, endTime),
-        customer_email: email,
+        datetime_start: this.formatToZulu(startDate, this.query.startTime),
+        datetime_end: this.formatToZulu(endDate, this.query.endTime),
+        customer_email: this.userForm.email,
         selected_product: {
           slug: selected.slug,
-          name: selected.content.name,
-          price: selected.price.price,
-          currency: this.selectedCurrency
+          name: selected.slot.price,
+          price: selected.slot.price,
+          currency: this.query.currency
         },
-        lang: this.selectedLocale,
-        tags: { ...this.selectedFilters },
-        legal_consents: { ...this.consents },
+        lang: this.query.locale,
+        tags: { ...this.query.selectedTags },
+        legal_consents: { ...this.userForm.consents },
         submitted_at: new Date().toISOString()
       };
 
@@ -237,15 +204,7 @@ export default {
 
     onFinalConfirm() {
       this.showConfirmDialog = false;
-      alert(this.$t('booking.success_message'));
-      this.resetAll();
     }
   }
 }
 </script>
-
-<style scoped>
-.v-card--list {
-  min-height: 400px;
-}
-</style>
