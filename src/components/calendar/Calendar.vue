@@ -139,7 +139,6 @@ export default {
       this.triggerSearch();
     },
     onLocaleChange(newLocale) {
-      console.log("Locale aggiornato:", newLocale);
       this.triggerSearch();
     },
     triggerSearch() {
@@ -153,17 +152,23 @@ export default {
         this.isSearching = true;
         try {
           const [startDate, endDate] = [...this.selectedDates].sort();
+          const flatTags = Object.values(this.selectedFilters).flat().join(',');
 
-          await this.$store.dispatch('initApp', {
-            from: this.formatToZulu(startDate, this.rentalForm.startTime),
-            to: this.formatToZulu(endDate, this.rentalForm.endTime),
+          const playload = {
+            currency: this.selectedCurrency,
+            language: this.selectedLocale,
+            utc_datetime_start: this.formatToZulu(startDate, this.rentalForm.startTime),
+            utc_datetime_end: this.formatToZulu(endDate, this.rentalForm.endTime),
+            fetch_config: 0,
+            page: this.page,
+            per_page: this.per_page,
             price_min: this.filters.priceRange[0],
             price_max: this.filters.priceRange[1],
-            sort: this.filters.sortBy,
-            tags: this.selectedFilters,
-            currency: this.selectedCurrency,
-            lang: this.selectedLocale
-          });
+            tags: flatTags,
+            sort: this.filters.sortBy
+          }
+
+          await this.$store.dispatch('initApp', playload);
         } catch (e) {
           console.error("Search Error:", e);
         } finally {

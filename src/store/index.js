@@ -2,55 +2,26 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { API } from '@/api'
 import i18n from '@/i18n'
+import { Entity } from '@/models/Entity'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    appReady: false,
-    bootError: null,
-    lastUpdate: null,
-    rentals: [],
-    selectedDates: [],
     businessConfig: {
-      minTime: '08:00',
-      maxTime: '22:00',
-      step: 15,
-      minDate: new Date().toISOString().split('T')[0],
-      maxDate: '2027-12-31',
+      minTime: '',
+      maxTime: '',
+      step: 0,
+      minDate: '',
+      maxDate: '',
       disabledDates: [],
       minPrice: 0,
-      maxPrice: 2000,
-      sortByOptions: [
-        { value: 'price_asc', text: 'rentals.sort_price_asc' },
-        { value: 'price_desc', text: 'rentals.sort_price_desc' },
-        { value: 'name_asc', text: 'rentals.sort_name_asc' }
-      ],
-      tagGroups: [
-        {
-          id: 'rent_type',
-          label: 'rentals.tag_product_type',
-          icon: 'mdi-car-key',
-          items: [
-            { id: 101, text: 'rentals.tag_daily' },
-            { id: 102, text: 'rentals.tag_long_term' }
-          ]
-        },
-        {
-          id: 'product_type',
-          label: 'rentals.tag_product_type',
-          icon: 'mdi-car-side',
-          items: [
-            { id: 201, text: 'rentals.tag_electric' },
-            { id: 202, text: 'rentals.tag_hybrid' }
-          ]
-        }
-      ],
-      legalChecks: [
-        { id: 'privacy', label: 'I accept the <a href="/privacy" target="_blank">Privacy Policy</a>', required: true },
-        { id: 'terms', label: 'I accept the <a href="/terms" target="_blank">Terms of Service</a>', required: true },
-        { id: 'marketing', label: 'Subscribe to newsletter', required: false }
-      ],
+      maxPrice: 0,
+      sortByOptions: [],
+      tagGroups: [],
+      legalChecks: [],
+      currencies: [],
+      languages: [],
       rentals: [
         {
           slug: "monolocale",
@@ -85,72 +56,26 @@ export default new Vuex.Store({
             thumbnail: { url: "http://localhost:5173/uploads/rental-2.jpg" }
           }
         }
-      ],
-      currencies: [
-        {
-          "key": "AUD",
-          "label": "Australian Dollar",
-          "symbol": "A$"
-        },
-        {
-          "key": "CAD",
-          "label": "Canadian Dollar",
-          "symbol": "CA$"
-        },
-        {
-          "key": "CHF",
-          "label": "Swiss Franc",
-          "symbol": "CHF"
-        },
-        {
-          "key": "CNY",
-          "label": "Chinese Yuan",
-          "symbol": "\u00a5"
-        },
-        {
-          "key": "EUR",
-          "label": "Euro",
-          "symbol": "\u20ac"
-        },
-        {
-          "key": "GBP",
-          "label": "British Pound",
-          "symbol": "\u00a3"
-        },
-        {
-          "key": "INR",
-          "label": "Indian Rupee",
-          "symbol": "\u20b9"
-        },
-        {
-          "key": "JPY",
-          "label": "Japanese Yen",
-          "symbol": "\u00a5"
-        },
-        {
-          "key": "USD",
-          "label": "US Dollar",
-          "symbol": "$"
-        }
-      ],
-      languages: [
-        { code: 'it-IT', label: 'Italiano', flag: 'it' },
-        { code: 'en-US', label: 'English', flag: 'gb' },
-        { code: 'fr-FR', label: 'Français', flag: 'fr' },
-        { code: 'de-DE', label: 'Deutsch', flag: 'de' }
       ]
     },
+    appReady: false,
+    bootError: null,
+    lastUpdate: null,
+    selectedDates: [],
+    page: 0,
+    per_page: 0,
+
     selectedFilters: {},
     rentalForm: {
       startTime: '08:00',
       endTime: '18:00',
       email: ''
     },
-    selectedLocale: 'en',
+    selectedLocale: 'it_IT',
     selectedCurrency: 'EUR',
     filters: {
-      sortBy: 'price_asc',
-      priceRange: [0, 2000],
+      sortBy: 'asc',
+      priceRange: [0, 0],
     },
     consents: {}
   },
@@ -173,11 +98,71 @@ export default new Vuex.Store({
       i18n.locale = localeCode;
     },
     SET_RENTALS(state, data) {
-      const currentSelectedSlug = state.businessConfig.rentals.find(r => r._selected)?.slug;
-      state.businessConfig.rentals = data.map(item => ({
-        ...item,
-        _selected: item.slug === currentSelectedSlug
-      }));
+      // update businessConfig
+      if (data.min_time) {
+        state.businessConfig.minTime = data.min_time;
+      }
+      if (data.max_time) {
+        state.businessConfig.maxTime = data.max_time;
+      }
+      if (data.step_minutes) {
+        state.businessConfig.step = data.step_minutes;
+      }
+      if (data.min_date) {
+        state.businessConfig.minDate = data.min_date;
+      }
+      if (data.max_date) {
+        state.businessConfig.maxDate = data.max_date;
+      }
+      if (data.disabled_dates) {
+        state.businessConfig.disabledDates = data.disabled_dates;
+      }
+      if (data.min_price) {
+        state.businessConfig.minPrice = data.min_price;
+      }
+      if (data.max_price) {
+        state.businessConfig.maxPrice = data.max_price;
+      }
+      if (data.sort_by_options) {
+        state.businessConfig.sortByOptions = data.sort_by_options;
+      }
+      if (data.tag_groups) {
+        state.businessConfig.tagGroups = data.tag_groups;
+      }
+      if (data.legal_checks) {
+        state.businessConfig.legalChecks = data.legal_checks;
+      }
+      if (data.currencies) {
+        state.businessConfig.currencies = data.currencies;
+      }
+      if (data.languages) {
+        state.businessConfig.languages = data.languages.map(lang => ({
+          ...lang,
+          code: lang.code.replace('_', '-')
+        }));
+      }
+
+      // update filters
+      if (state.filters.priceRange[0] === 0 && state.filters.priceRange[1] === 0) {
+        state.filters.priceRange = [data.min_price, data.max_price];
+      }
+
+      if (data.tag_groups) {
+        data.tag_groups.forEach(group => {
+          if (!Object.prototype.hasOwnProperty.call(state.selectedFilters, group.slug)) {
+            Vue.set(state.selectedFilters, group.slug, []);
+          }
+        });
+      }
+
+      if (data.catalog) {
+        const currentSelectedSlug = state.businessConfig.rentals.find(r => r._selected)?.slug;
+        state.businessConfig.rentals = Object.keys(data.catalog).map(slug => {
+          const entity = new Entity(slug, data.catalog[slug]);
+          entity._selected = (slug === currentSelectedSlug);
+          return entity;
+        });
+      }
     },
     SET_RENTAL_TIME(state, { key, val }) {
       state.rentalForm[key] = val
@@ -232,11 +217,9 @@ export default new Vuex.Store({
     async initApp({ commit }, payload = {}) {
       try {
         const response = await API.fetchRentals(payload);
-        if (response.success) {
+        if (response.data) {
           commit('SET_RENTALS', response.data);
           commit('SET_LAST_UPDATE');
-        } else if (response.status !== 429) {
-          throw new Error(response.message);
         }
       } catch (error) {
         commit('SET_BOOT_ERROR', error.message);

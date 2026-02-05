@@ -23,7 +23,26 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('initApp')
+    const todayUTC = new Date(Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate(),
+      0, 0, 0
+    ));
+
+    const tomorrowUTC = new Date(todayUTC);
+    tomorrowUTC.setUTCDate(todayUTC.getUTCDate() + 1);
+
+    const playload = {
+      utc_datetime_start: todayUTC.toISOString(),
+      utc_datetime_end: tomorrowUTC.toISOString(),
+      currency: 'EUR',
+      language: 'it_IT',
+      fetch_config: 1,
+      sort: 'asc'
+    }
+
+    this.$store.dispatch('initApp', playload)
   },
   data() {
     return {
