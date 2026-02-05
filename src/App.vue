@@ -9,6 +9,7 @@
             {{ $t('common.retry') || 'Retry' }}
           </v-btn>
         </div>
+
         <v-progress-circular v-else indeterminate :color="primaryColor" :size="size" />
       </div>
 
@@ -18,7 +19,6 @@
     </v-fade-transition>
   </v-app>
 </template>
-
 <script>
 import { ICONS } from '@/assets/icons'
 
@@ -31,8 +31,13 @@ export default {
   computed: {
     appReady() { return this.$store.state.appReady },
     bootError() { return this.$store.state.bootError },
+
     primaryColor() {
-      return this.$vuetify?.theme?.themes?.light?.primary || '#1976D2'
+      try {
+        return this.$vuetify?.theme?.themes?.light?.primary || '#1976D2'
+      } catch (e) {
+        return '#1976D2'
+      }
     }
   },
   created() {
@@ -67,5 +72,9 @@ export default {
   height: 100%;
   background: white;
   z-index: 999;
+}
+
+.v-application {
+  font-family: 'Roboto', sans-serif !important;
 }
 </style>

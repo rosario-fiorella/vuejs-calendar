@@ -116,12 +116,30 @@ export default {
   computed: {
     ...mapState({
       query: state => state.query,
-      userForm: state => state.userForm
+      userForm: state => state.userForm,
+      catalogAnagraphic: state => state.config.catalog
     }),
     ...mapGetters(['allProducts', 'selectedProduct', 'apiPayload']),
   },
   watch: {
-    query: {
+    'query.dates': {
+      handler(val) {
+        if (val && val.length === 2) this.triggerSearch();
+      }
+    },
+    'query.startTime': 'triggerSearch',
+    'query.endTime': 'triggerSearch',
+    'query.sortBy': 'triggerSearch',
+    'query.currency': 'triggerSearch',
+    'query.locale': 'triggerSearch',
+    'query.priceRange': {
+      handler(newVal, oldVal) {
+        if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+          this.triggerSearch();
+        }
+      }
+    },
+    'query.selectedTags': {
       deep: true,
       handler() {
         this.triggerSearch();
@@ -136,18 +154,20 @@ export default {
       this.triggerSearch();
     },
     triggerSearch() {
-      if (this.apiDebounceTimer) clearTimeout(this.apiDebounceTimer);
+      if (this.apiDebounceTimer) {
+        clearTimeout(this.apiDebounceTimer);
+      }
 
       this.apiDebounceTimer = setTimeout(async () => {
         if (!this.query.dates || this.query.dates.length < 2) {
           return;
         }
-
         this.isSearching = true;
+
         try {
           await this.$store.dispatch('initApp', { fetch_config: 0 });
         } catch (e) {
-          console.error("Search Error:", e);
+          console.error("Errore durante la ricerca API:", e);
         } finally {
           this.isSearching = false;
         }
@@ -155,41 +175,50 @@ export default {
     },
 
     formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) return null;
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const [hh, mm] = timeStr.split(':').map(Number);
-      return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
+      if (!dateStr || !timeStr) {
+        return null;
+      }
+
+      try {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const [hh, mm] = timeStr.split(':').map(Number);
+        const dateObj = new Date(y, m - 1, d, hh, mm);
+
+        return isNaN(dateObj.getTime()) ? null : dateObj.toISOString();
+      } catch (error) {
+        console.error("Errore conversione locale to UTC:", error);
+        return null;
+      }
     },
 
     resetAll() {
-      if (this.$refs.bookingForm) this.$refs.bookingForm.resetValidation();
+      if (this.$refs.bookingForm) {
+        this.$refs.bookingForm.resetValidation();
+      }
       this.$store.commit('RESET_FILTERS');
+      this.triggerSearch();
     },
 
     handleSubmit() {
       const isFormValid = this.$refs.bookingForm ? this.$refs.bookingForm.validate() : false;
-
+      const selected = this.selectedProduct;
       if (!this.query.dates || this.query.dates.length < 2) {
         return;
       }
-
-      if (this.query.startTime && this.query.endTime && this.query.endTime <= this.query.startTime) {
-        return;
-      }
-
-      const selected = this.selectedProduct;
       if (!selected || !isFormValid) {
         return;
       }
 
       const [startDate, endDate] = [...this.query.dates].sort();
+      const entityInfo = this.catalogAnagraphic[selected.slug];
+
       this.lastPayload = {
         datetime_start: this.formatToZulu(startDate, this.query.startTime),
         datetime_end: this.formatToZulu(endDate, this.query.endTime),
         customer_email: this.userForm.email,
         selected_product: {
           slug: selected.slug,
-          name: selected.slot.price,
+          name: entityInfo ? entityInfo.content.name : selected.slug,
           price: selected.slot.price,
           currency: this.query.currency
         },
@@ -202,9 +231,61 @@ export default {
       this.showConfirmDialog = true;
     },
 
-    onFinalConfirm() {
+    async onFinalConfirm() {
       this.showConfirmDialog = false;
+      this.isSearching = true;
+
+      try {
+        // 3. ESEMPIO DI CHIAMATA API (da implementare nel tuo api/index.js se necessario)
+        // const response = await API.confirmBooking(this.lastPayload);
+        // Per ora simuliamo un log del payload pronto per il server
+        console.log("Invio prenotazione al server...", this.lastPayload);
+        // 4. Feedback all'utente (opzionale: potresti usare una snackbar o un alert)
+        // alert(this.$t('booking.success_message'));
+        // 5. Opzionale: Resetta tutto dopo il successo
+        // this.resetAll();
+      } catch (error) {
+        console.error("Errore durante la conferma finale:", error);
+      } finally {
+        this.isSearching = false;
+      }
     }
+
   }
 }
 </script>
+<style scoped>
+.v-card--form {
+  max-width: 500px;
+  width: 100%;
+}
+
+.v-card--list {
+  position: relative;
+  min-height: 400px;
+}
+
+@media (min-width: 1264px) {
+  .v-card--form {
+    position: sticky;
+    top: 24px;
+    align-self: flex-start;
+  }
+}
+
+.v-card--list {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.v-card-title {
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+</style>

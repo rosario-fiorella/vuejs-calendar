@@ -20,7 +20,6 @@
     </v-sheet>
   </div>
 </template>
-
 <script>
 import { mapState } from 'vuex';
 import { ICONS } from '@/assets/icons';
@@ -44,12 +43,15 @@ export default {
   },
 
   methods: {
-    resolveIcon(iconNameFromApi) {
-      return ICONS[iconNameFromApi] || ICONS.tag;
+    resolveIcon(groupId) {
+      return ICONS[groupId] || ICONS.tag;
     },
 
     handleTagChange(groupId, tags) {
-      this.$store.commit('SET_TAG_SELECTION', { groupId, tags: tags || [] });
+      this.$store.commit('SET_TAG_SELECTION', {
+        groupId,
+        tags: tags || []
+      });
     }
   }
 }
@@ -63,5 +65,9 @@ export default {
 .custom-card-border {
   border: 1px solid rgba(0, 0, 0, 0.12) !important;
   border-radius: 4px !important;
+}
+
+:deep(.v-chip__filter) {
+  margin-right: 4px;
 }
 </style>

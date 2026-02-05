@@ -40,7 +40,8 @@
             <v-spacer></v-spacer>
             <v-btn color="primary" text @click="toggleExpand(slug, date)">
               {{ isExpanded(slug, date) ? $t('common.cancel') : $t('common.view_details') }}
-              <v-icon right>{{ isExpanded(slug, date) ? icons.arrowUp : icons.arrowDown }}</v-icon>
+              <v-icon right>{{ isExpanded(slug, date) ? (isExpanded(slug, date) ? icons.arrowUp : icons.arrowDown) :
+                icons.arrowDown }}</v-icon>
             </v-btn>
           </v-card-actions>
 
@@ -48,9 +49,9 @@
             <div v-show="isExpanded(slug, date)">
               <v-divider></v-divider>
               <v-card-text class="grey lighten-4 pa-4">
-
                 <div class="text-overline mb-2 primary--text font-weight-bold">{{ $t('calendar.selection_title') }}
                 </div>
+
                 <v-expansion-panels flat hover class="mb-6">
                   <v-expansion-panel v-for="(slot, s) in slots" :key="s" class="rounded-lg mb-2 overflow-hidden border">
                     <v-expansion-panel-header class="py-3 px-4">
@@ -71,6 +72,7 @@
                         </v-col>
                       </v-row>
                     </v-expansion-panel-header>
+
                     <v-expansion-panel-content class="white">
                       <v-divider class="mb-3"></v-divider>
                       <div class="text-caption">
@@ -79,14 +81,13 @@
                         <div v-for="(tax, t) in getEntity(slug).taxes" :key="t"
                           class="d-flex justify-space-between mb-1 align-center">
                           <span class="grey--text">
-                            {{ tax.title }}
-                            ({{ tax.type === 'tax_percentage' ? tax.value + '%' : tax.currency + ' ' + tax.value }})
+                            {{ tax.title }} ({{ tax.type === 'tax_percentage' ? tax.value + '%' : tax.currency + ' ' +
+                              tax.value }})
                           </span>
                           <v-tooltip v-if="tax.description" bottom>
                             <template v-slot:activator="{ on, attrs }">
-                              <v-icon v-bind="attrs" v-on="on" x-small class="ml-1" color="grey lighten-1">
-                                {{ icons.help }}
-                              </v-icon>
+                              <v-icon v-bind="attrs" v-on="on" x-small class="ml-1" color="grey lighten-1">{{ icons.help
+                                }}</v-icon>
                             </template>
                             <span>{{ tax.description }}</span>
                           </v-tooltip>
@@ -145,24 +146,42 @@ export default {
   },
   methods: {
     getEntity(slug) { return this.catalogAnagraphic[slug] || null; },
+
     formatDisplayDate(dateStr) {
+      if (!dateStr) return '';
       const [y, m, d] = dateStr.split('-').map(Number);
-      return new Date(y, m - 1, d).toLocaleDateString(this.$i18n.locale, { weekday: 'long', day: 'numeric', month: 'long' });
+      return new Date(y, m - 1, d).toLocaleDateString(this.$i18n.locale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+      });
     },
-    formatTime(timeStr) { return timeStr ? timeStr.substring(0, 5) : '--:--'; },
-    isExpanded(slug, date) { return this.expandedCards.includes(`${slug}-${date}`); },
+
+    formatTime(timeStr) {
+      return timeStr ? timeStr.substring(0, 5) : '--:--';
+    },
+
+    isExpanded(slug, date) {
+      return this.expandedCards.includes(`${slug}-${date}`);
+    },
+
     toggleExpand(slug, date) {
       const id = `${slug}-${date}`;
       const idx = this.expandedCards.indexOf(id);
       if (idx > -1) this.expandedCards.splice(idx, 1);
       else this.expandedCards.push(id);
     },
+
     isSlotSelected(slug, date, slot) {
-      return this.selectedSlot?.slug === slug && this.selectedSlot?.date === date && this.selectedSlot?.slot?.time_start === slot.time_start;
+      return this.selectedSlot?.slug === slug &&
+        this.selectedSlot?.date === date &&
+        this.selectedSlot?.slot?.time_start === slot.time_start;
     },
+
     isProductSelectedInDate(slug, date) {
       return this.selectedSlot?.slug === slug && this.selectedSlot?.date === date;
     },
+
     toggleSlot(slug, date, slot) {
       if (this.isSlotSelected(slug, date, slot)) {
         this.$store.commit('SET_SELECTED_SLOT', null);

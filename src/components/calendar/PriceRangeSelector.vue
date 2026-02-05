@@ -24,37 +24,40 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'PriceRangeSelector',
-
+  data: () => ({
+    internalRange: [0, 0]
+  }),
   computed: {
     ...mapState({
       currency: state => state.query.currency,
       minLimit: state => state.config.limits.minPrice,
       maxLimit: state => state.config.limits.maxPrice,
-    }),
-
-    internalRange: {
-      get() {
-        return this.$store.state.query.priceRange;
-      },
-      set(val) {
+      storeRange: state => state.query.priceRange
+    })
+  },
+  watch: {
+    storeRange: {
+      immediate: true,
+      handler(val) {
+        this.internalRange = [...val];
+      }
+    },
+    internalRange(val) {
+      if (JSON.stringify(val) !== JSON.stringify(this.storeRange)) {
         this.$store.commit('SET_QUERY_PRICE_RANGE', val);
       }
     }
   },
-
   methods: {
     updateRange(index, value) {
       let numValue = Number(value);
       const newRange = [...this.internalRange];
-
       if (index === 0) {
         numValue = Math.max(this.minLimit, Math.min(numValue, newRange[1]));
       } else {
         numValue = Math.min(this.maxLimit, Math.max(numValue, newRange[0]));
       }
-
-      newRange[index] = numValue;
-      this.internalRange = newRange;
+      this.$set(this.internalRange, index, numValue);
     }
   }
 }

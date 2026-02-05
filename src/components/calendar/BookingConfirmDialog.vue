@@ -15,7 +15,7 @@
             <v-list-item-content>
               <v-list-item-title class="text-caption">{{ $t('booking.product') }}</v-list-item-title>
               <v-list-item-subtitle class="font-weight-bold primary--text text-body-1">
-                {{ payload.selected_product.name }} — {{ $n(payload.selected_product.price, 'currency') }}
+                {{ payload.selected_product.name }} — {{ formatCurrency(payload.selected_product.price) }}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -28,7 +28,7 @@
               <v-list-item-title class="text-caption">{{ $t('booking.period_label') }}</v-list-item-title>
               <v-list-item-subtitle class="text-body-2">
                 <strong>{{ formatDate(payload.datetime_start) }}</strong>
-                <v-icon x-small class="mx-1">mdi-arrow-right</v-icon>
+                <v-icon x-small class="mx-1" color="grey">{{ ICONS.arrowRight }}</v-icon>
                 <strong>{{ formatDate(payload.datetime_end) }}</strong>
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -51,7 +51,7 @@
           </div>
           <v-chip-group column>
             <v-chip v-for="(tagName, index) in allTagNames" :key="index" x-small color="primary" outlined>
-              {{ $t(tagName) }}
+              {{ tagName }}
             </v-chip>
           </v-chip-group>
         </div>
@@ -65,6 +65,7 @@
           {{ $t('common.cancel') }}
         </v-btn>
         <v-btn :color="bgColorSubmit" class="px-6" dark depressed @click="$emit('confirm')">
+          <v-icon left small>{{ ICONS.check }}</v-icon>
           {{ $t('common.confirm_final') }}
         </v-btn>
       </v-card-actions>
@@ -79,14 +80,8 @@ export default {
   name: 'BookingConfirmDialog',
   props: {
     value: Boolean,
-    payload: {
-      type: Object,
-      default: null
-    },
-    bgColorSubmit: {
-      type: String,
-      default: 'primary'
-    }
+    payload: { type: Object, default: null },
+    bgColorSubmit: { type: String, default: 'primary' }
   },
   data: () => ({
     ICONS
@@ -100,19 +95,20 @@ export default {
 
       const tagGroups = this.$store.state.config.tagGroups || [];
       const selectedMap = this.payload.tags;
-      let keys = [];
+      let names = [];
 
       Object.keys(selectedMap).forEach(groupId => {
         const group = tagGroups.find(g => g.id === groupId);
         if (group && Array.isArray(selectedMap[groupId])) {
           selectedMap[groupId].forEach(tagId => {
             const item = group.items.find(i => i.id === tagId);
-            if (item) keys.push(item.text);
+            if (item) {
+              names.push(this.$t(item.text));
+            }
           });
         }
       });
-
-      return keys;
+      return names;
     }
   },
   methods: {
@@ -120,7 +116,6 @@ export default {
       if (!isoStr) return '';
       const d = new Date(isoStr);
       return d.toLocaleString(this.$i18n.locale, {
-        timeZone: 'UTC',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -128,6 +123,12 @@ export default {
         minute: '2-digit',
         hour12: false
       });
+    },
+    formatCurrency(value) {
+      if (typeof value !== 'number') {
+        value = parseFloat(value || 0);
+      }
+      return this.$n(value, 'currency', { currency: this.payload.selected_product.currency || 'EUR' });
     }
   }
 }

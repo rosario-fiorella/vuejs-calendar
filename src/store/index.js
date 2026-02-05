@@ -7,7 +7,10 @@ import { Entity } from '@/models/Entity'
 Vue.use(Vuex)
 
 const formatToZulu = (dateInput, timeStr) => {
-  if (!dateInput || !timeStr) return null;
+  if (!dateInput || !timeStr) {
+    return null;
+  }
+
   let y, m, d;
   if (typeof dateInput === 'string') {
     [y, m, d] = dateInput.split('-').map(Number);
@@ -16,9 +19,12 @@ const formatToZulu = (dateInput, timeStr) => {
     m = dateInput.getMonth() + 1;
     d = dateInput.getDate();
   }
+
   const [hh, mm] = timeStr.split(':').map(Number);
-  return new Date(Date.UTC(y, m - 1, d, hh, mm)).toISOString();
+  const localDate = new Date(y, m - 1, d, hh, mm);
+  return localDate.toISOString();
 };
+
 
 export default new Vuex.Store({
   state: {
@@ -103,13 +109,13 @@ export default new Vuex.Store({
       }
 
       if (data.tag_groups) {
-        const newTags = { ...state.query.selectedTags };
+        const currentTags = { ...state.query.selectedTags };
         data.tag_groups.forEach(group => {
-          if (!Object.prototype.hasOwnProperty.call(newTags, group.id)) {
-            newTags[group.id] = [];
+          if (!Object.prototype.hasOwnProperty.call(currentTags, group.id)) {
+            Vue.set(currentTags, group.id, []);
           }
         });
-        state.query.selectedTags = newTags;
+        state.query.selectedTags = currentTags;
       }
 
       if (data.availability) {
@@ -148,20 +154,19 @@ export default new Vuex.Store({
       state.userForm[field] = value;
     },
     SET_CONSENT(state, { id, val }) {
-      state.userForm.consents = {
-        ...state.userForm.consents,
-        [id]: val
-      };
+      Vue.set(state.userForm.consents, id, !!val);
     },
     RESET_FILTERS(state) {
       state.query.priceRange = [state.config.limits.minPrice, state.config.limits.maxPrice];
       state.query.sortBy = 'asc';
       state.query.dates = [];
+
       const resetTags = {};
       Object.keys(state.query.selectedTags).forEach(key => {
         resetTags[key] = [];
       });
       state.query.selectedTags = resetTags;
+
       state.userForm.email = '';
       state.userForm.consents = {};
       state.catalog.selectedSlot = null;
@@ -170,8 +175,8 @@ export default new Vuex.Store({
 
   getters: {
     apiPayload: (state) => {
-      const [startDate, endDate] = state.query.dates.length === 2
-        ? [...state.query.dates].sort((a, b) => new Date(a) - new Date(b))
+      const [startDate, endDate] = (state.query.dates && state.query.dates.length === 2)
+        ? [...state.query.dates].sort()
         : [null, null];
 
       const flatTags = Object.values(state.query.selectedTags)
@@ -200,6 +205,11 @@ export default new Vuex.Store({
     async initApp({ commit, getters }, externalPayload = {}) {
       try {
         const payload = { ...getters.apiPayload, ...externalPayload };
+
+        if (!externalPayload.fetch_config && (!payload.utc_datetime_start || !payload.utc_datetime_end)) {
+          return;
+        }
+
         const response = await API.fetchRentals(payload);
 
         if (response.success) {
