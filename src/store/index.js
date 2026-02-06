@@ -3,34 +3,21 @@ import Vuex from 'vuex'
 import { API } from '@/api'
 import i18n from '@/i18n'
 import { Entity } from '@/models/Entity'
+import DateTransformer from '@/utils/DateTransformer'
 
 Vue.use(Vuex)
-
-const formatToZulu = (dateInput, timeStr) => {
-  if (!dateInput || !timeStr) {
-    return null;
-  }
-
-  let y, m, d;
-  if (typeof dateInput === 'string') {
-    [y, m, d] = dateInput.split('-').map(Number);
-  } else {
-    y = dateInput.getFullYear();
-    m = dateInput.getMonth() + 1;
-    d = dateInput.getDate();
-  }
-
-  const [hh, mm] = timeStr.split(':').map(Number);
-  const localDate = new Date(y, m - 1, d, hh, mm);
-  return localDate.toISOString();
-};
-
 
 export default new Vuex.Store({
   state: {
     appReady: false,
     bootError: null,
     lastUpdate: null,
+    snackbar: {
+      show: false,
+      message: '',
+      color: 'error',
+      timeout: 4000
+    },
     config: {
       limits: {
         minPrice: 0,
@@ -80,6 +67,15 @@ export default new Vuex.Store({
     },
     SET_LAST_UPDATE(state) {
       state.lastUpdate = new Date().toISOString();
+    },
+    SHOW_SNACKBAR(state, payload) {
+      state.snackbar.show = true;
+      state.snackbar.message = payload.message;
+      state.snackbar.color = payload.color || 'error';
+      state.snackbar.timeout = payload.timeout || 4000;
+    },
+    CLOSE_SNACKBAR(state) {
+      state.snackbar.show = false;
     },
     SET_RENTALS_DATA(state, data) {
       if (data.min_time) state.config.limits.minTime = data.min_time;
@@ -193,8 +189,8 @@ export default new Vuex.Store({
         tags: flatTags,
         page: state.query.page,
         per_page: state.query.per_page,
-        utc_datetime_start: formatToZulu(startDate, state.query.startTime),
-        utc_datetime_end: formatToZulu(endDate, state.query.endTime)
+        utc_datetime_start: DateTransformer.localToZulu(startDate, state.query.startTime),
+        utc_datetime_end: DateTransformer.localToZulu(endDate, state.query.endTime)
       };
     },
     allProducts: state => state.catalog.availability,

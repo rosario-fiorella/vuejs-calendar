@@ -27,6 +27,7 @@ const messages = {
       selection_title: "Stay Period"
     },
     common: {
+      close: "Close",
       cancel: "Cancel",
       confirm_final: "Confirm Booking",
       reset: "Reset Filters",

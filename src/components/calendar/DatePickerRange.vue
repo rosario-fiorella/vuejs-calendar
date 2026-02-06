@@ -7,13 +7,14 @@
       <div class="text-h6">{{ formattedRangeTitle }}</div>
     </v-sheet>
 
-    <v-date-picker v-model="internalDateRange" full-width range no-title :locale="$i18n.locale"
-      :prev-icon="icons.arrowLeft" :next-icon="icons.arrowRight" :max="toLocal(limitTo)" :min="toLocal(limitFrom)"
+    <v-date-picker v-model="internalDateRange" full-width range no-title :locale="pickerLocale"
+      :prev-icon="icons.arrowLeft" :next-icon="icons.arrowRight" :max="limitToFormatted" :min="limitFromFormatted"
       :allowed-dates="isDateAllowed" :color="bgColor" @input="handleSelection"></v-date-picker>
   </v-card>
 </template>
 <script>
 import { ICONS } from '@/assets/icons'
+import DateTransformer from '@/utils/DateTransformer'
 
 export default {
   name: 'DatePickerRange',
@@ -31,38 +32,54 @@ export default {
     '$store.state.query.dates': {
       immediate: true,
       handler(newDates) {
-        this.internalDateRange = newDates ? [...newDates] : [];
+        if (JSON.stringify(newDates) !== JSON.stringify(this.internalDateRange)) {
+          this.internalDateRange = newDates ? [...newDates] : [];
+        }
       }
     }
   },
   computed: {
+    pickerLocale() {
+      return this.$i18n.locale ? this.$i18n.locale.replace('_', '-').toLowerCase() : 'en-us';
+    },
+    limitTo() {
+      return this.$store.state.config.limits.maxDate
+    },
+    limitFrom() {
+      return this.$store.state.config.limits.minDate
+    },
+    limitToFormatted() {
+      return this.limitTo ? this.limitTo.substring(0, 10) : undefined
+    },
+    limitFromFormatted() {
+      return this.limitFrom ? this.limitFrom.substring(0, 10) : undefined
+    },
     formattedRangeTitle() {
-      if (!this.internalDateRange || this.internalDateRange.length === 0) {
+      if (!this.internalDateRange?.length) {
         return this.$t('calendar.selection_title');
       }
-      const sorted = [...this.internalDateRange].sort();
-      if (sorted.length === 1) {
-        return this.formatReadableDate(sorted[0]);
-      }
-      return `${this.formatReadableDate(sorted[0])} — ${this.formatReadableDate(sorted[1])}`;
+
+      return this.internalDateRange
+        .slice()
+        .sort()
+        .map(this.formatReadableDate)
+        .join(' — ');
     },
-    limitTo() { return this.$store.state.config.limits.maxDate },
-    limitFrom() { return this.$store.state.config.limits.minDate },
     disabledDatesSet() {
-      const dates = this.$store.state.config.limits.disabledDates || [];
-      return new Set(dates.map(d => (typeof d === 'string' ? d.split('T')[0] : d)));
+      const limits = this.$store.state.config?.limits;
+      const dates = limits?.disabledDates || [];
+      return new Set(dates.map(d => (typeof d === 'string' ? d.substring(0, 10) : d)));
     }
   },
   methods: {
     formatReadableDate(dateStr) {
-      if (!dateStr) return '';
+      if (!dateStr) return ''
       const [y, m, d] = dateStr.split('-');
       return `${d}/${m}`;
     },
 
     toLocal(zuluStr) {
-      if (!zuluStr) return null;
-      return zuluStr.split('T')[0];
+      return DateTransformer.toISODate(zuluStr)
     },
 
     isDateAllowed(date) {
@@ -70,28 +87,39 @@ export default {
     },
 
     handleSelection(dates) {
-      if (dates.length !== 2) return;
+      if (!dates || dates.length === 0) return;
 
-      const sortedDates = [...dates].sort();
-      const [start, end] = sortedDates;
+      const sorted = [...dates].sort((a, b) => new Date(a) - new Date(b));
 
-      if (this.hasDisabledDatesInRange(start, end)) {
-        alert(this.$t('errors.disabled_date_in_range'));
-        this.internalDateRange = [];
-        this.$store.commit('SET_QUERY_DATES', []);
-        return;
+      if (sorted.length === 2) {
+        if (this.hasDisabledDatesInRange(sorted[0], sorted[1])) {
+          this.notifyError(this.$t('errors.disabled_date_in_range'));
+          const lastPicked = dates[dates.length - 1];
+          this.updateDates([lastPicked]);
+          return;
+        }
       }
 
-      this.$store.commit('SET_QUERY_DATES', sortedDates);
+      this.updateDates(sorted);
+    },
+
+    updateDates(val) {
+      this.$store.commit('SET_QUERY_DATES', val);
+    },
+
+    notifyError(msg) {
+      this.$store.commit('SHOW_SNACKBAR', {
+        message: msg,
+        color: 'error'
+      });
     },
 
     hasDisabledDatesInRange(start, end) {
-      const disabledRaw = this.$store.state.config.limits.disabledDates || [];
-      return disabledRaw.some(d => {
-        const target = d.split('T')[0];
-        return target >= start && target <= end;
+      return Array.from(this.disabledDatesSet).some(disabledDate => {
+        return disabledDate >= start && disabledDate <= end;
       });
     }
+
   }
 }
 </script>

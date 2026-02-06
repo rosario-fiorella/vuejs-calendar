@@ -86,6 +86,7 @@ import LegalConsents from '@/components/calendar/LegalConsents.vue'
 import BookingActions from '@/components/calendar/BookingActions.vue'
 import RentalCardList from '@/components/calendar/RentalCardList.vue'
 import BookingConfirmDialog from '@/components/calendar/BookingConfirmDialog.vue'
+import DateTransformer from '@/utils/DateTransformer'
 
 export default {
   name: 'CalendarView',
@@ -174,23 +175,6 @@ export default {
       }, 400);
     },
 
-    formatToZulu(dateStr, timeStr) {
-      if (!dateStr || !timeStr) {
-        return null;
-      }
-
-      try {
-        const [y, m, d] = dateStr.split('-').map(Number);
-        const [hh, mm] = timeStr.split(':').map(Number);
-        const dateObj = new Date(y, m - 1, d, hh, mm);
-
-        return isNaN(dateObj.getTime()) ? null : dateObj.toISOString();
-      } catch (error) {
-        console.error("Errore conversione locale to UTC:", error);
-        return null;
-      }
-    },
-
     resetAll() {
       if (this.$refs.bookingForm) {
         this.$refs.bookingForm.resetValidation();
@@ -213,8 +197,8 @@ export default {
       const entityInfo = this.catalogAnagraphic[selected.slug];
 
       this.lastPayload = {
-        datetime_start: this.formatToZulu(startDate, this.query.startTime),
-        datetime_end: this.formatToZulu(endDate, this.query.endTime),
+        datetime_start: DateTransformer.localToZulu(startDate, this.query.startTime),
+        datetime_end: DateTransformer.localToZulu(endDate, this.query.endTime),
         customer_email: this.userForm.email,
         selected_product: {
           slug: selected.slug,

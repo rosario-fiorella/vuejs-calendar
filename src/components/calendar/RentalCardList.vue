@@ -67,7 +67,7 @@
                           <v-btn fab x-small depressed :color="isSlotSelected(slug, date, slot) ? 'error' : 'primary'"
                             @click.stop="toggleSlot(slug, date, slot)">
                             <v-icon small color="white">{{ isSlotSelected(slug, date, slot) ? icons.close : icons.add
-                              }}</v-icon>
+                            }}</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -87,7 +87,7 @@
                           <v-tooltip v-if="tax.description" bottom>
                             <template v-slot:activator="{ on, attrs }">
                               <v-icon v-bind="attrs" v-on="on" x-small class="ml-1" color="grey lighten-1">{{ icons.help
-                                }}</v-icon>
+                              }}</v-icon>
                             </template>
                             <span>{{ tax.description }}</span>
                           </v-tooltip>
@@ -128,6 +128,7 @@
 <script>
 import { mapState } from 'vuex'
 import { ICONS } from '@/assets/icons'
+import DateTransformer from '@/utils/DateTransformer'
 
 export default {
   name: 'RentalCardList',
@@ -147,14 +148,9 @@ export default {
   methods: {
     getEntity(slug) { return this.catalogAnagraphic[slug] || null; },
 
-    formatDisplayDate(dateStr) {
-      if (!dateStr) return '';
-      const [y, m, d] = dateStr.split('-').map(Number);
-      return new Date(y, m - 1, d).toLocaleDateString(this.$i18n.locale, {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long'
-      });
+    formatDisplayDate(zuluStr) {
+      const dateObj = DateTransformer.zuluToDate(zuluStr);
+      return DateTransformer.toHuman(dateObj)
     },
 
     formatTime(timeStr) {

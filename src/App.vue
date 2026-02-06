@@ -17,6 +17,16 @@
         <router-view />
       </v-main>
     </v-fade-transition>
+
+    <v-snackbar v-model="snackbarStatus" :color="$store.state.snackbar.color" :timeout="$store.state.snackbar.timeout"
+      bottom right>
+      {{ $store.state.snackbar.message }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="$store.commit('CLOSE_SNACKBAR')">
+          {{ $t('common.close') }}
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 <script>
@@ -29,9 +39,16 @@ export default {
     ICONS
   }),
   computed: {
-    appReady() { return this.$store.state.appReady },
-    bootError() { return this.$store.state.bootError },
-
+    appReady() {
+      return this.$store.state.appReady
+    },
+    bootError() {
+      return this.$store.state.bootError
+    },
+    snackbarStatus: {
+      get() { return this.$store.state.snackbar.show; },
+      set(val) { if (!val) this.$store.commit('CLOSE_SNACKBAR'); }
+    },
     primaryColor() {
       try {
         return this.$vuetify?.theme?.themes?.light?.primary || '#1976D2'
@@ -68,10 +85,13 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: white;
-  z-index: 999;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .v-application {
